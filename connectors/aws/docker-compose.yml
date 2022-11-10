@@ -9,6 +9,8 @@ services:
       - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - LAMBDA_EXECUTOR=local
     volumes:
+      - './localstack/:/docker-entrypoint-initaws.d/'
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

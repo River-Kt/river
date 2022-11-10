@@ -206,4 +206,4 @@ fun <E, F, S, T> Flow<E>.broadcast(
 
 fun <T> flowOf(item: suspend () -> T) = flow { emit(item()) }
 
-fun <T, R> Flow<T>.via(flow: Flow<T>.() -> Flow<R>) = flow(this)
+inline fun <T, R> Flow<T>.via(flow: Flow<T>.() -> Flow<R>) = flow(this)
