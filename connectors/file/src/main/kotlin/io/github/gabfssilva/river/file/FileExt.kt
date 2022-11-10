@@ -2,16 +2,18 @@
 
 package io.github.gabfssilva.river.file
 
+import io.github.gabfssilva.river.core.collectAsync
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.nio.file.OpenOption
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.inputStream
 import kotlin.io.path.writeBytes
@@ -46,5 +48,33 @@ fun Path.asFlow(
 
 suspend fun Flow<ByteArray>.writeTo(
     path: Path,
-    vararg options: OpenOption
+    vararg options: OpenOption = arrayOf(
+        StandardOpenOption.WRITE,
+        StandardOpenOption.CREATE,
+        StandardOpenOption.APPEND
+    )
 ) = collect { path.writeBytes(it, *options) }
+
+fun Flow<ByteArray>.zipAsFile(
+    name: String
+) = PipedOutputStream().let { os ->
+    val zipChannel = Channel<ByteArray>()
+
+    val pis = PipedInputStream().also { it.connect(os) }
+    val zipOS = ZipOutputStream(os)
+
+    val entry = ZipEntry(name)
+    zipOS.putNextEntry(entry)
+
+    zipChannel
+        .consumeAsFlow()
+        .collectAsync { zipOS.write(it) }
+
+    onCompletion {
+        zipChannel.close()
+        zipOS.closeEntry()
+        zipOS.close()
+    }.collectAsync { zipChannel.send(it) }
+
+    pis.asFlow()
+}
