@@ -1,10 +1,14 @@
+@file:OptIn(FlowPreview::class)
+
 package io.github.gabfssilva.river.aws.s3
 
 import io.github.gabfssilva.river.core.intersperse
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
@@ -16,6 +20,8 @@ import java.net.URI
 
 class S3Test : FeatureSpec({
     feature("S3 streaming connector") {
+        s3Client.createBucket { it.bucket("test") }.await()
+
         scenario("Successful upload") {
             val responses =
                 s3Client
@@ -45,7 +51,6 @@ class S3Test : FeatureSpec({
                 .collect()
 
             val (metadata, content) = s3Client.download("test", "test.txt")
-
             metadata.contentLength() shouldBe ContentLenght
 
             val count =
@@ -56,19 +61,21 @@ class S3Test : FeatureSpec({
                     .split("\n")
                     .size
 
-            count shouldBe 800000
+            count shouldBe 2104969
         }
     }
 })
 
-const val ContentLenght = 12688894L
+const val ContentLenght = 15728640L
 
 private val flow =
-    (1..800000)
+    (1..Long.MAX_VALUE)
         .asFlow()
-        .map { "hello, #$it!" }
+        .map { it.toString() }
         .intersperse("\n")
         .map { it.toByteArray() }
+        .flatMapConcat { it.asList().asFlow() }
+        .take(1024 * 1024 * 15)
 
 private val s3Client: S3AsyncClient =
     S3AsyncClient
@@ -81,4 +88,3 @@ private val s3Client: S3AsyncClient =
             )
         )
         .build()
-
