@@ -19,12 +19,16 @@ include(
     "connectors:aws:common",
     "connectors:aws:sns",
     "connectors:aws:sqs",
+    "connectors:aws:ses",
     "connectors:elasticsearch",
     "connectors:file",
+    "connectors:format:csv",
+    "connectors:format:json",
     "connectors:ftp",
     "connectors:jms",
     "connectors:mongodb",
     "connectors:mqtt",
     "connectors:rdbms:jdbc",
-    "connectors:rdbms:r2dbc"
+    "connectors:rdbms:r2dbc",
+    "connectors:twilio",
 )

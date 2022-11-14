@@ -17,7 +17,7 @@ object Dependencies {
         listOf(
             "core",
             "reactive",
-            "jdk8"
+            "jdk8",
         ).map {
             "org.jetbrains.kotlinx:kotlinx-coroutines-$it:${Version.Coroutine}"
         }
@@ -26,8 +26,13 @@ object Dependencies {
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"
         val Sns = "software.amazon.awssdk:sns:${Version.AwsSdk}"
         val S3 = "software.amazon.awssdk:s3:${Version.AwsSdk}"
+        val SesV2 = "software.amazon.awssdk:sesv2:${Version.AwsSdk}"
         val Lambda = "software.amazon.awssdk:lambda:${Version.AwsSdk}"
     }
 
     val CommonsNet = "commons-net:commons-net:${Version.CommonsNet}"
+
+    val Twilio = "com.twilio.sdk:twilio:${Version.Twilio}"
+
+    val Jackson = "com.fasterxml.jackson.module:jackson-module-kotlin:${Version.Jackson}"
 }

@@ -7,6 +7,8 @@ object Version {
     const val Slf4j = "1.7.36"
     const val Ktor = "2.1.3"
     const val CommonsNet = "3.8.0"
+    const val Twilio = "9.1.2"
+    const val Jackson = "2.14.0"
 
     const val Kotest = "5.5.3"
 }
