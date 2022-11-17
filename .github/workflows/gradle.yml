@@ -27,6 +27,7 @@ jobs:
       env:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
       run: |
+        pip install --upgrade pyopenssl
         pip install localstack awscli-local[ver1]
         docker pull localstack/localstack       
         localstack start -d                  
