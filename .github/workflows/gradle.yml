@@ -18,25 +18,13 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-    - name: Start LocalStack
-      env:
-        LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
-      run: |
-        pip install --upgrade pyopenssl
-        pip install localstack awscli-local[ver1]
-        docker pull localstack/localstack       
-        localstack start -d                  
-
-        echo "Waiting for LocalStack startup..."
-        localstack wait -t 30
-        echo "Startup complete"
-    - name: Setup LocalStack
-      run: ./connectors/aws/localstack.init.sh
+    - name: Check
+      run: ls -lh
+    - name: Run docker-compose
+      run: docker-compose up -d
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
