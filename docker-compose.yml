@@ -11,6 +11,6 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - LAMBDA_EXECUTOR=local
     volumes:
-      - './localstack/:/docker-entrypoint-initaws.d/'
+      - './stub/localstack/:/docker-entrypoint-initaws.d/'
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
