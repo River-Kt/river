@@ -7,6 +7,9 @@ object Dependencies {
     val DependencyHandlerScope.AwsCommon
         get() = project(mapOf("path" to ":connectors:aws:common"))
 
+    val DependencyHandlerScope.Http
+        get() = project(mapOf("path" to ":utils:http"))
+
     val Kotlin =
         listOf("kotlin-stdlib-jdk8")
             .map { "org.jetbrains.kotlin:$it" }
@@ -18,6 +21,7 @@ object Dependencies {
             "core",
             "reactive",
             "jdk8",
+            "jdk9"
         ).map {
             "org.jetbrains.kotlinx:kotlinx-coroutines-$it:${Version.Coroutine}"
         }
@@ -35,4 +39,6 @@ object Dependencies {
     val Twilio = "com.twilio.sdk:twilio:${Version.Twilio}"
 
     val Jackson = "com.fasterxml.jackson.module:jackson-module-kotlin:${Version.Jackson}"
+
+    val Elasticsearch = "co.elastic.clients:elasticsearch-java:${Version.Elasticsearch}"
 }

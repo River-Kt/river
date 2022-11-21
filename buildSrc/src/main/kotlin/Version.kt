@@ -9,6 +9,7 @@ object Version {
     const val CommonsNet = "3.8.0"
     const val Twilio = "9.1.2"
     const val Jackson = "2.14.0"
+    const val Elasticsearch = "8.5.1"
 
     const val Kotest = "5.5.3"
 }

@@ -31,4 +31,5 @@ include(
     "connectors:rdbms:jdbc",
     "connectors:rdbms:r2dbc",
     "connectors:twilio",
+    "utils:http",
 )

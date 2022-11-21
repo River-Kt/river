@@ -1,6 +1,9 @@
 package io.github.gabfssilva.river.twilio
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.github.gabfssilva.river.core.asByteArray
+import io.github.gabfssilva.river.util.http.get
+import kotlinx.coroutines.flow.flowOf
 import java.net.URI
 import java.net.http.HttpRequest
 
@@ -51,12 +54,11 @@ data class Message(
 }
 
 fun CreateMessage.asHttpRequest(
-    uri: URI,
+    uri: String,
     authorization: String
 ): HttpRequest =
-    HttpRequest
-        .newBuilder(uri)
-            .POST(HttpRequest.BodyPublishers.ofString(asEncodedString()))
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Authorization", authorization)
-        .build()
+    get(uri) {
+        contentType("application/x-www-form-urlencoded")
+        header("Authorization", authorization)
+        body { flowOf(asEncodedString()).asByteArray() }
+    }

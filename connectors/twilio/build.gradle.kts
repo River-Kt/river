@@ -1,3 +1,4 @@
+import Dependencies.Http
 import Dependencies.RiverCore
 
 plugins {
@@ -16,6 +17,7 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(RiverCore)
+    implementation(Http)
 
     implementation(Dependencies.Jackson)
 

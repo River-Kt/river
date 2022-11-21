@@ -6,7 +6,10 @@ import io.github.gabfssilva.river.core.internal.*
 import io.github.gabfssilva.river.core.internal.Broadcast
 import io.github.gabfssilva.river.core.internal.StoppableFlow
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import java.nio.ByteBuffer
+import java.nio.charset.Charset
 import kotlin.time.Duration
 
 fun <T> unfold(
@@ -97,7 +100,7 @@ fun <T> Flow<T>.throttle(
     strategy: ThrottleStrategy = ThrottleStrategy.Suspend
 ): Flow<T> = ThrottleFlow(elementsPerInterval, interval, strategy, this)
 
-suspend fun <T> Flow<T>.earlyCompleteIf(
+fun <T> Flow<T>.earlyCompleteIf(
     stopPredicate: suspend (T) -> Boolean
 ): Flow<T> =
     stoppableFlow {
@@ -206,4 +209,17 @@ fun <E, F, S, T> Flow<E>.broadcast(
 
 fun <T> flowOf(item: suspend () -> T) = flow { emit(item()) }
 
+fun <T> repeat(item: T): Flow<T> =
+    flow {
+        while (true) {
+            emit(item)
+        }
+    }
+
 inline fun <T, R> Flow<T>.via(flow: Flow<T>.() -> Flow<R>) = flow(this)
+
+fun <E, S> Flow<E>.alsoTo(
+    bufferCapacity: Int = Channel.BUFFERED,
+    flow: Flow<E>.() -> Flow<S>,
+): Flow<Pair<E, S>> =
+    broadcast({ buffer(bufferCapacity) }, { flow() })
