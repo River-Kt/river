@@ -1,26 +1,30 @@
 package io.github.gabfssilva.river.format.csv
 
+import io.github.gabfssilva.river.core.asByteArray
+import io.github.gabfssilva.river.core.chunked
+import io.github.gabfssilva.river.core.intersperse
+import io.github.gabfssilva.river.core.lines
 import kotlinx.coroutines.flow.*
 
 fun <T> Flow<T>.rawCsv(
     headers: List<String>,
-    separator: String = ";",
+    delimiter: String = ";",
     f: (T) -> List<String>
 ): Flow<String> =
     merge(
-        if (headers.isEmpty()) emptyFlow() else flowOf(headers.joinToString(separator)),
-        map { f(it).joinToString(separator) }
+        if (headers.isEmpty()) emptyFlow() else flowOf(headers.joinToString(delimiter)),
+        map { f(it).joinToString(delimiter) }
     )
 
 fun <T> Flow<T>.rawCsv(
     vararg headers: String,
-    separator: String = ";",
+    delimiter: String = ";",
     f: (T) -> List<String>
-): Flow<String> = rawCsv(headers.toList(), separator, f)
+): Flow<String> = rawCsv(headers.toList(), delimiter, f)
 
 inline fun <reified T> Flow<T>.csv(
     appendHeader: Boolean = true,
-    separator: String = ";"
+    delimiter: String = ";"
 ): Flow<String> =
     T::class.java
         .declaredFields
@@ -30,5 +34,38 @@ inline fun <reified T> Flow<T>.csv(
                 if (appendHeader) fields.map { it.name }
                 else emptyList()
 
-            rawCsv(headers, separator) { i -> fields.map { it.get(i).toString() } }
+            rawCsv(headers, delimiter) { i -> fields.map { it.get(i).toString() } }
         }
+
+fun Flow<String>.parseCsv(
+    delimiter: String = ";"
+): Flow<List<String>> =
+    lines().map { it.split(delimiter) }
+
+fun <T> Flow<String>.parseCsv(
+    delimiter: String = ";",
+    f: (List<String>) -> T
+): Flow<T> = parseCsv(delimiter).map { f(it) }
+
+fun Flow<String>.parseCsvWithHeaders(
+    delimiter: String = ";"
+): Flow<Map<String, String>> =
+    flow {
+        var headers = emptyList<String>()
+
+        parseCsv(delimiter)
+            .collect {
+                if (headers.isEmpty()) {
+                    headers = it
+                } else {
+                    emit((headers zip it).toMap())
+                }
+            }
+    }
+
+fun <T> Flow<String>.parseCsvWithHeaders(
+    delimiter: String = ";",
+    f: (Map<String, String>) -> T
+): Flow<T> =
+    parseCsvWithHeaders(delimiter)
+        .map { f(it) }

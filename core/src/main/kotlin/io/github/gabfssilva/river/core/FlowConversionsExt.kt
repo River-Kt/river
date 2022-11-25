@@ -1,9 +1,14 @@
 package io.github.gabfssilva.river.core
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
+
+fun Flow<String>.asBytes(
+    charset: Charset = Charset.defaultCharset()
+) = asByteArray(charset)
+    .map { it.toList() }
+    .flatten()
 
 fun Flow<String>.asByteArray(
     charset: Charset = Charset.defaultCharset()

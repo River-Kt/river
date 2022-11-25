@@ -1,9 +1,14 @@
 package io.github.gabfssilva.river.format.csv
 
+import io.github.gabfssilva.river.core.asByteArray
+import io.github.gabfssilva.river.core.asBytes
+import io.github.gabfssilva.river.core.chunked
+import io.github.gabfssilva.river.core.intersperse
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 
 class CsvExtKtTest : FeatureSpec({
@@ -39,6 +44,47 @@ class CsvExtKtTest : FeatureSpec({
                     } else {
                         value shouldBe "$index;${index * 2};${if (index % 2 == 0) "paid" else "not_paid"}"
                     }
+                }
+        }
+    }
+
+    feature("CSV parsing") {
+        data class ItemV(val item: String, val `item * 2`: String)
+
+        scenario("CSV with header") {
+            (0..100)
+                .asFlow()
+                .map { ItemV(it.toString(), (it * 2).toString()) }
+                .csv()
+                .intersperse("\n")
+                .asBytes()
+                .chunked(8)
+                .map { String(it.toByteArray()) }
+                .parseCsvWithHeaders {
+                    ItemV(it.getValue("item"), it.getValue("item * 2"))
+                }
+                .collectIndexed { index, value ->
+                    value.item shouldBe "$index"
+                    value.`item * 2` shouldBe "${index * 2}"
+                }
+        }
+
+        scenario("CSV without header") {
+            (0..100)
+                .asFlow()
+                .map { ItemV(it.toString(), (it * 2).toString()) }
+                .csv(false)
+                .intersperse("\n")
+                .asBytes()
+                .chunked(8)
+                .map { String(it.toByteArray()) }
+                .parseCsv {
+                    val (i, doubleI) = it
+                    ItemV(i, doubleI)
+                }
+                .collectIndexed { index, value ->
+                    value.item shouldBe "$index"
+                    value.`item * 2` shouldBe "${index * 2}"
                 }
         }
     }
