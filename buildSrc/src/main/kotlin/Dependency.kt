@@ -41,4 +41,6 @@ object Dependencies {
     val Jackson = "com.fasterxml.jackson.module:jackson-module-kotlin:${Version.Jackson}"
 
     val Elasticsearch = "co.elastic.clients:elasticsearch-java:${Version.Elasticsearch}"
+
+    val Amqp = "com.rabbitmq:amqp-client:${Version.RabbitMQ}"
 }
