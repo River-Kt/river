@@ -10,6 +10,9 @@ object Dependencies {
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":utils:http"))
 
+    val DependencyHandlerScope.Pool
+        get() = project(mapOf("path" to ":utils:pool"))
+
     val Kotlin =
         listOf("kotlin-stdlib-jdk8")
             .map { "org.jetbrains.kotlin:$it" }
@@ -43,4 +46,10 @@ object Dependencies {
     val Elasticsearch = "co.elastic.clients:elasticsearch-java:${Version.Elasticsearch}"
 
     val Amqp = "com.rabbitmq:amqp-client:${Version.RabbitMQ}"
+
+    object Jms {
+        val Api = "javax.jms:javax.jms-api:${Version.Jms}"
+        val ArtemisClient = "org.apache.activemq:artemis-jms-client:${Version.ActiveMQArtemis}"
+        val ArtemisServer = "org.apache.activemq:artemis-server:${Version.ActiveMQArtemis}"
+    }
 }

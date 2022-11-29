@@ -3,3 +3,4 @@ build
 .idea/
 volume/
 .DS_Store
+data/

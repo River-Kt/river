@@ -32,4 +32,5 @@ include(
     "connectors:rdbms:r2dbc",
     "connectors:twilio",
     "utils:http",
+    "utils:pool"
 )

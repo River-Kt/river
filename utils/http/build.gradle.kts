@@ -16,8 +16,6 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(RiverCore)
-    implementation(Dependencies.Elasticsearch)
-    implementation(Dependencies.Jackson)
 
     Dependencies.Coroutines.forEach { implementation(it) }
 

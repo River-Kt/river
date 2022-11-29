@@ -11,6 +11,8 @@ object Version {
     const val Jackson = "2.14.0"
     const val Elasticsearch = "8.5.1"
     const val RabbitMQ = "5.16.0"
+    const val Jms = "2.0.1"
+    const val ActiveMQArtemis = "2.27.0"
 
     const val Kotest = "5.5.3"
 }
