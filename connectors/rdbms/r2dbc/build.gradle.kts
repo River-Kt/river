@@ -1,11 +1,4 @@
-
-object Version {
-    const val Kotlin = "1.7.20"
-    const val Coroutine = "1.6.4"
-    const val Slf4j = "1.7.36"
-
-    const val Kotest = "5.5.3"
-}
+import Dependencies.RiverCore
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
@@ -22,17 +15,20 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
-    implementation(project(":core"))
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.Coroutine}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${Version.Coroutine}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Version.Coroutine}")
-
+    implementation(RiverCore)
+    Dependencies.Coroutines.forEach { implementation(it) }
+    implementation(Dependencies.R2dbc.spi)
     compileOnly("org.slf4j:slf4j-api:${Version.Slf4j}")
-
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     testImplementation("io.kotest:kotest-runner-junit5:${Version.Kotest}")
+    testImplementation(Dependencies.R2dbc.h2)
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
+        jvmTarget = "17"
+    }
 }
