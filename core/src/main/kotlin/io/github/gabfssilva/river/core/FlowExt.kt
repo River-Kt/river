@@ -151,10 +151,20 @@ inline fun <T> Flow<T>.onEachParallel(
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Flow<T> = mapParallel(concurrencyLevel) { it.also { f(it) } }
 
+inline fun <T> Flow<T>.unorderedOnEachParallel(
+    concurrencyLevel: Int,
+    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+): Flow<T> = unorderedMapParallel(concurrencyLevel) { it.also { f(it) } }
+
 suspend inline fun <T> Flow<T>.collectParallel(
     concurrencyLevel: Int,
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Unit = onEachParallel(concurrencyLevel, f).collect()
+
+suspend inline fun <T> Flow<T>.unorderedCollectParallel(
+    concurrencyLevel: Int,
+    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+): Unit = unorderedOnEachParallel(concurrencyLevel, f).collect()
 
 suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
     var counter = 0
@@ -165,6 +175,16 @@ fun <T, R> Flow<T>.mapParallel(
     concurrencyLevel: Int,
     f: suspend ConcurrencyInfo.(T) -> R
 ): Flow<R> = MapParallelFlow(this, concurrencyLevel, f)
+
+fun <T, R> Flow<T>.unorderedMapParallel(
+    concurrencyLevel: Int,
+    f: suspend ConcurrencyInfo.(T) -> R
+): Flow<R> = UnorderedMapParallelFlow(this, concurrencyLevel, f)
+
+fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
+    concurrencyLevel: Int,
+    f: suspend ConcurrencyInfo.(Iterable<T>) -> Iterable<R>
+): Flow<R> = mapParallel(concurrencyLevel, f).flatten()
 
 fun <T, R> Flow<Iterable<T>>.flatMapParallel(
     concurrencyLevel: Int,
