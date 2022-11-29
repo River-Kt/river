@@ -6,51 +6,49 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.awaitFirst
 
-class R2dbcFlowExtTest: FeatureSpec({
-    feature("Test statement execution"){
+class R2dbcFlowExtTest : FeatureSpec({
+    feature("Test statement execution") {
         val connection = h2Client.awaitFirst()
 
-        scenario("Insert statements"){
-            val flow = (1..1000)
+        scenario("Insert statements") {
+            val flow = (1..10)
                 .asFlow()
                 .map {
                     connection.createStatement("INSERT INTO test (id) VALUES ('$it')")
                 }
 
-            connection.executeFlowStatement(flow).collect(::println)
+            connection.executeStatementFlow(flow).collect(::println)
         }
 
-        scenario("Select statements"){
+        scenario("Select statements") {
             val flow = (1..10)
                 .asFlow()
                 .map {
                     connection.createStatement("SELECT * FROM test WHERE id = '$it'")
                 }
 
-            connection.executeFlowStatement(flow).collect(::println)
+            connection.executeStatementFlow(flow).collect(::println)
         }
 
-        scenario("Update statements"){
+        scenario("Update statements") {
             val flow = (1..10)
                 .asFlow()
                 .map {
                     connection.createStatement("UPDATE test set id = '$it' WHERE id = '$it'")
                 }
 
-            connection.executeFlowStatement(flow).collect(::println)
+            connection.executeStatementFlow(flow).collect(::println)
         }
 
-        scenario("Delete statements"){
+        scenario("Delete statements") {
             val flow = (1..10)
                 .asFlow()
                 .map {
                     connection.createStatement("DELETE FROM test WHERE id = '$it'")
                 }
 
-            connection.executeFlowStatement(flow).collect(::println)
+            connection.executeStatementFlow(flow).collect(::println)
         }
-
-
     }
 })
 
