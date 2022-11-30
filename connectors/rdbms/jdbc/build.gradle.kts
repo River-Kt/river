@@ -1,6 +1,7 @@
 import Dependencies.Common
 import Dependencies.CommonTest
 import Dependencies.Http
+import Dependencies.KotlinReflect
 import Dependencies.Pool
 import Dependencies.PostgreSQLJDBC
 import Dependencies.RiverCore
@@ -20,6 +21,7 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
+    implementation(KotlinReflect)
     implementation(RiverCore)
     implementation(Pool)
     implementation(PostgreSQLJDBC)

@@ -27,6 +27,8 @@ object Dependencies {
         listOf("kotlin-stdlib-jdk8")
             .map { "org.jetbrains.kotlin:$it" }
 
+    val KotlinReflect = "org.jetbrains.kotlin:kotlin-reflect"
+
     val Slf4j = "org.slf4j:slf4j-api:${Version.Slf4j}"
 
     val Common: List<String> = Kotlin + Coroutines + Slf4j

@@ -62,8 +62,27 @@ class JdbcTest : FeatureSpec({
 
                 query("select body from messages order by id;")
                     .withIndex()
-                    .onEach { (index, item) ->
-                        item["body"] shouldBe "message #${index + 1}"
+                    .onEach { (index, row) ->
+                        row["body"] shouldBe "message #${index + 1}"
+                    }
+                    .count() shouldBe size
+            }
+
+            scenario("Typed query flow") {
+                data class Message(val id: Long, val body: String)
+
+                val size = 100
+
+                batchUpdate(
+                    sql = "insert into messages (body) values (?)",
+                    upstream = (1..size).asFlow()
+                ) { setString(1, "message #$it") }
+                    .collect()
+
+                typedQuery<Message>("select * from messages order by id;")
+                    .withIndex()
+                    .onEach { (index, row) ->
+                        row.body shouldBe "message #${index + 1}"
                     }
                     .count() shouldBe size
             }
