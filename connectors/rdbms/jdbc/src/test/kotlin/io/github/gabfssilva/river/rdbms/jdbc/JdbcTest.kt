@@ -1,10 +1,7 @@
-@file:OptIn(FlowPreview::class)
-
 package io.github.gabfssilva.river.rdbms.jdbc
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
 class JdbcTest : FeatureSpec({
@@ -79,7 +76,7 @@ suspend inline fun withJDBC(
 ) {
     Jdbc(
         url = "jdbc:postgresql://localhost:5432/messages",
-        credentials = Jdbc.Credentials(username = "postgresql", password = "postgresql"),
+        credentials = "postgresql" to "postgresql",
         connectionPoolSize = 20
     ).also(f).also { it.close() }
 }

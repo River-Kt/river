@@ -17,17 +17,15 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class Jdbc(
     connectionPoolSize: Int = 10,
-    val connectionFactory: () -> Connection,
+    private val connectionFactory: () -> Connection,
 ) {
-    val IO: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(connectionPoolSize)
+    private val IO: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(connectionPoolSize)
 
-    val connectionPool = ObjectPool.sized(
+    private val connectionPool = ObjectPool.sized(
         maxSize = connectionPoolSize,
         onClose = { IO { it.close() } },
         factory = { IO { connectionFactory() } }
     )
-
-    data class Credentials(val username: String, val password: String)
 
     fun singleUpdate(
         sql: String,
@@ -124,10 +122,10 @@ class Jdbc(
         operator fun invoke(
             url: String,
             connectionPoolSize: Int = 10,
-            credentials: Credentials? = null,
+            credentials: Pair<String, String>? = null,
         ) = Jdbc(connectionPoolSize) {
             credentials
-                ?.let { DriverManager.getConnection(url, it.username, it.password) }
+                ?.let { DriverManager.getConnection(url, it.first, it.second) }
                 ?: DriverManager.getConnection(url)
         }
     }
