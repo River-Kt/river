@@ -1,8 +1,15 @@
 package io.github.gabfssilva.river.r2dbc
 
 import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.r2dbc.spi.ConnectionFactories
+import io.r2dbc.spi.Result
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.awaitFirst
 
@@ -10,44 +17,26 @@ class R2dbcFlowExtTest : FeatureSpec({
     feature("Test statement execution") {
         val connection = h2Client.awaitFirst()
 
-        scenario("Insert statements") {
-            val flow = (1..10)
-                .asFlow()
-                .map {
-                    connection.createStatement("INSERT INTO test (id) VALUES ('$it')")
-                }
+        scenario("Test all type of statements") {
 
-            connection.executeStatementFlow(flow).collect(::println)
-        }
+            forAll(
+                row("INSERT INTO test (id) VALUES ('%s')"),
+                row("SELECT * FROM test WHERE id = '%s'"),
+                row("UPDATE test set id = id WHERE id = '%s'"),
+                row("DELETE FROM test WHERE id = '%s'")
+            ) { statement: String ->
 
-        scenario("Select statements") {
-            val flow = (1..10)
-                .asFlow()
-                .map {
-                    connection.createStatement("SELECT * FROM test WHERE id = '$it'")
-                }
+                val flow = (1..10)
+                    .asFlow()
+                    .map {
+                        connection.createStatement(statement.format(it))
+                    }
 
-            connection.executeStatementFlow(flow).collect(::println)
-        }
+                val result = connection.executeStatementFlow(flow)
 
-        scenario("Update statements") {
-            val flow = (1..10)
-                .asFlow()
-                .map {
-                    connection.createStatement("UPDATE test set id = '$it' WHERE id = '$it'")
-                }
-
-            connection.executeStatementFlow(flow).collect(::println)
-        }
-
-        scenario("Delete statements") {
-            val flow = (1..10)
-                .asFlow()
-                .map {
-                    connection.createStatement("DELETE FROM test WHERE id = '$it'")
-                }
-
-            connection.executeStatementFlow(flow).collect(::println)
+                result.count() shouldBe 10
+                result.shouldBeInstanceOf<Flow<Result>>()
+            }
         }
     }
 })
