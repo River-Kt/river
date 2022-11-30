@@ -63,5 +63,7 @@ object Dependencies {
         val JUnit5 = "io.kotest:kotest-runner-junit5:${Version.Kotest}"
     }
 
+    val PostgreSQLJDBC = "org.postgresql:postgresql:${Version.PostgreSQLJDBC}"
+
     val CommonTest = listOf(Kotest.JUnit5)
 }

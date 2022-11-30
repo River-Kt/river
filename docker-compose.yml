@@ -40,3 +40,12 @@ services:
       - "10000:10000"
       - "10001:10001"
       - "10002:10002"
+
+  postgresql:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgresql
+      - POSTGRES_PASSWORD=postgresql
+      - POSTGRES_DB=messages
+    ports:
+      - '5432:5432'
