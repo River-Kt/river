@@ -20,6 +20,7 @@ include(
     "connectors:aws:sns",
     "connectors:aws:sqs",
     "connectors:aws:ses",
+    "connectors:azure:queue-storage",
     "connectors:elasticsearch",
     "connectors:file",
     "connectors:format:csv",

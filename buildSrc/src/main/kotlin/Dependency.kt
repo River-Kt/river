@@ -13,12 +13,6 @@ object Dependencies {
     val DependencyHandlerScope.Pool
         get() = project(mapOf("path" to ":utils:pool"))
 
-    val Kotlin =
-        listOf("kotlin-stdlib-jdk8")
-            .map { "org.jetbrains.kotlin:$it" }
-
-    val Slf4j = "org.slf4j:slf4j-api:${Version.Slf4j}"
-
     val Coroutines =
         listOf(
             "core",
@@ -28,6 +22,14 @@ object Dependencies {
         ).map {
             "org.jetbrains.kotlinx:kotlinx-coroutines-$it:${Version.Coroutine}"
         }
+
+    val Kotlin =
+        listOf("kotlin-stdlib-jdk8")
+            .map { "org.jetbrains.kotlin:$it" }
+
+    val Slf4j = "org.slf4j:slf4j-api:${Version.Slf4j}"
+
+    val Common: List<String> = Kotlin + Coroutines + Slf4j
 
     object Aws {
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"
@@ -52,4 +54,14 @@ object Dependencies {
         val ArtemisClient = "org.apache.activemq:artemis-jms-client:${Version.ActiveMQArtemis}"
         val ArtemisServer = "org.apache.activemq:artemis-server:${Version.ActiveMQArtemis}"
     }
+
+    object Azure {
+        val QueueStorage = "com.azure:azure-storage-queue:${Version.Azure}"
+    }
+
+    object Kotest {
+        val JUnit5 = "io.kotest:kotest-runner-junit5:${Version.Kotest}"
+    }
+
+    val CommonTest = listOf(Kotest.JUnit5)
 }
