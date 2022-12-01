@@ -2,6 +2,7 @@
 
 package io.github.gabfssilva.river.aws.s3
 
+import io.github.gabfssilva.river.core.asByteArray
 import io.github.gabfssilva.river.core.chunked
 import io.github.gabfssilva.river.core.mapParallel
 import kotlinx.coroutines.FlowPreview
@@ -25,7 +26,7 @@ suspend fun S3AsyncClient.download(
     getObject({ it.bucket(bucket).key(key) }, AsyncResponseTransformer.toPublisher())
         .await()
         .let { responsePublisher ->
-            responsePublisher.response() to responsePublisher.asFlow().map { it.array() }
+            responsePublisher.response() to responsePublisher.asFlow().asByteArray()
         }
 
 fun S3AsyncClient.upload(

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.github.gabfssilva.river.core.asByteArray
 import io.github.gabfssilva.river.util.http.get
 import kotlinx.coroutines.flow.flowOf
-import java.net.URI
 import java.net.http.HttpRequest
 
 sealed class Destination(
@@ -60,5 +59,5 @@ fun CreateMessage.asHttpRequest(
     get(uri) {
         contentType("application/x-www-form-urlencoded")
         header("Authorization", authorization)
-        body { flowOf(asEncodedString()).asByteArray() }
+        byteArrayBody { flowOf(asEncodedString()).asByteArray() }
     }

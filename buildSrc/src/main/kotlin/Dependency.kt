@@ -34,6 +34,7 @@ object Dependencies {
     val Common: List<String> = Kotlin + Coroutines + Slf4j
 
     object Aws {
+        val HttpClientSpi = "software.amazon.awssdk:http-client-spi:${Version.AwsSdk}"
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"
         val Sns = "software.amazon.awssdk:sns:${Version.AwsSdk}"
         val S3 = "software.amazon.awssdk:s3:${Version.AwsSdk}"

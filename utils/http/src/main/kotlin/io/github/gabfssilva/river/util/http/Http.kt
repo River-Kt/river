@@ -17,8 +17,11 @@ import java.util.concurrent.Flow.Publisher
 
 private val DefaultHttpClient = HttpClient.newHttpClient()
 
-fun Flow<ByteArray>.asBodyPublisher(): HttpRequest.BodyPublisher =
-    fromPublisher(map { ByteBuffer.wrap(it) }.asPublisher())
+fun Flow<ByteBuffer>.asBodyPublisher(
+    contentLength: Long = 0
+): HttpRequest.BodyPublisher =
+    if (contentLength < 1) fromPublisher(asPublisher())
+    else fromPublisher(asPublisher(), contentLength)
 
 suspend fun <T> HttpRequest.send(
     bodyHandler: BodyHandler<T>,
@@ -28,30 +31,36 @@ suspend fun <T> HttpRequest.send(
         .sendAsync(this, bodyHandler)
         .await()
 
+fun method(
+    name: String,
+    url: String,
+    f: RequestBuilder.() -> Unit = {}
+) = RequestBuilder(url, name.uppercase()).also(f).build()
+
 fun get(
     url: String,
     f: RequestBuilder.() -> Unit = {}
-): HttpRequest = RequestBuilder(url, "GET").also(f).build()
+): HttpRequest = method("GET", url, f)
 
 fun post(
     url: String,
     f: RequestBuilder.() -> Unit = {}
-): HttpRequest = RequestBuilder(url, "POST").also(f).build()
+): HttpRequest = method("POST", url, f)
 
 fun put(
     url: String,
     f: RequestBuilder.() -> Unit = {}
-): HttpRequest = RequestBuilder(url, "PUT").also(f).build()
+): HttpRequest = method("PUT", url, f)
 
 fun delete(
     url: String,
     f: RequestBuilder.() -> Unit = {}
-): HttpRequest = RequestBuilder(url, "DELETE").also(f).build()
+): HttpRequest = method("DELETE", url, f)
 
 fun patch(
     url: String,
     f: RequestBuilder.() -> Unit = {}
-): HttpRequest = RequestBuilder(url, "PATCH").also(f).build()
+): HttpRequest = method("PATCH", url, f)
 
 fun <T> HttpResponse<Publisher<T>>.bodyAsFlow(): Flow<T> =
     flow { body().collect { emit(it) } }

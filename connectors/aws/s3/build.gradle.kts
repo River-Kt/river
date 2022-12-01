@@ -1,3 +1,4 @@
+import Dependencies.AwsCommon
 import Dependencies.RiverCore
 
 plugins {
@@ -16,7 +17,10 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(RiverCore)
-    implementation(Dependencies.Aws.S3)
+    implementation(AwsCommon)
+    implementation(Dependencies.Aws.S3){
+        exclude("software.amazon.awssdk", "netty-nio-client")
+    }
 
     Dependencies.Coroutines.forEach { implementation(it) }
     compileOnly("org.slf4j:slf4j-api:${Version.Slf4j}")

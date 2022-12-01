@@ -2,34 +2,43 @@ package io.github.gabfssilva.river.util.http
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import java.net.URI
 import java.net.http.HttpRequest
+import java.nio.ByteBuffer
 
 class RequestBuilder(
     val url: String,
     val method: String,
-    var contentType: String? = null,
-    var body: () -> Flow<ByteArray> = { emptyFlow() },
+    var body: () -> Pair<Long, Flow<ByteBuffer>> = { 0L to emptyFlow() },
     val query: MutableMap<String, List<String>> = mutableMapOf(),
-    val headers: MutableMap<String, List<String>> = mutableMapOf()
+    val headers: MutableMap<String, List<String>> = mutableMapOf(),
+    var expectContinue: Boolean = false
 ) {
-    fun body(f: () -> Flow<ByteArray>) {
-        body = f
+    fun byteArrayBody(contentLenght: Long = 0, f: () -> Flow<ByteArray>) = body(contentLenght) {
+        f().map { ByteBuffer.wrap(it) }
+    }
+
+    fun body(contentLenght: Long = 0, f: () -> Flow<ByteBuffer>) {
+        body = { contentLenght to f() }
     }
 
     fun contentType(s: String) = header("Content-Type", s)
 
     private fun uri() =
-        query
-            .toList()
-            .flatMap { (key, values) -> values.map { key to it } }
-            .joinToString(separator = "&", prefix = "?") { (key, value) -> "$key=$value" }
-            .let { URI("$url$it") }
+        if (query.isEmpty()) URI(url)
+        else {
+            query
+                .toList()
+                .flatMap { (key, values) -> values.map { key to it } }
+                .joinToString(separator = "&", prefix = "?") { (key, value) -> "$key=$value" }
+                .let { URI("$url$it") }
+        }
 
     fun build(): HttpRequest =
         HttpRequest
             .newBuilder(uri())
-            .method(method, body().asBodyPublisher())
+            .method(method, body().let { (cl, flow) -> flow.asBodyPublisher(cl) })
             .also { builder ->
                 headers.forEach { (key, values) -> values.forEach { value -> builder.setHeader(key, value) } }
             }
