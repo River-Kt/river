@@ -7,16 +7,19 @@ import software.amazon.awssdk.utils.AttributeMap
 import java.net.http.HttpClient
 
 class Java11HttpClientBuilder(
-    private val httpClient: HttpClient,
-    private val scope: CoroutineScope
+    private val httpClient: HttpClient? = null,
+    private val scope: CoroutineScope? = null
 ) : SdkAsyncHttpClient.Builder<Java11HttpClientBuilder> {
     private fun copy(
-        httpClient: HttpClient = this.httpClient,
-        scope: CoroutineScope = this.scope
+        httpClient: HttpClient? = this.httpClient,
+        scope: CoroutineScope? = this.scope
     ) = Java11HttpClientBuilder(httpClient, scope)
 
-    override fun buildWithDefaults(serviceDefaults: AttributeMap?): SdkAsyncHttpClient =
-        Java11HttpClient(httpClient, scope)
+    override fun buildWithDefaults(serviceDefaults: AttributeMap): SdkAsyncHttpClient =
+        Java11HttpClient(
+            httpClient = httpClient ?: HttpClient.newHttpClient(),
+            scope = scope ?: CoroutineScope(Dispatchers.Default)
+        )
 
     fun withHttpClient(httpClient: HttpClient) =
         copy(httpClient = httpClient)

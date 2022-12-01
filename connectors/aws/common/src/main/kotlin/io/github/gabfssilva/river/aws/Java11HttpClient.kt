@@ -22,14 +22,10 @@ class Java11HttpClient(
         private val headersToSkip = setOf("Host", "Content-Length", "Expect")
 
         fun builder(): Java11HttpClientBuilder =
-            Java11HttpClientBuilder(
-                HttpClient.newHttpClient(),
-                CoroutineScope(Dispatchers.Default)
-            )
+            Java11HttpClientBuilder()
 
         fun buildDefault(): SdkAsyncHttpClient =
-            builder()
-                .build()
+            builder().build()
     }
 
     override fun close() {
