@@ -9,6 +9,7 @@ import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.awaitFirst
@@ -37,6 +38,26 @@ class R2dbcFlowExtTest : FeatureSpec({
                 result.count() shouldBe 10
                 result.shouldBeInstanceOf<Flow<Result>>()
             }
+        }
+
+        scenario("Batch flow"){
+            val size: Int = 10
+            val flow = (1..size).asFlow()
+            val inserts = flow.map { "INSERT INTO test (id) VALUES ('%s')".format(it) }
+            val selects = flow.map { "SELECT * FROM test WHERE id = '%s'".format(it) }
+
+
+            connection.executeBatchedStatementFlow(
+                inserts,
+                connection.createBatch()
+            ).count() shouldBe size
+
+            connection.executeBatchedStatementFlow(
+                selects,
+                connection.createBatch()
+            ).count() shouldBe size
+
+
         }
     }
 })

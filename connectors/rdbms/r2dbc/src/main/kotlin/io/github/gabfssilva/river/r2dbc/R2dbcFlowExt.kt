@@ -25,9 +25,9 @@ fun Connection.executeStatementFlow(
 
 fun Connection.executeBatchedStatementFlow(
     upstream: Flow<String>,
+    batch: Batch,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds),
-    batch: Batch
+    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
 )=
     upstream
         .chunked(chunkStrategy)
