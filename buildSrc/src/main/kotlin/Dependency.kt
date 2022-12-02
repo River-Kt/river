@@ -4,8 +4,8 @@ object Dependencies {
     val DependencyHandlerScope.RiverCore
         get() = project(mapOf("path" to ":core"))
 
-    val DependencyHandlerScope.AwsCommon
-        get() = project(mapOf("path" to ":connectors:aws:common"))
+    val DependencyHandlerScope.AwsHttp11Spi
+        get() = project(mapOf("path" to ":connectors:aws:java-11-http-spi"))
 
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":utils:http"))

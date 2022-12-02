@@ -1,4 +1,4 @@
-import Dependencies.AwsCommon
+import Dependencies.AwsHttp11Spi
 import Dependencies.RiverCore
 
 plugins {
@@ -17,7 +17,7 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(RiverCore)
-    implementation(AwsCommon)
+    implementation(AwsHttp11Spi)
     implementation(Dependencies.Aws.S3){
         exclude("software.amazon.awssdk", "netty-nio-client")
     }

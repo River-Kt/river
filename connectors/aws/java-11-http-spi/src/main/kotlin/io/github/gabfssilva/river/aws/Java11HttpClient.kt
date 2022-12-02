@@ -4,10 +4,11 @@ import io.github.gabfssilva.river.util.http.method
 import io.github.gabfssilva.river.util.http.ofFlow
 import io.github.gabfssilva.river.util.http.send
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.asPublisher
+import org.reactivestreams.FlowAdapters
 import software.amazon.awssdk.http.SdkHttpResponse
 import software.amazon.awssdk.http.async.AsyncExecuteRequest
 import software.amazon.awssdk.http.async.SdkAsyncHttpClient
@@ -43,9 +44,10 @@ class Java11HttpClient(
                         headers.putAll(awsReq.headers().filterKeys { it !in headersToSkip })
                         expectContinue = awsReq.headers()["Expect"]?.firstOrNull()?.equals("100-continue") ?: false
 
-                        body(awsReq.headers()["Content-Length"]?.firstOrNull()?.toLong() ?: 0) {
-                            asyncExecuteRequest.requestContentPublisher().asFlow()
-                        }
+                        body(
+                            body = FlowAdapters.toFlowPublisher(asyncExecuteRequest.requestContentPublisher()),
+                            contentLength = awsReq.headers()["Content-Length"]?.firstOrNull()?.toLong() ?: 0
+                        )
                     }
 
                 val response = request.send(ofFlow, httpClient)
@@ -57,9 +59,14 @@ class Java11HttpClient(
                     .build()
 
                 handler.onHeaders(awsHeaders)
-                handler.onStream(response.body().asPublisher())
+
+                handler.onStream(
+                    response
+                        .body()
+                        .catch { handler.onError(it); throw it }
+                        .asPublisher()
+                )
             }.getOrElse {
-                it.printStackTrace()
                 handler.onError(it)
             }
 
