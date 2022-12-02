@@ -59,5 +59,5 @@ fun CreateMessage.asHttpRequest(
     get(uri) {
         contentType("application/x-www-form-urlencoded")
         header("Authorization", authorization)
-        byteArrayBody { flowOf(asEncodedString()).asByteArray() }
+        stringBody(asEncodedString())
     }
