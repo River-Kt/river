@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.invoke
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -32,11 +31,11 @@ context(Flow<T>)
 fun <T> Jdbc.singleUpdate(
     sql: String,
     upstream: Flow<T>,
-    paralellism: Int = 1,
+    parallelism: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
-        .mapParallel(paralellism) { item ->
+        .mapParallel(parallelism) { item ->
             connectionPool.use {
                 IO {
                     it.prepareStatement(sql)
@@ -49,40 +48,35 @@ fun <T> Jdbc.singleUpdate(
 fun <T> Jdbc.singleUpdate(
     sql: String,
     upstream: Flow<T>,
-    paralellism: Int = 1,
+    parallelism: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     with(upstream) {
-        singleUpdate(sql, upstream, paralellism, prepare)
+        singleUpdate(sql, upstream, parallelism, prepare)
     }
 
 fun <T> Jdbc.batchUpdate(
     sql: String,
     upstream: Flow<T>,
-    paralellism: Int = 1,
+    parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds),
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
         .chunked(chunkStrategy)
-        .mapParallel(paralellism) { chunk ->
+        .mapParallel(parallelism) { chunk ->
             connectionPool.use {
                 IO {
+                    logger.debug("Running $sql with ${chunk.size} elements.")
+
                     it.prepareStatement(sql)
                         .also { ps -> chunk.forEach { prepare(ps, it); ps.addBatch() } }
                         .executeBatch()
                         .size
+                        .also { logger.debug("Finished running batch update: $it rows were updated.") }
                 }
             }
         }
-
-inline fun <reified T : Any> Row.default(): T {
-    val clazz: KClass<T> = T::class
-    val constructor = checkNotNull(clazz.primaryConstructor) {
-        "Class ${clazz.simpleName} does not have a primary constructor"
-    }
-    return constructor.callBy(constructor.parameters.associateWith { get(it.name) })
-}
 
 inline fun <reified T : Any> Jdbc.typedQuery(
     sql: String,
@@ -93,31 +87,33 @@ inline fun <reified T : Any> Jdbc.typedQuery(
     crossinline prepare: suspend PreparedStatement.() -> Unit,
 ): Flow<T> =
     query(sql) { prepare() }
-        .map { it.default() }
+        .map { row ->
+            val constructor = checkNotNull(T::class.primaryConstructor) {
+                "Class ${T::class.simpleName} does not have a primary constructor"
+            }
+
+            constructor.callBy(
+                constructor.parameters.associateWith { row[it.name] }
+            )
+        }
 
 fun Jdbc.query(
     sql: String,
     prepare: suspend PreparedStatement.() -> Unit = {}
-): Flow<Row> =
-    flow {
-        val connection = connectionPool.borrow()
-
+): Flow<Row> = flow {
+    connectionPool.use { connection ->
         val resultSet: ResultSet = IO {
-            val statement = connection.instance.prepareStatement(sql).also { prepare(it) }
+            val statement = connection.prepareStatement(sql).also { prepare(it) }
             statement.executeQuery()
         }
 
         val metaData = resultSet.metaData
         val columns = metaData.columnCount
 
-        suspend fun coNext() =
-            IO { resultSet.next() }
-
-        while (coNext()) {
+        while (IO { resultSet.next() }) {
             (1..columns)
                 .associate { metaData.getColumnName(it) to resultSet.getObject(it) }
                 .let { emit(it) }
         }
-
-        connectionPool.release(connection)
     }
+}
