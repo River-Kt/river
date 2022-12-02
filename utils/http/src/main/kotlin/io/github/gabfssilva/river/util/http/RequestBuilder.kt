@@ -1,26 +1,38 @@
 package io.github.gabfssilva.river.util.http
 
+import io.github.gabfssilva.river.core.asByteArray
+import io.github.gabfssilva.river.core.asByteBuffer
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.jdk9.asPublisher
 import java.net.URI
 import java.net.http.HttpRequest
+import java.net.http.HttpRequest.BodyPublisher
+import java.net.http.HttpRequest.BodyPublishers
 import java.nio.ByteBuffer
+import java.util.concurrent.Flow.Publisher
 
 class RequestBuilder(
     val url: String,
     val method: String,
-    var body: () -> Pair<Long, Flow<ByteBuffer>> = { 0L to emptyFlow() },
+    var body: BodyPublisher = BodyPublishers.noBody(),
     val query: MutableMap<String, List<String>> = mutableMapOf(),
     val headers: MutableMap<String, List<String>> = mutableMapOf(),
     var expectContinue: Boolean = false
 ) {
-    fun byteArrayBody(contentLenght: Long = 0, f: () -> Flow<ByteArray>) = body(contentLenght) {
-        f().map { ByteBuffer.wrap(it) }
+    fun stringBody(body: String) = byteArrayBody(flowOf(body).asByteArray())
+
+    fun byteArrayBody(body: Flow<ByteArray>, contentLength: Long? = null) =
+        body(body.asByteBuffer(), contentLength)
+
+    fun body(body: Flow<ByteBuffer>, contentLength: Long? = null) {
+        body(body.asPublisher(), contentLength)
     }
 
-    fun body(contentLenght: Long = 0, f: () -> Flow<ByteBuffer>) {
-        body = { contentLenght to f() }
+    fun body(body: Publisher<ByteBuffer>, contentLength: Long? = null) {
+        this.body = if (contentLength != null && contentLength > 0) {
+            BodyPublishers.fromPublisher(body, contentLength)
+        } else BodyPublishers.fromPublisher(body)
     }
 
     fun contentType(s: String) = header("Content-Type", s)
@@ -38,7 +50,7 @@ class RequestBuilder(
     fun build(): HttpRequest =
         HttpRequest
             .newBuilder(uri())
-            .method(method, body().let { (cl, flow) -> flow.asBodyPublisher(cl) })
+            .method(method, body)
             .also { builder ->
                 headers.forEach { (key, values) -> values.forEach { value -> builder.setHeader(key, value) } }
             }

@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.Flow.Publisher
 
-private val DefaultHttpClient = HttpClient.newHttpClient()
+private val DefaultHttpClient: HttpClient = HttpClient.newHttpClient()
 
 fun Flow<ByteBuffer>.asBodyPublisher(
     contentLength: Long = 0
