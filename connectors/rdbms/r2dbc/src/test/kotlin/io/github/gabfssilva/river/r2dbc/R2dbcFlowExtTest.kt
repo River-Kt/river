@@ -1,42 +1,55 @@
 package io.github.gabfssilva.river.r2dbc
 
 import io.kotest.core.spec.style.FeatureSpec
-import io.kotest.data.forAll
-import io.kotest.data.row
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import io.r2dbc.spi.ConnectionFactories
-import io.r2dbc.spi.Result
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.reactive.awaitFirst
 
 class R2dbcFlowExtTest : FeatureSpec({
     feature("Test statement execution") {
         val connection = h2Client.awaitFirst()
 
-        scenario("Test all type of statements") {
+        scenario("Single update flow") {
+            val size = 10
 
-            forAll(
-                row("INSERT INTO test (id) VALUES ('%s')"),
-                row("SELECT * FROM test WHERE id = '%s'"),
-                row("UPDATE test set id = id WHERE id = '%s'"),
-                row("DELETE FROM test WHERE id = '%s'")
-            ) { statement: String ->
+            connection.singleUpdate(
+                sql = "insert into books (name) values ($1)",
+                upstream = (1..size).asFlow()
+            ) { bind("$1", "book $it") }
+                .fold(0L) { acc, i -> acc + i } shouldBe size
 
-                val flow = (1..10)
-                    .asFlow()
-                    .map {
-                        connection.createStatement(statement.format(it))
-                    }
+            connection.singleUpdate("delete from books")
+                .first() shouldBe size
+        }
 
-                val result = connection.executeStatementFlow(flow)
+        scenario("Query flow") {
+            val size = 50
 
-                result.count() shouldBe 10
-                result.shouldBeInstanceOf<Flow<Result>>()
-            }
+            connection.singleUpdate(
+                sql = "insert into books (name) values ($1)",
+                upstream = (1..size).asFlow()
+            ) {
+                bind("$1", "book $it")
+            }.collect()
+
+            connection.query("select count(1) from books")
+                .map { it.values.first() as Long }
+                .first() shouldBe size
+
+            connection.query("select name from books order by id")
+                .withIndex()
+                .onEach { (index, row) ->
+                    row["NAME"] shouldBe "book ${index + 1}"
+                }
+                .count() shouldBe size
         }
     }
 })
