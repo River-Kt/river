@@ -1,11 +1,9 @@
 package io.github.gabfssilva.river.amqp
 
-import com.rabbitmq.client.BuiltinExchangeType
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.impl.nio.NioParams
-import io.github.gabfssilva.river.core.via
 import kotlinx.coroutines.flow.*
 
 fun nonBlockingConnectionFactory(
@@ -76,32 +74,3 @@ fun Channel.publishFlow(
     exchange: String,
     routingKey: String
 ) = with(upstream) { publishFlow(exchange, routingKey) }
-
-suspend fun main() {
-    val connection =
-        nonBlockingConnectionFactory { setUri("amqp://admin:admin@localhost:5672") }
-            .connection()
-
-    connection.channel {
-        queueDeclare("hello.world", false, false, false, emptyMap())
-        exchangeDeclare("hello", BuiltinExchangeType.DIRECT, true)
-        queueBind("hello.world", "hello", "world")
-    }
-
-    with(connection) {
-        (1..1000)
-            .asFlow()
-            .map { Message.Simple(it.toString().toByteArray()) }
-            .via { publishFlow("hello", "world") }
-            .collect()
-
-        consume("hello.world", 100)
-            .withIndex()
-            .collect {
-                println(it.index)
-                it.value.ack()
-            }
-
-        println("done!")
-    }
-}

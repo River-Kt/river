@@ -2,23 +2,24 @@
 
 package io.github.gabfssilva.river.jms
 
-import io.github.gabfssilva.river.core.*
+import io.github.gabfssilva.river.core.flatten
+import io.github.gabfssilva.river.core.mapParallel
+import io.github.gabfssilva.river.core.repeat
+import io.github.gabfssilva.river.core.unorderedMapParallel
 import io.github.gabfssilva.river.util.pool.ObjectPool
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.invoke
-import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl
-import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
-import java.io.Serializable
 import javax.jms.ConnectionFactory
 import javax.jms.JMSContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
-import kotlin.time.measureTimedValue
 
 private fun ConnectionFactory.newBlockingContext(
     sessionMode: SessionMode = SessionMode.CLIENT_ACKNOWLEDGE,
@@ -107,54 +108,3 @@ fun ConnectionFactory.sendToDestination(
     upstream: Flow<JmsMessage>,
     parallelism: Int = 1
 ): Flow<Unit> = with(upstream) { sendToDestination(destination, parallelism) }
-
-suspend fun main() {
-    val server = EmbeddedActiveMQ().apply {
-        configuration = ConfigurationImpl().apply {
-            addAcceptorConfiguration("in-vm", "vm://0")
-            addAcceptorConfiguration("tcp", "tcp://127.0.0.1:61616")
-            isSecurityEnabled = false
-        }
-    }
-
-    server.start()
-
-    data class Greeting(
-        val greeting: String,
-        val name: String
-    ) : Serializable
-
-    with(ActiveMQConnectionFactory("tcp://localhost:61616")) {
-        measureTimedValue {
-            (0..10000)
-                .asFlow()
-                .map { Greeting(if (it % 2 == 0) "hello" else "hi", "#$it") }
-                .map {
-                    JmsMessage.Object(
-                        value = it,
-                        correlationId = it.name,
-                        properties = mapOf(
-                            "name" to JmsPrimitive.Text(it.name)
-                        )
-                    )
-                }
-                .via { sendToDestination(JmsDestination.Queue("hello"), 100) }
-                .collect()
-        }.let {
-            println("done within ${it.duration}")
-        }
-
-        kotlin.runCatching {
-            consume(queueName = "hello", sessionMode = SessionMode.CLIENT_ACKNOWLEDGE, parallelism = 1)
-                .filterIsInstance<CommitableMessage.CommitableObjectMessage>()
-                .collect {
-                    val greeting = it.`object` as Greeting
-                    println("$greeting - ${it.jmsCorrelationID} - ${it.getStringProperty("name")}")
-                    it.coAcknowledge()
-                }
-        }.getOrElse {
-            println("ué")
-            it.printStackTrace()
-        }
-    }
-}

@@ -2,7 +2,9 @@
 
 package io.github.gabfssilva.river.aws.s3
 
+import io.github.gabfssilva.river.core.asByteArray
 import io.github.gabfssilva.river.core.chunked
+import io.github.gabfssilva.river.core.flowOf
 import io.github.gabfssilva.river.core.mapParallel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -18,15 +20,15 @@ import java.util.*
 
 private const val MINIMUM_UPLOAD_SIZE = 1024 * 1024 * 5
 
-suspend fun S3AsyncClient.download(
+fun S3AsyncClient.download(
     bucket: String,
     key: String
-): Pair<GetObjectResponse, Flow<ByteArray>> =
-    getObject({ it.bucket(bucket).key(key) }, AsyncResponseTransformer.toPublisher())
-        .await()
-        .let { responsePublisher ->
-            responsePublisher.response() to responsePublisher.asFlow().map { it.array() }
-        }
+): Flow<Pair<GetObjectResponse, Flow<ByteArray>>> =
+    flowOf {
+        getObject({ it.bucket(bucket).key(key) }, AsyncResponseTransformer.toPublisher())
+            .await()
+            .let { it.response() to it.asFlow().asByteArray() }
+    }
 
 fun S3AsyncClient.upload(
     bucket: String,

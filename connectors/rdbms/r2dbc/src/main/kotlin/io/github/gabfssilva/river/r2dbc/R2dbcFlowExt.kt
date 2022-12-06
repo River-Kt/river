@@ -7,8 +7,8 @@ import io.r2dbc.spi.Connection
 import io.r2dbc.spi.Statement
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flattenConcat
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 
 
@@ -20,14 +20,14 @@ fun Connection.query(
     createStatement(sql)
         .execute()
         .asFlow()
-        .map {
+        .flatMapConcat {
             it.map { row, rowMetadata ->
                 rowMetadata.columnMetadatas.associate { metadata ->
                     val columnName = metadata.name
                     columnName to row.get(columnName)
                 }
             }.asFlow()
-        }.flattenConcat()
+        }
 
 fun Connection.singleUpdate(
     sql: String
@@ -35,8 +35,7 @@ fun Connection.singleUpdate(
     createStatement(sql)
         .execute()
         .asFlow()
-        .map { it.rowsUpdated.asFlow() }
-        .flattenConcat()
+        .flatMapConcat { it.rowsUpdated.asFlow() }
 
 
 fun <T> Connection.singleUpdate(
@@ -51,5 +50,4 @@ fun <T> Connection.singleUpdate(
         }.execute().asFlow()
     }
     .flattenConcat()
-    .map { it.rowsUpdated.asFlow() }
-    .flattenConcat()
+    .flatMapConcat { it.rowsUpdated.asFlow() }

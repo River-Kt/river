@@ -25,12 +25,20 @@ interface ObjectPool<T> {
     }
 
     companion object {
+        fun <T> sized(
+            maxSize: Int,
+            maxDuration: Duration = 5.minutes,
+            onClose: suspend (T) -> Unit = {},
+            factory: suspend () -> T,
+        ): ObjectPool<T> = DefaultObjectPool(maxSize, maxDuration, emptyList(), factory, onClose)
+
         suspend fun <T> sized(
             maxSize: Int,
             initialSize: Int = 1,
             maxDuration: Duration = 5.minutes,
             onClose: suspend (T) -> Unit = {},
             factory: suspend () -> T,
-        ) = DefaultObjectPool(maxSize, maxDuration, (1..initialSize).map { factory() }, factory, onClose)
+        ): ObjectPool<T> =
+            DefaultObjectPool(maxSize, maxDuration, (1..initialSize).map { factory() }, factory, onClose)
     }
 }

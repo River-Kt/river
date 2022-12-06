@@ -50,7 +50,7 @@ class S3Test : FeatureSpec({
                 .upload(bucket = "test", "test.txt", flow)
                 .collect()
 
-            val (metadata, content) = s3Client.download("test", "test.txt")
+            val (metadata, content) = s3Client.download("test", "test.txt").first()
             metadata.contentLength() shouldBe ContentLenght
 
             val count =

@@ -1,12 +1,5 @@
+import Dependencies.AwsHttp11Spi
 import Dependencies.RiverCore
-
-object Version {
-    const val Kotlin = "1.7.20"
-    const val Coroutine = "1.6.4"
-    const val Slf4j = "1.7.36"
-
-    const val Kotest = "5.5.3"
-}
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
@@ -24,7 +17,10 @@ tasks.withType<Test>().configureEach {
 
 dependencies {
     implementation(RiverCore)
-    implementation(Dependencies.Aws.SesV2)
+    implementation(AwsHttp11Spi)
+    implementation(Dependencies.Aws.SesV2){
+        exclude("software.amazon.awssdk", "netty-nio-client")
+    }
 
     Dependencies.Coroutines.forEach { implementation(it) }
 

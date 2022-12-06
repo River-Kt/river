@@ -4,20 +4,14 @@ object Dependencies {
     val DependencyHandlerScope.RiverCore
         get() = project(mapOf("path" to ":core"))
 
-    val DependencyHandlerScope.AwsCommon
-        get() = project(mapOf("path" to ":connectors:aws:common"))
+    val DependencyHandlerScope.AwsHttp11Spi
+        get() = project(mapOf("path" to ":connectors:aws:java-11-http-spi"))
 
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":utils:http"))
 
     val DependencyHandlerScope.Pool
         get() = project(mapOf("path" to ":utils:pool"))
-
-    val Kotlin =
-        listOf("kotlin-stdlib-jdk8")
-            .map { "org.jetbrains.kotlin:$it" }
-
-    val Slf4j = "org.slf4j:slf4j-api:${Version.Slf4j}"
 
     val Coroutines =
         listOf(
@@ -29,7 +23,18 @@ object Dependencies {
             "org.jetbrains.kotlinx:kotlinx-coroutines-$it:${Version.Coroutine}"
         }
 
+    val Kotlin =
+        listOf("kotlin-stdlib-jdk8")
+            .map { "org.jetbrains.kotlin:$it" }
+
+    val KotlinReflect = "org.jetbrains.kotlin:kotlin-reflect"
+
+    val Slf4j = "org.slf4j:slf4j-api:${Version.Slf4j}"
+
+    val Common: List<String> = Kotlin + Coroutines + Slf4j
+
     object Aws {
+        val HttpClientSpi = "software.amazon.awssdk:http-client-spi:${Version.AwsSdk}"
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"
         val Sns = "software.amazon.awssdk:sns:${Version.AwsSdk}"
         val S3 = "software.amazon.awssdk:s3:${Version.AwsSdk}"
@@ -57,4 +62,16 @@ object Dependencies {
         val spi = "io.r2dbc:r2dbc-spi:${Version.R2dbc}"
         val h2 = "io.r2dbc:r2dbc-h2:${Version.R2dbc}"
     }
+
+    object Azure {
+        val QueueStorage = "com.azure:azure-storage-queue:${Version.Azure}"
+    }
+
+    object Kotest {
+        val JUnit5 = "io.kotest:kotest-runner-junit5:${Version.Kotest}"
+    }
+
+    val PostgreSQLJDBC = "org.postgresql:postgresql:${Version.PostgreSQLJDBC}"
+
+    val CommonTest = listOf(Kotest.JUnit5)
 }
