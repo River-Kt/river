@@ -13,6 +13,9 @@ object Dependencies {
     val DependencyHandlerScope.Pool
         get() = project(mapOf("path" to ":utils:pool"))
 
+    val DependencyHandlerScope.Jdbc
+        get() = project(mapOf("path" to ":connectors:rdbms:jdbc"))
+
     val Coroutines =
         listOf(
             "core",
@@ -67,6 +70,14 @@ object Dependencies {
     }
 
     val PostgreSQLJDBC = "org.postgresql:postgresql:${Version.PostgreSQLJDBC}"
+    val MySQLJDBC = "com.mysql:mysql-connector-j:${Version.MySQLJDBC}"
+
+    object Debezium {
+        val Api = "io.debezium:debezium-api:${Version.Debezium}"
+        val Embedded = "io.debezium:debezium-embedded:${Version.Debezium}"
+
+        val MySQL = "io.debezium:debezium-connector-mysql:${Version.Debezium}"
+    }
 
     val CommonTest = listOf(Kotest.JUnit5)
 }

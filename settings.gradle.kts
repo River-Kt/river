@@ -32,6 +32,7 @@ include(
     "connectors:mqtt",
     "connectors:rdbms:jdbc",
     "connectors:rdbms:r2dbc",
+    "connectors:red-hat:debezium",
     "connectors:twilio",
     "utils:http",
     "utils:pool"

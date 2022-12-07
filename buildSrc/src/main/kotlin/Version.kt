@@ -15,6 +15,9 @@ object Version {
     const val ActiveMQArtemis = "2.27.0"
     const val Azure = "12.6.0"
     const val PostgreSQLJDBC = "42.5.1"
+    const val MySQLJDBC = "8.0.31"
+    const val Debezium = "2.0.0.Final"
+    const val Groovy = "4.0.6"
 
     const val Kotest = "5.5.3"
 }

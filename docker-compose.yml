@@ -41,6 +41,14 @@ services:
       - "10001:10001"
       - "10002:10002"
 
+  mysql:
+    image: mysql:8.0.31
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=db
+      - MYSQL_ROOT_PASSWORD=root
+
   postgresql:
     image: postgres:14.1-alpine
     environment:
