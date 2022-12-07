@@ -17,33 +17,26 @@ fun Jdbc.singleUpdate(
     sql: String,
     prepare: suspend PreparedStatement.() -> Unit = {}
 ): Flow<Int> = flow {
-    connectionPool.use {
-        IO {
-            it.prepareStatement(sql)
-                .also { ps -> prepare(ps) }
-                .executeUpdate()
-                .let { emit(it) }
-        }
-    }
+    connectionPool
+        .use { IO { it.prepareStatement(sql).also { prepare(it) }.executeUpdate() } }
+        .let { emit(it) }
 }
 
 context(Flow<T>)
 fun <T> Jdbc.singleUpdate(
     sql: String,
-    upstream: Flow<T>,
     parallelism: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
-    upstream
-        .mapParallel(parallelism) { item ->
-            connectionPool.use {
-                IO {
-                    it.prepareStatement(sql)
-                        .also { ps -> prepare(ps, item) }
-                        .executeUpdate()
-                }
+    mapParallel(parallelism) { item ->
+        connectionPool.use {
+            IO {
+                it.prepareStatement(sql)
+                    .also { ps -> prepare(ps, item) }
+                    .executeUpdate()
             }
         }
+    }
 
 fun <T> Jdbc.singleUpdate(
     sql: String,
@@ -51,9 +44,7 @@ fun <T> Jdbc.singleUpdate(
     parallelism: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
-    with(upstream) {
-        singleUpdate(sql, upstream, parallelism, prepare)
-    }
+    with(upstream) { singleUpdate(sql, parallelism, prepare) }
 
 fun <T> Jdbc.batchUpdate(
     sql: String,
@@ -61,12 +52,20 @@ fun <T> Jdbc.batchUpdate(
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds),
     prepare: suspend PreparedStatement.(T) -> Unit = {}
+): Flow<Int> = with(upstream) { batchUpdate(sql, parallelism, chunkStrategy, prepare) }
+
+context(Flow<T>)
+fun <T> Jdbc.batchUpdate(
+    sql: String,
+    parallelism: Int = 1,
+    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds),
+    prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
-    upstream
-        .chunked(chunkStrategy)
+    chunked(chunkStrategy)
         .mapParallel(parallelism) { chunk ->
             connectionPool.use {
                 IO {
+                    println("Running $sql with ${chunk.size} elements.")
                     logger.debug("Running $sql with ${chunk.size} elements.")
 
                     it.prepareStatement(sql)
@@ -80,13 +79,15 @@ fun <T> Jdbc.batchUpdate(
 
 inline fun <reified T : Any> Jdbc.typedQuery(
     sql: String,
-): Flow<T> = typedQuery(sql) { }
+    fetchSize: Int = 100,
+): Flow<T> = typedQuery(sql, fetchSize) { }
 
 inline fun <reified T : Any> Jdbc.typedQuery(
     sql: String,
+    fetchSize: Int = 100,
     crossinline prepare: suspend PreparedStatement.() -> Unit,
 ): Flow<T> =
-    query(sql) { prepare() }
+    query(sql, fetchSize) { prepare() }
         .map { row ->
             val constructor = checkNotNull(T::class.primaryConstructor) {
                 "Class ${T::class.simpleName} does not have a primary constructor"
@@ -99,11 +100,13 @@ inline fun <reified T : Any> Jdbc.typedQuery(
 
 fun Jdbc.query(
     sql: String,
+    fetchSize: Int = 100,
     prepare: suspend PreparedStatement.() -> Unit = {}
 ): Flow<Row> = flow {
     connectionPool.use { connection ->
         val resultSet: ResultSet = IO {
             val statement = connection.prepareStatement(sql).also { prepare(it) }
+            statement.fetchSize = fetchSize
             statement.executeQuery()
         }
 
