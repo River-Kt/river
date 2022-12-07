@@ -61,6 +61,11 @@ object Dependencies {
         val ArtemisServer = "org.apache.activemq:artemis-server:${Version.ActiveMQArtemis}"
     }
 
+    object R2dbc {
+        val spi = "io.r2dbc:r2dbc-spi:${Version.R2dbc}"
+        val h2 = "io.r2dbc:r2dbc-h2:${Version.R2dbc}"
+    }
+
     object Azure {
         val QueueStorage = "com.azure:azure-storage-queue:${Version.Azure}"
     }

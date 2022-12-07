@@ -13,6 +13,7 @@ object Version {
     const val RabbitMQ = "5.16.0"
     const val Jms = "2.0.1"
     const val ActiveMQArtemis = "2.27.0"
+    const val R2dbc = "1.0.0.RELEASE"
     const val Azure = "12.6.0"
     const val PostgreSQLJDBC = "42.5.1"
     const val MySQLJDBC = "8.0.31"
