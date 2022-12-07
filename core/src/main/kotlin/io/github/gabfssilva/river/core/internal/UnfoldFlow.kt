@@ -74,10 +74,14 @@ class UnfoldFlow<T>(
                             logger.debug("Emitting ${it.size} items downstream")
                         } else logger.debug("No items returned.")
                     }
-                    .forEach { emit(it) }
+                    .forEach {
+                        emit(it)
+                    }
 
                 firstIteration = false
                 gotEmptyResponse = emptyResultOnResponse
             }
+
+            logger.debug("Stopping unfold...")
         }.collect(collector)
 }

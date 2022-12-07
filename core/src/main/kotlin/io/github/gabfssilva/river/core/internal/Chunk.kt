@@ -1,11 +1,11 @@
 package io.github.gabfssilva.river.core.internal
 
 import io.github.gabfssilva.river.core.ChunkStrategy
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
+import io.github.gabfssilva.river.core.collectAsync
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.*
 
 internal class Chunk<T>(
     private val upstream: Flow<T>,
@@ -57,10 +57,10 @@ internal class Chunk<T>(
                 strategy: ChunkStrategy.TimeWindow,
                 upstream: Flow<T>
             ): Flow<List<T>> =
-                channelFlow {
+                channelFlow<List<T>> {
                     val windowedChunk =
                         MutexBasedWindowedChunk(
-                            this,
+                            channel,
                             strategy.duration,
                             strategy.size
                         )
@@ -75,5 +75,6 @@ internal class Chunk<T>(
     override suspend fun collect(collector: FlowCollector<List<T>>): Unit =
         Strategy
             .chunkedFlow(strategy, upstream)
+            .buffer(RENDEZVOUS)
             .collect(collector)
 }

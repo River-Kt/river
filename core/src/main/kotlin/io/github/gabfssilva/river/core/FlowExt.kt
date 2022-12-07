@@ -3,13 +3,10 @@
 package io.github.gabfssilva.river.core
 
 import io.github.gabfssilva.river.core.internal.*
-import io.github.gabfssilva.river.core.internal.Broadcast
-import io.github.gabfssilva.river.core.internal.StoppableFlow
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import java.nio.ByteBuffer
-import java.nio.charset.Charset
 import kotlin.time.Duration
 
 fun <T> unfold(
@@ -196,6 +193,15 @@ fun <T> Flow<T>.collectAsync(
     collector: FlowCollector<T> = FlowCollector { }
 ): Job = scope.launch { collect(collector) }
 
+suspend fun <T> Flow<T>.collectCatching(
+    collector: FlowCollector<T> = FlowCollector { },
+): Result<Unit> = runCatching { collect(collector) }
+
+fun <T> Flow<T>.catchAndEmitLast(
+    f: FlowCollector<T>.(Throwable) -> T
+): Flow<T> =
+    catch { emit(f(this, it)) }
+
 suspend fun <T> Flow<T>.collectWithTimeout(
     duration: Duration,
     collector: FlowCollector<T> = FlowCollector { },
@@ -203,25 +209,29 @@ suspend fun <T> Flow<T>.collectWithTimeout(
 
 fun <T> Flow<T>.broadcast(
     number: Int,
+    buffer: Int = Channel.BUFFERED,
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-): List<Flow<T>> = Broadcast(scope, this, number).flows()
+): List<Flow<T>> = Broadcast(scope, buffer, this, number).flows()
 
 fun <E, F, S> Flow<E>.broadcast(
     firstFlowMap: Flow<E>.() -> Flow<F>,
     secondFlowMap: Flow<E>.() -> Flow<S>,
+    buffer: Int = Channel.BUFFERED,
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 ): Flow<Pair<F, S>> =
-    broadcast(2, scope).let { (first, second) ->
-        firstFlowMap(first).zip(secondFlowMap(second)) { f, s -> f to s }
+    broadcast(2, buffer, scope).let { (first, second) ->
+        firstFlowMap(first)
+            .zip(secondFlowMap(second)) { f, s -> f to s }
     }
 
 fun <E, F, S, T> Flow<E>.broadcast(
     firstFlowMap: Flow<E>.() -> Flow<F>,
     secondFlowMap: Flow<E>.() -> Flow<S>,
     thirdFlowMap: Flow<E>.() -> Flow<T>,
+    buffer: Int = Channel.BUFFERED,
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
 ): Flow<Triple<F, S, T>> =
-    broadcast(3, scope).let { (first, second, third) ->
+    broadcast(3, buffer, scope).let { (first, second, third) ->
         firstFlowMap(first)
             .zip(secondFlowMap(second)) { f, s -> f to s }
             .zip(thirdFlowMap(third)) { (f, s), t -> Triple(f, s, t) }
@@ -240,6 +250,23 @@ inline fun <T, R> Flow<T>.via(flow: Flow<T>.() -> Flow<R>) = flow(this)
 
 fun <E, S> Flow<E>.alsoTo(
     bufferCapacity: Int = Channel.BUFFERED,
+    onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
+    onUndeliveredElement: ((E) -> Unit)? = null,
+    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     flow: Flow<E>.() -> Flow<S>,
-): Flow<Pair<E, S>> =
-    broadcast({ buffer(bufferCapacity) }, { flow() })
+): Flow<E> = flow {
+    val channel = Channel(bufferCapacity, onBufferOverflow, onUndeliveredElement)
+    flow(channel.consumeAsFlow()).collectAsync(scope)
+
+    buffer(bufferCapacity)
+        .onCompletion { channel.cancel() }
+        .collect {
+            channel.send(it)
+            emit(it)
+        }
+}
+
+operator fun <T, R : T> Flow<T>.plus(other: Flow<R>) =
+    flowOf(this, other)
+        .flattenConcat()
+
