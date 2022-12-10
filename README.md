@@ -12,46 +12,46 @@ Multi-platform is desired for a future release, but initially all the dependenci
 val latestVersion = "1.0.0-alpha"
 
 //Core connector
-implementation("io.github.gabfssilva.river:core:$latestVersion")
-implementation("io.github.gabfssilva.river:format-json:$latestVersion")
-implementation("io.github.gabfssilva.river:format-csv:$latestVersion")
-implementation("io.github.gabfssilva.river:file:$latestVersion")
+implementation("io.river:core:$latestVersion")
+implementation("io.river.connector:format-json:$latestVersion")
+implementation("io.river.connector:format-csv:$latestVersion")
+implementation("io.river.connector:file:$latestVersion")
 
 //AMQP
-implementation("io.github.gabfssilva.river:amqp:$latestVersion")
+implementation("io.river.connector:amqp:$latestVersion")
 
 //AWS
-implementation("io.github.gabfssilva.river:aws-sqs:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-sns:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-s3:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-ses:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-dynamodb:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-lambda:$latestVersion")
-implementation("io.github.gabfssilva.river:aws-kinesis:$latestVersion")
+implementation("io.river.connector:aws-sqs:$latestVersion")
+implementation("io.river.connector:aws-sns:$latestVersion")
+implementation("io.river.connector:aws-s3:$latestVersion")
+implementation("io.river.connector:aws-ses:$latestVersion")
+implementation("io.river.connector:aws-dynamodb:$latestVersion")
+implementation("io.river.connector:aws-lambda:$latestVersion")
+implementation("io.river.connector:aws-kinesis:$latestVersion")
 
 //RDBMS
-implementation("io.github.gabfssilva.river:rdbms-jdbc:$latestVersion")
-implementation("io.github.gabfssilva.river:rdbms-r2dbc:$latestVersion")
+implementation("io.river.connector:rdbms-jdbc:$latestVersion")
+implementation("io.river.connector:rdbms-r2dbc:$latestVersion")
 
 //Azure
-implementation("io.github.gabfssilva.river:azure-queue-storage:$latestVersion")
+implementation("io.river.connector:azure-queue-storage:$latestVersion")
 
 //Console
-implementation("io.github.gabfssilva.river:console:$latestVersion")
+implementation("io.river.connector:console:$latestVersion")
 
 //ElasticSearch
-implementation("io.github.gabfssilva.river:elasticsearch:$latestVersion")
+implementation("io.river.connector:elasticsearch:$latestVersion")
 
-implementation("io.github.gabfssilva.river:ftp:$latestVersion")
+implementation("io.river.connector:ftp:$latestVersion")
 
-implementation("io.github.gabfssilva.river:jms:$latestVersion")
+implementation("io.river.connector:jms:$latestVersion")
 
-implementation("io.github.gabfssilva.river:mongodb:$latestVersion")
+implementation("io.river.connector:mongodb:$latestVersion")
 
-implementation("io.github.gabfssilva.river:mqtt:$latestVersion")
+implementation("io.river.connector:mqtt:$latestVersion")
 
 
 
-implementation("io.github.gabfssilva.river:twilio:$latestVersion")
+implementation("io.river.connector:twilio:$latestVersion")
 ```
 
