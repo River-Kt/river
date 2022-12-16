@@ -1,7 +1,6 @@
 package io.river.connector.aws.sqs
 
 import io.river.core.*
-import io.river.core.internal.UnfoldFlow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
@@ -28,7 +27,7 @@ inline fun SqsAsyncClient.receiveMessagesFlow(
     maxParallelism: Int = 1,
     stopOnEmptyList: Boolean = false,
     minimumParallelism: Int = 1,
-    increaseStrategy: UnfoldFlow.ParallelismIncreaseStrategy = UnfoldFlow.ParallelismIncreaseStrategy.ByOne,
+    increaseStrategy: ParallelismIncreaseStrategy = ParallelismIncreaseStrategy.ByOne,
     builder: ReceiveMessageRequestBuilder.() -> Unit
 ): Flow<Message> =
     ReceiveMessageRequestBuilder()

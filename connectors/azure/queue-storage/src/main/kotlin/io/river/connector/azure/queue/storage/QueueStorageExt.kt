@@ -4,7 +4,6 @@ import com.azure.storage.queue.QueueAsyncClient
 import com.azure.storage.queue.models.QueueMessageItem
 import com.azure.storage.queue.models.SendMessageResult
 import io.river.core.*
-import io.river.core.internal.UnfoldFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
@@ -20,7 +19,7 @@ fun QueueAsyncClient.receiveMessagesAsFlow(
     visibilityTimeout: Duration = 30.seconds,
     stopOnEmptyList: Boolean = false,
     minimumParallelism: Int = 1,
-    increaseStrategy: UnfoldFlow.ParallelismIncreaseStrategy = UnfoldFlow.ParallelismIncreaseStrategy.ByOne
+    increaseStrategy: ParallelismIncreaseStrategy = ParallelismIncreaseStrategy.ByOne
 ): Flow<QueueMessageItem> =
     unfoldParallel(
         maxParallelism = maxParallelism,
