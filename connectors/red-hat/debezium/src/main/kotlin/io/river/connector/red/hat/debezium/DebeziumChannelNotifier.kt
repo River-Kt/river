@@ -14,7 +14,7 @@ class DebeziumChannelNotifier<R>(
     private val semaphore = Semaphore(maxRecordsInFlight)
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
-    override fun handleBatch(records: MutableList<R>, committer: DebeziumEngine.RecordCommitter<R>) {
+    override fun handleBatch(records: List<R>, committer: DebeziumEngine.RecordCommitter<R>) {
         runBlocking(Dispatchers.IO) {
             val batchSize = records.size
 

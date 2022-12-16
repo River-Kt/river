@@ -1,16 +1,6 @@
-
-object Version {
-    const val Kotlin = "1.7.20"
-    const val Coroutine = "1.6.4"
-    const val Slf4j = "1.7.36"
-
-    const val Kotest = "5.5.3"
-}
-
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
-
-    `java-library`
+    kotlin("jvm")
+    id("org.jetbrains.dokka")
 }
 
 repositories {
@@ -39,5 +29,17 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
         jvmTarget = "17"
+    }
+}
+
+java.sourceSets["test"].kotlin {
+    srcDir("src/sample/kotlin")
+}
+
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        configureEach {
+            samples.from("src/sample/kotlin")
+        }
     }
 }

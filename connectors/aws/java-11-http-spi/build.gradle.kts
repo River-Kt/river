@@ -3,9 +3,8 @@ import Dependencies.Http
 import Dependencies.RiverCore
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version Version.Kotlin
-
-    `java-library`
+    kotlin("jvm")
+    id("org.jetbrains.dokka")
 }
 
 repositories {

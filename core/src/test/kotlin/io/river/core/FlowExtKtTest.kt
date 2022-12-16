@@ -7,7 +7,7 @@ import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContainAll
 import io.kotest.matchers.shouldBe
-import io.river.core.internal.UnfoldFlow.ParallelismIncreaseStrategy.Companion.MaxAllowedAfterReceive
+import io.river.core.ParallelismIncreaseStrategy.Companion.MaxAllowedAfterReceive
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect

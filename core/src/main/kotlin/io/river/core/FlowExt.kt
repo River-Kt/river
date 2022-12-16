@@ -9,30 +9,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 
-fun <T> unfold(
-    stopOnEmptyList: Boolean = false,
-    unfolder: suspend UnfoldFlow.ParallelismInfo.() -> List<T>
-): Flow<T> =
-    unfoldParallel(
-        maxParallelism = 1,
-        stopOnEmptyList = stopOnEmptyList,
-        unfolder = unfolder
-    )
-
-fun <T> unfoldParallel(
-    maxParallelism: Int,
-    stopOnEmptyList: Boolean = false,
-    minimumParallelism: Int = 1,
-    increaseStrategy: UnfoldFlow.ParallelismIncreaseStrategy = UnfoldFlow.ParallelismIncreaseStrategy.ByOne,
-    unfolder: suspend UnfoldFlow.ParallelismInfo.() -> List<T>
-): Flow<T> =
-    UnfoldFlow(
-        minimumParallelism = minimumParallelism,
-        maxParallelism = maxParallelism,
-        stopOnEmptyList = stopOnEmptyList,
-        increaseStrategy = increaseStrategy,
-        producer = unfolder
-    )
 
 fun <T> Flow<T>.timeout(duration: Duration): Flow<T> =
     flow { withTimeoutOrNull(duration) { collect { emit(it) } } }

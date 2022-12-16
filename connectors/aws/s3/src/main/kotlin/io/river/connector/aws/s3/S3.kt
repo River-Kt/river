@@ -13,7 +13,7 @@ import kotlinx.coroutines.reactive.asFlow
 import software.amazon.awssdk.core.async.AsyncRequestBody.fromBytes
 import software.amazon.awssdk.core.async.AsyncResponseTransformer
 import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.model.CompletedPart
+import software.amazon.awssdk.services.s3.model.CompletedPart.builder
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import software.amazon.awssdk.services.s3.model.S3Response
 import java.util.*
@@ -111,15 +111,11 @@ private suspend fun S3AsyncClient.completeMultipartUpload(
         .bucket(bucket)
         .key(key)
         .uploadId(uploadId)
-        .multipartUpload {
-            val completed =
-                etags.mapIndexed { number, part ->
-                    CompletedPart
-                        .builder()
-                        .apply { partNumber(number + 1).eTag(part) }
-                        .build()
+        .multipartUpload { complete ->
+            etags
+                .mapIndexed { number, part ->
+                    builder().apply { partNumber(number + 1).eTag(part) }.build()
                 }
-
-            it.parts(completed)
+                .let { complete.parts(it) }
         }
 }.await()

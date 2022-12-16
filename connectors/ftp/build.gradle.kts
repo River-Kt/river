@@ -1,8 +1,6 @@
-
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
-
-    `java-library`
+    kotlin("jvm")
+    id("org.jetbrains.dokka")
 }
 
 repositories {

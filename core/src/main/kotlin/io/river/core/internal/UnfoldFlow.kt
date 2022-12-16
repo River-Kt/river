@@ -2,6 +2,8 @@
 
 package io.river.core.internal
 
+import io.river.core.ParallelismIncreaseStrategy
+import io.river.core.ParallelismInfo
 import io.river.core.mapParallel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import org.slf4j.LoggerFactory
 
-class UnfoldFlow<T>(
+internal class UnfoldFlow<T>(
     private val minimumParallelism: Int,
     private val maxParallelism: Int,
     private val stopOnEmptyList: Boolean = false,
@@ -23,22 +25,6 @@ class UnfoldFlow<T>(
     private val isCoroutineContextActive: Boolean
         get() = GlobalScope.coroutineContext[Job]?.isActive != false
 
-    data class ParallelismInfo(val maxAllowedParallelism: Int, val currentParallelism: Int)
-
-    fun interface ParallelismIncreaseStrategy {
-        operator fun invoke(info: ParallelismInfo): ParallelismInfo
-
-        companion object {
-            fun by(f: (ParallelismInfo) -> Int): ParallelismIncreaseStrategy = ParallelismIncreaseStrategy {
-                val next = f(it)
-                it.copy(currentParallelism = if (next > it.maxAllowedParallelism) it.maxAllowedParallelism else next)
-            }
-
-            val ByOne = by { it.currentParallelism + 1 }
-            val Exponential = by { it.currentParallelism * 2 }
-            val MaxAllowedAfterReceive = by { it.maxAllowedParallelism }
-        }
-    }
 
     override suspend fun collect(collector: FlowCollector<T>) =
         flow {
