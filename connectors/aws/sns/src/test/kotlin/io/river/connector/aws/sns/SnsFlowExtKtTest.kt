@@ -1,8 +1,10 @@
 package io.river.connector.aws.sns
 
 import io.kotest.core.spec.style.FeatureSpec
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.river.core.flatten
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
@@ -16,11 +18,17 @@ class SnsFlowExtKtTest : FeatureSpec({
             val topic = createTopic { it.name("topic_sample") }.await().topicArn()
 
             scenario("Successful message publishing") {
-                val flow = (1..20).asFlow().map {
+                val totalSize = 20
+
+                val flow = (1..totalSize).asFlow().map {
                     PublishRequestEntry(it.toString())
                 }
 
-                snsClient.publishFlow(topic, flow).collect(::println)
+                snsClient
+                    .publishFlow(topic, flow)
+                    .map { it.successful() }
+                    .flatten()
+                    .toList() shouldHaveSize totalSize
             }
         }
     }

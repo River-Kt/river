@@ -30,10 +30,10 @@ fun S3AsyncClient.download(
             .let { it.response() to it.asFlow().asByteArray() }
     }
 
-context(Flow<Byte>)
-fun S3AsyncClient.upload(
+fun S3AsyncClient.uploadBytes(
     bucket: String,
     key: String,
+    upstream: Flow<Byte>,
     parallelism: Int = 1
 ): Flow<S3Response> = flow {
     val uploadResponse = createMultipartUpload { it.bucket(bucket).key(key) }.await()
@@ -41,7 +41,8 @@ fun S3AsyncClient.upload(
     val uploadId = uploadResponse.uploadId()
 
     val uploadedParts =
-        chunked(MINIMUM_UPLOAD_SIZE)
+        upstream
+            .chunked(MINIMUM_UPLOAD_SIZE)
             .withIndex()
             .mapParallel(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
             .onEach { emit(it) }
@@ -61,32 +62,15 @@ fun S3AsyncClient.upload(
 fun S3AsyncClient.upload(
     bucket: String,
     key: String,
-    upstream: Flow<Byte>,
+    upstream: Flow<ByteArray>,
     parallelism: Int = 1
-) = with(upstream) { upload(bucket, key, parallelism) }
-
-object bytes {
-    context(Flow<ByteArray>)
-    fun S3AsyncClient.upload(
-        bucket: String,
-        key: String,
-        parallelism: Int = 1
-    ): Flow<S3Response> = upload(
+): Flow<S3Response> =
+    uploadBytes(
         bucket = bucket,
         key = key,
-        upstream = flatMapConcat { it.toList().asFlow() },
+        upstream = upstream.flatMapConcat { it.toList().asFlow() },
         parallelism = parallelism
     )
-
-    fun S3AsyncClient.upload(
-        bucket: String,
-        key: String,
-        upstream: Flow<ByteArray>,
-        parallelism: Int = 1
-    ): Flow<S3Response> = with(upstream) {
-        upload(bucket, key, parallelism)
-    }
-}
 
 private suspend fun S3AsyncClient.uploadPart(
     bucket: String,

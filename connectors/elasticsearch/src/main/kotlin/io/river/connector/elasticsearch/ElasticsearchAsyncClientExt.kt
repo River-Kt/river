@@ -36,12 +36,13 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
     ?.settings()
     ?.maxResultWindow() ?: default
 
-context(Flow<Document<T>>)
 fun <T> ElasticsearchAsyncClient.indexFlow(
+    upstream: Flow<Document<T>>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds)
 ): Flow<BulkResponseItem> =
-    chunked(chunkStrategy)
+    upstream
+        .chunked(chunkStrategy)
         .mapParallel(parallelism) { chunk ->
             BulkRequest.Builder()
                 .also { builder ->
@@ -58,10 +59,3 @@ fun <T> ElasticsearchAsyncClient.indexFlow(
                 .let { bulk(it.build()).await().items() }
         }
         .flatten()
-
-fun <T> ElasticsearchAsyncClient.indexFlow(
-    upstream: Flow<Document<T>>,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(1, 250.milliseconds)
-): Flow<BulkResponseItem> =
-    with(upstream) { indexFlow(parallelism, chunkStrategy) }

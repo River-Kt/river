@@ -2,7 +2,8 @@ package io.river.connector.aws.sqs
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
-import io.river.core.via
+import io.river.connector.aws.sqs.model.Acknowledgment
+import io.river.connector.aws.sqs.model.RequestMessage
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -38,8 +39,8 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { MessageRequestEntry("hello, $it!") }
-                    .via { sendMessageFlow(queue) }
+                    .map { RequestMessage("hello, $it!") }
+                    .let { sendMessageFlow(queue, it) }
                     .collect()
 
                 count() shouldBe 100
@@ -50,8 +51,8 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { MessageRequestEntry("hello, $it!") }
-                    .via { sendMessageFlow(queue) }
+                    .map { RequestMessage("hello, $it!") }
+                    .let { sendMessageFlow(queue, it) }
                     .collect()
 
                 val messages =
@@ -72,8 +73,8 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { MessageRequestEntry("hello, $it!") }
-                    .via { sendMessageFlow(queue) }
+                    .map { RequestMessage("hello, $it!") }
+                    .let { sendMessageFlow(queue, it) }
                     .collect()
 
                 val messages =
@@ -82,7 +83,7 @@ class SqsFlowExtKtTest : FeatureSpec({
                         waitTimeSeconds = 0
                     }
                     .map { it.acknowledgeWith(Acknowledgment.Delete) }
-                    .via { acknowledgmentMessageFlow(queue) }
+                    .let { acknowledgmentMessageFlow(queue, it) }
                     .toList()
 
                 messages.size shouldBe 100

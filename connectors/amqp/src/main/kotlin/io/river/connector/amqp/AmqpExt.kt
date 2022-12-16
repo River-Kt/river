@@ -14,7 +14,7 @@ fun nonBlockingConnectionFactory(
     nioParams = NioParams().setNbIoThreads(threadNumber)
 }.also(f)
 
-fun <T> Connection.channel(f: Channel.() -> T): T =
+fun <T> Connection.withChannel(f: Channel.() -> T): T =
     createChannel()
         .let { channel -> f(channel).also { channel.close() } }
 
@@ -33,44 +33,24 @@ fun Connection.consume(
 ): Flow<ReceivingMessage.ManualAck> =
     internalConsume(queue, false, prefetch).filterIsInstance()
 
-context(Flow<Message.Default>)
-fun Connection.publishFlow() =
-    createChannel()
-        .publishFlow()
+fun Connection.publishFlow(
+    exchange: String,
+    routingKey: String,
+    upstream: Flow<Message.Simple>
+) = createChannel()
+    .publishFlow(exchange, routingKey, upstream)
 
-context(Flow<Message.Default>)
-fun Channel.publishFlow() = map {
-    basicPublish(it.exchange, it.routingKey, it.mandatory, it.immediate, it.properties, it.body)
-}
-
-context(Flow<Message.Simple>)
 fun Channel.publishFlow(
     exchange: String,
-    routingKey: String
-) = with(map { it.asDefault(exchange, routingKey) }) { publishFlow() }
-
-context(Flow<Message.Simple>)
-fun Connection.publishFlow(
-    exchange: String,
-    routingKey: String
-) = with(map { it.asDefault(exchange, routingKey) }) { publishFlow() }
-
-fun Connection.publishFlow(
-    upstream: Flow<Message.Default>
-) = with(upstream) { publishFlow() }
+    routingKey: String,
+    upstream: Flow<Message.Simple>
+) = upstream
+    .map { it.asDefault(exchange, routingKey) }
+    .let { publishFlow(it) }
 
 fun Channel.publishFlow(
     upstream: Flow<Message.Default>
-) = with(upstream) { publishFlow() }
-
-fun Connection.publishFlow(
-    upstream: Flow<Message.Simple>,
-    exchange: String,
-    routingKey: String
-) = with(upstream) { publishFlow(exchange, routingKey) }
-
-fun Channel.publishFlow(
-    upstream: Flow<Message.Simple>,
-    exchange: String,
-    routingKey: String
-) = with(upstream) { publishFlow(exchange, routingKey) }
+) = upstream
+    .map {
+        basicPublish(it.exchange, it.routingKey, it.mandatory, it.immediate, it.properties, it.body)
+    }

@@ -6,16 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.debezium.engine.DebeziumEngine.create
 import io.debezium.engine.format.Json
-import io.river.connector.rdbms.jdbc.Jdbc
-import io.river.connector.rdbms.jdbc.singleUpdate
 import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.engine.test.logging.info
 import io.kotest.matchers.shouldBe
+import io.river.connector.rdbms.jdbc.Jdbc
+import io.river.connector.rdbms.jdbc.singleUpdate
 import io.river.core.catchAndEmitLast
 import io.river.core.plus
 import io.river.core.sum
-import io.river.core.via
 import kotlinx.coroutines.flow.*
 import java.util.*
 
@@ -45,7 +44,11 @@ class DebeziumExtKtTest : FeatureSpec({
                 val insertRows = (1..10)
                     .asFlow()
                     .map { """ { "counter": $it } """ }
-                    .via { singleUpdate("insert into events(event_data) values(?);") { setString(1, it) } }
+                    .let {
+                        singleUpdate("insert into events(event_data) values(?);", it) {
+                            setString(1, it)
+                        }
+                    }
 
                 runCatching { (dropTable + createTable + insertRows).sum() }
                     .onSuccess { info { "$it rows were updated" } }

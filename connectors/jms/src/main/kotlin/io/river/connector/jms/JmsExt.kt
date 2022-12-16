@@ -2,6 +2,7 @@
 
 package io.river.connector.jms
 
+import io.river.connector.jms.model.*
 import io.river.core.flatten
 import io.river.core.mapParallel
 import io.river.core.repeat
@@ -71,9 +72,9 @@ fun ConnectionFactory.consume(
     }
 }
 
-context(Flow<JmsMessage>)
 fun ConnectionFactory.sendToDestination(
     destination: JmsDestination,
+    upstream: Flow<JmsMessage>,
     parallelism: Int = 1,
     credentials: Credentials? = null,
 ): Flow<Unit> {
@@ -98,13 +99,8 @@ fun ConnectionFactory.sendToDestination(
                     IO { producer.send(dest, message.build(context)) }
                 }
 
-        mapParallel(parallelism) { send(it) }
+        upstream
+            .mapParallel(parallelism) { send(it) }
             .collect { emit(Unit) }
     }
 }
-
-fun ConnectionFactory.sendToDestination(
-    destination: JmsDestination,
-    upstream: Flow<JmsMessage>,
-    parallelism: Int = 1
-): Flow<Unit> = with(upstream) { sendToDestination(destination, parallelism) }

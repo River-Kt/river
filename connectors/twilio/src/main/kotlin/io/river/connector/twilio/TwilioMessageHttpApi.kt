@@ -3,6 +3,10 @@ package io.river.connector.twilio
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.river.connector.twilio.model.CreateMessage
+import io.river.connector.twilio.model.Message
+import io.river.connector.twilio.model.TwilioConfiguration
+import io.river.connector.twilio.model.asHttpRequest
 import io.river.util.http.ofString
 import io.river.util.http.send
 import java.net.http.HttpClient

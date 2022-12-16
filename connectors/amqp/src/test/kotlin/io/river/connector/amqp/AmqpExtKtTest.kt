@@ -5,7 +5,6 @@ import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.river.core.toList
-import io.river.core.via
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -17,7 +16,7 @@ class AmqpExtKtTest : FeatureSpec({
                 .connection()
 
         beforeTest {
-            connection.channel {
+            connection.withChannel {
                 queueDelete("hello.world")
                 queueDeclare("hello.world", false, false, false, emptyMap())
                 exchangeDeclare("hello", BuiltinExchangeType.DIRECT, true)
@@ -29,12 +28,12 @@ class AmqpExtKtTest : FeatureSpec({
             (1..1000)
                 .asFlow()
                 .map { Message.Simple(it.toString().toByteArray()) }
-                .via { connection.publishFlow("hello", "world") }
+                .let { connection.publishFlow("hello", "world", it) }
                 .collect()
 
             val count =
                 connection
-                    .channel { queueDeclarePassive("hello.world").messageCount }
+                    .withChannel { queueDeclarePassive("hello.world").messageCount }
 
             count shouldBe 1000
         }
@@ -43,7 +42,7 @@ class AmqpExtKtTest : FeatureSpec({
             (1..1000)
                 .asFlow()
                 .map { Message.Simple(it.toString().toByteArray()) }
-                .via { connection.publishFlow("hello", "world") }
+                .let { connection.publishFlow("hello", "world", it) }
                 .collect()
 
             val numbers = connection
@@ -57,7 +56,7 @@ class AmqpExtKtTest : FeatureSpec({
             numbers shouldContainAll (1..1000).toList()
 
             val count =
-                connection.channel { queueDeclarePassive("hello.world").messageCount }
+                connection.withChannel { queueDeclarePassive("hello.world").messageCount }
 
             count shouldBe 0
         }

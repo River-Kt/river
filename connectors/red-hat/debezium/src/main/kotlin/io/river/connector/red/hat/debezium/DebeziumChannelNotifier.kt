@@ -1,13 +1,15 @@
 package io.river.connector.red.hat.debezium
 
 import io.debezium.engine.DebeziumEngine
+import io.river.connector.red.hat.debezium.model.CommittableOffset
+import io.river.connector.red.hat.debezium.model.CommittableRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import org.slf4j.LoggerFactory
 
-class DebeziumChannelNotifier<R>(
+internal class DebeziumChannelNotifier<R>(
     maxRecordsInFlight: Int,
     private val recordChannel: SendChannel<CommittableRecord<R>>
 ) : DebeziumEngine.ChangeConsumer<R> {

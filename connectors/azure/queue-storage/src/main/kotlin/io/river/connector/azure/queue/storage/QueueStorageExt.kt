@@ -3,7 +3,10 @@ package io.river.connector.azure.queue.storage
 import com.azure.storage.queue.QueueAsyncClient
 import com.azure.storage.queue.models.QueueMessageItem
 import com.azure.storage.queue.models.SendMessageResult
-import io.river.core.*
+import io.river.connector.azure.queue.storage.model.SendMessageRequest
+import io.river.core.ParallelismIncreaseStrategy
+import io.river.core.mapParallel
+import io.river.core.unfoldParallel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
@@ -32,31 +35,24 @@ fun QueueAsyncClient.receiveMessagesAsFlow(
             .toList()
     }
 
-context(Flow<QueueMessageItem>)
-fun QueueAsyncClient.deleteMessagesFlow(
-    parallelism: Int = 100,
-): Flow<Unit> =
-    mapParallel(parallelism) {
-        deleteMessage(it.messageId, it.popReceipt).awaitFirstOrNull()
-        Unit
-    }
 
 fun QueueAsyncClient.deleteMessagesFlow(
     upstream: Flow<QueueMessageItem>,
     parallelism: Int = 100,
-): Flow<Unit> = with(upstream) { deleteMessagesFlow(parallelism) }
-
-context(Flow<SendMessageRequest>)
-fun QueueAsyncClient.sendMessagesFlow(
-    parallelism: Int = 100,
-): Flow<SendMessageResult> =
-    mapParallel(parallelism) {
-        sendMessageWithResponse(it.text, it.visibilityTimeout?.toJavaDuration(), it.ttl?.toJavaDuration())
-            .awaitFirst()
-            .value
-    }
+): Flow<Unit> =
+    upstream
+        .mapParallel(parallelism) {
+            deleteMessage(it.messageId, it.popReceipt).awaitFirstOrNull()
+            Unit
+        }
 
 fun QueueAsyncClient.sendMessagesFlow(
     upstream: Flow<SendMessageRequest>,
-    parallelism: Int = 1,
-): Flow<SendMessageResult> = with(upstream) { sendMessagesFlow(parallelism) }
+    parallelism: Int = 100,
+): Flow<SendMessageResult> =
+    upstream
+        .mapParallel(parallelism) {
+            sendMessageWithResponse(it.text, it.visibilityTimeout?.toJavaDuration(), it.ttl?.toJavaDuration())
+                .awaitFirst()
+                .value
+        }

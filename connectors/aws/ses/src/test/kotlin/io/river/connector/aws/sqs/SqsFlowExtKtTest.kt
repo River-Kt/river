@@ -35,7 +35,7 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                         fromEmailAddress("+5511837265364")
                     }
-                    .via { sendEmailFlow() }
+                    .let { sendEmailFlow(it) }
                     .collect()
             }
         }

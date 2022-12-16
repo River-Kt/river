@@ -12,25 +12,18 @@ import software.amazon.awssdk.services.sns.model.PublishBatchResponse
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
-context(Flow<PublishBatchRequestEntry>)
-fun SnsAsyncClient.publishFlow(
-    topicArn: String,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-): Flow<PublishBatchResponse> =
-    chunked(chunkStrategy)
-        .mapParallel(parallelism) {
-            publishBatch { builder -> builder.publishBatchRequestEntries(it).topicArn(topicArn) }
-                .await()
-        }
-
 fun SnsAsyncClient.publishFlow(
     topicArn: String,
     upstream: Flow<PublishBatchRequestEntry>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
 ): Flow<PublishBatchResponse> =
-    with(upstream) { publishFlow(topicArn, parallelism, chunkStrategy) }
+    upstream
+        .chunked(chunkStrategy)
+        .mapParallel(parallelism) {
+            publishBatch { builder -> builder.publishBatchRequestEntries(it).topicArn(topicArn) }
+                .await()
+        }
 
 fun PublishRequestEntry(
     message: String,

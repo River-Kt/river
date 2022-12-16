@@ -15,8 +15,10 @@ module:ftp
 io.river.connector.ftp
 module:jms
 io.river.connector.jms
+io.river.connector.jms.model
 module:twilio
 io.river.connector.twilio
+io.river.connector.twilio.model
 module:http
 io.river.util.http
 module:pool
@@ -33,8 +35,10 @@ module:sns
 io.river.connector.aws.sns
 module:sqs
 io.river.connector.aws.sqs
+io.river.connector.aws.sqs.model
 module:queue-storage
 io.river.connector.azure.queue.storage
+io.river.connector.azure.queue.storage.model
 module:csv
 io.river.connector.format.csv
 module:json
@@ -45,3 +49,4 @@ module:r2dbc
 io.river.connector.rdbms.r2dbc
 module:debezium
 io.river.connector.red.hat.debezium
+io.river.connector.red.hat.debezium.model

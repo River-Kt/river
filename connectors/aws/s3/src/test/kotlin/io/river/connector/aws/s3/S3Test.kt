@@ -25,7 +25,7 @@ class S3Test : FeatureSpec({
         scenario("Successful upload") {
             val responses =
                 s3Client
-                    .upload(bucket = "test", "test.txt", flow)
+                    .uploadBytes(bucket = "test", "test.txt", flow)
                     .toList()
 
             val (
@@ -47,7 +47,7 @@ class S3Test : FeatureSpec({
 
         scenario("Successful download") {
             s3Client
-                .upload(bucket = "test", "test.txt", flow)
+                .uploadBytes(bucket = "test", "test.txt", flow)
                 .collect()
 
             val (metadata, content) = s3Client.download("test", "test.txt").first()

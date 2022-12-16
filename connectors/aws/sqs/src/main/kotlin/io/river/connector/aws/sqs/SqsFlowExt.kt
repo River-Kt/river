@@ -1,5 +1,7 @@
 package io.river.connector.aws.sqs
 
+import io.river.connector.aws.sqs.model.*
+import io.river.connector.aws.sqs.model.Acknowledgment.*
 import io.river.core.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -12,18 +14,10 @@ import software.amazon.awssdk.services.sqs.model.*
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
-val SqsAsyncClient.logger: Logger
+internal val SqsAsyncClient.logger: Logger
     get() = LoggerFactory.getLogger(javaClass)
 
-fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
-    MessageAcknowledgment(this, acknowledgment)
-
-suspend fun SqsAsyncClient.getQueueUrl(name: String): String =
-    getQueueUrl { it.queueName(name) }
-        .await()
-        .queueUrl()
-
-inline fun SqsAsyncClient.receiveMessagesFlow(
+fun SqsAsyncClient.receiveMessagesFlow(
     maxParallelism: Int = 1,
     stopOnEmptyList: Boolean = false,
     minimumParallelism: Int = 1,
@@ -46,40 +40,13 @@ inline fun SqsAsyncClient.receiveMessagesFlow(
             }
         }
 
-context(Flow<MessageAcknowledgment<Acknowledgment.Delete>>)
-fun SqsAsyncClient.deleteMessagesFlow(
-    queueUrl: String,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-) = chunked(chunkStrategy)
-    .mapParallel(parallelism) { messages ->
-        deleteMessageBatch {
-            logger.info("Sending ${messages.size} messages to queue")
-
-            it.queueUrl(queueUrl)
-
-            it.entries(
-                messages
-                    .mapIndexed { index, result ->
-                        DeleteMessageBatchRequestEntry
-                            .builder()
-                            .receiptHandle(result.message.receiptHandle())
-                            .id("$index")
-                            .build()
-                    }
-            )
-        }
-        .await()
-        .let { response -> messages.map { it to response } }
-    }
-    .flatten()
-
-context(Flow<MessageAcknowledgment<Acknowledgment.ChangeMessageVisibility>>)
 fun SqsAsyncClient.changeMessageVisibilityFlow(
     queueUrl: String,
+    upstream: Flow<MessageAcknowledgment<ChangeMessageVisibility>>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-) = chunked(chunkStrategy)
+) = upstream
+    .chunked(chunkStrategy)
     .mapParallel(parallelism) { messages ->
         changeMessageVisibilityBatch {
             it.queueUrl(queueUrl)
@@ -95,96 +62,75 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
                             .build()
                     }
             )
-        }
-        .await()
-        .let { response -> messages.map { it to response } }
+        }.await().let { response -> messages.map { it to response } }
     }
     .flatten()
 
-fun MessageRequestEntry(
-    body: String,
-    delaySeconds: Int = 0,
-    messageAttributes: Map<String, MessageAttributeValue> = emptyMap(),
-    id: String = UUID.randomUUID().toString()
-): SendMessageBatchRequestEntry =
-    SendMessageBatchRequestEntry
-        .builder()
-        .apply {
-            messageBody(body)
-            delaySeconds(delaySeconds)
-            messageAttributes(messageAttributes)
-            id(id)
-        }
-        .build()
-
-fun SqsAsyncClient.sendMessageFlow(
-    upstream: Flow<SendMessageBatchRequestEntry>,
-    queueUrl: String,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-) = with(upstream) { sendMessageFlow(queueUrl, parallelism, chunkStrategy) }
-
-context(Flow<SendMessageBatchRequestEntry>)
 fun SqsAsyncClient.sendMessageFlow(
     queueUrl: String,
+    upstream: Flow<RequestMessage>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-) = chunked(chunkStrategy)
+) = upstream
+    .map { it.asMessageRequestEntry() }
+    .chunked(chunkStrategy)
     .mapParallel(parallelism) { entries ->
-        sendMessageBatch {
-            it.queueUrl(queueUrl)
-                .entries(entries)
-        }.await()
+        sendMessageBatch { it.queueUrl(queueUrl).entries(entries) }
+            .await()
     }
-
-fun SqsAsyncClient.changeMessageVisibilityFlow(
-    upstream: Flow<MessageAcknowledgment<Acknowledgment.ChangeMessageVisibility>>,
-    queueUrl: String,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-): Flow<Pair<MessageAcknowledgment<Acknowledgment.ChangeMessageVisibility>, ChangeMessageVisibilityBatchResponse>> {
-    val client = this
-
-    with(upstream) {
-        return client.changeMessageVisibilityFlow(queueUrl, parallelism, chunkStrategy)
-    }
-}
 
 fun SqsAsyncClient.deleteMessagesFlow(
-    upstream: Flow<MessageAcknowledgment<Acknowledgment.Delete>>,
     queueUrl: String,
+    upstream: Flow<MessageAcknowledgment<Delete>>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
-): Flow<Pair<MessageAcknowledgment<Acknowledgment.Delete>, DeleteMessageBatchResponse>> {
-    val client = this
+): Flow<Pair<MessageAcknowledgment<Delete>, DeleteMessageBatchResponse>> =
+    upstream
+        .chunked(chunkStrategy)
+        .mapParallel(parallelism) { messages ->
+            deleteMessageBatch {
+                logger.info("Deleting ${messages.size} messages from queue $queueUrl")
 
-    with(upstream) {
-        return client.deleteMessagesFlow(queueUrl, parallelism, chunkStrategy)
-    }
-}
+                it.queueUrl(queueUrl)
 
-context(Flow<MessageAcknowledgment<*>>)
+                it.entries(
+                    messages
+                        .mapIndexed { index, result ->
+                            DeleteMessageBatchRequestEntry
+                                .builder()
+                                .receiptHandle(result.message.receiptHandle())
+                                .id("$index")
+                                .build()
+                        }
+                )
+            }
+                .await()
+                .let { response -> messages.map { it to response } }
+        }
+        .flatten()
+
 fun SqsAsyncClient.acknowledgmentMessageFlow(
     queueUrl: String,
+    upstream: Flow<MessageAcknowledgment<out Acknowledgment>>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
 ): Flow<AcknowledgmentResult<SdkResponse>> {
-    val deleteMessageChannel = Channel<MessageAcknowledgment<Acknowledgment.Delete>>()
-    val changeMessageVisibilityChannel = Channel<MessageAcknowledgment<Acknowledgment.ChangeMessageVisibility>>()
-    val ignoreChannel = Channel<MessageAcknowledgment<Acknowledgment.Ignore>>()
+    val deleteMessageChannel: Channel<MessageAcknowledgment<Delete>> = Channel()
+    val changeMessageVisibilityChannel: Channel<MessageAcknowledgment<ChangeMessageVisibility>> = Channel()
+    val ignoreChannel: Channel<MessageAcknowledgment<Ignore>> = Channel()
 
     val deleteFlow =
         deleteMessagesFlow(
-            deleteMessageChannel.receiveAsFlow(),
             queueUrl,
+            deleteMessageChannel.receiveAsFlow(),
             parallelism,
             chunkStrategy
         )
 
     val changeVisibilityFlow =
         changeMessageVisibilityFlow(
-            changeMessageVisibilityChannel.receiveAsFlow(),
             queueUrl,
+            changeMessageVisibilityChannel.receiveAsFlow(),
             parallelism,
             chunkStrategy
         )
@@ -194,23 +140,26 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
             .receiveAsFlow()
             .map { it to null }
 
-    onCompletion {
-        deleteMessageChannel.close()
-        ignoreChannel.close()
-        changeMessageVisibilityChannel.close()
-    }.collectAsync {
-        when (it.acknowledgment) {
-            is Acknowledgment.ChangeMessageVisibility ->
-                changeMessageVisibilityChannel.send(it as MessageAcknowledgment<Acknowledgment.ChangeMessageVisibility>)
-
-            Acknowledgment.Delete ->
-                deleteMessageChannel.send(it as MessageAcknowledgment<Acknowledgment.Delete>)
-
-            Acknowledgment.Ignore ->
-                ignoreChannel.send(it as MessageAcknowledgment<Acknowledgment.Ignore>)
+    upstream
+        .onCompletion {
+            deleteMessageChannel.close()
+            ignoreChannel.close()
+            changeMessageVisibilityChannel.close()
         }
-    }
+        .collectAsync { ack: MessageAcknowledgment<out Acknowledgment> ->
+            @Suppress("UNCHECKED_CAST")
+            val channel = when (ack.acknowledgment) {
+                is ChangeMessageVisibility -> changeMessageVisibilityChannel
+                Delete -> deleteMessageChannel
+                Ignore -> ignoreChannel
+            } as Channel<MessageAcknowledgment<out Acknowledgment>>
+
+            channel.send(ack)
+        }
 
     return merge(deleteFlow, changeVisibilityFlow, ignoreFlow)
         .map { (ack, response) -> AcknowledgmentResult(ack.message, ack.acknowledgment, response) }
 }
+
+fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
+    MessageAcknowledgment(this, acknowledgment)

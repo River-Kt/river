@@ -1,6 +1,7 @@
 package io.river.connector.red.hat.debezium
 
 import io.debezium.engine.DebeziumEngine
+import io.river.connector.red.hat.debezium.model.CommittableRecord
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow

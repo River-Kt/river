@@ -3,6 +3,8 @@ package io.river.connector.jms
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
+import io.river.connector.jms.model.JmsDestination
+import io.river.connector.jms.model.JmsMessage
 import io.river.core.toList
 import io.river.core.via
 import kotlinx.coroutines.flow.*
@@ -20,7 +22,7 @@ class JmsExtKtTest : FeatureSpec({
                     (1..100)
                         .asFlow()
                         .map { JmsMessage.Text("hello, #$it!") }
-                        .via { sendToDestination(JmsDestination.Queue("hello.world")) }
+                        .let { sendToDestination(JmsDestination.Queue("hello.world"), it) }
                         .count() shouldBe 100
                 }
 
@@ -28,7 +30,7 @@ class JmsExtKtTest : FeatureSpec({
                     (1..100)
                         .asFlow()
                         .map { JmsMessage.Text("hello, #$it!") }
-                        .via { sendToDestination(JmsDestination.Queue("hello.world")) }
+                        .let { sendToDestination(JmsDestination.Queue("hello.world"), it) }
                         .collect()
 
                     val messages =

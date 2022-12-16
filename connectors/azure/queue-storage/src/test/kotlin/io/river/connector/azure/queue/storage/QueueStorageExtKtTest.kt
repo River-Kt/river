@@ -5,7 +5,7 @@ import com.azure.storage.queue.QueueClientBuilder
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.river.core.via
+import io.river.connector.azure.queue.storage.model.SendMessageRequest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -22,7 +22,7 @@ class QueueStorageExtKtTest : FeatureSpec({
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest(it.toString()) }
-                    .via { sendMessagesFlow() }
+                    .let { sendMessagesFlow(it) }
                     .count() shouldBe 100
 
                 messageCount() shouldBe 100
@@ -32,7 +32,7 @@ class QueueStorageExtKtTest : FeatureSpec({
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest(it.toString()) }
-                    .via { sendMessagesFlow() }
+                    .let { sendMessagesFlow(it) }
                     .count() shouldBe 100
 
                 receiveMessagesAsFlow()
@@ -46,7 +46,7 @@ class QueueStorageExtKtTest : FeatureSpec({
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest(it.toString()) }
-                    .via { sendMessagesFlow() }
+                    .let { sendMessagesFlow(it) }
                     .count() shouldBe 100
 
                 val messages =
@@ -60,7 +60,7 @@ class QueueStorageExtKtTest : FeatureSpec({
 
                 messages
                     .asFlow()
-                    .via { deleteMessagesFlow() }
+                    .let { deleteMessagesFlow(it) }
                     .count() shouldBe 100
 
                 messageCount() shouldBe 0

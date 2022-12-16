@@ -25,13 +25,14 @@ fun Jdbc.singleUpdate(
         .let { emit(it) }
 }
 
-context(Flow<T>)
 fun <T> Jdbc.singleUpdate(
     sql: String,
+    upstream: Flow<T>,
     parallelism: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
-    mapParallel(parallelism) { item ->
+    upstream
+        .mapParallel(parallelism) { item ->
         connectionPool.use {
             IO {
                 it.prepareStatement(sql)
@@ -41,30 +42,15 @@ fun <T> Jdbc.singleUpdate(
         }
     }
 
-fun <T> Jdbc.singleUpdate(
-    sql: String,
-    upstream: Flow<T>,
-    parallelism: Int = 1,
-    prepare: suspend PreparedStatement.(T) -> Unit = {}
-): Flow<Int> =
-    with(upstream) { singleUpdate(sql, parallelism, prepare) }
-
 fun <T> Jdbc.batchUpdate(
     sql: String,
     upstream: Flow<T>,
     parallelism: Int = 1,
     chunkStrategy: ChunkStrategy = TimeWindow(100, 250.milliseconds),
     prepare: suspend PreparedStatement.(T) -> Unit = {}
-): Flow<Int> = with(upstream) { batchUpdate(sql, parallelism, chunkStrategy, prepare) }
-
-context(Flow<T>)
-fun <T> Jdbc.batchUpdate(
-    sql: String,
-    parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = TimeWindow(100, 250.milliseconds),
-    prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
-    chunked(chunkStrategy)
+    upstream
+        .chunked(chunkStrategy)
         .mapParallel(parallelism) { chunk ->
             connectionPool.use {
                 IO {
