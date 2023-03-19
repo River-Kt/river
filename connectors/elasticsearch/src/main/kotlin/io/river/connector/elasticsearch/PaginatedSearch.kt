@@ -96,7 +96,6 @@ sealed interface PaginatedSearch {
                 var lastHit = first.last().sort()
 
                 val flow = unfold(stopOnEmptyList = true) {
-                    println(lastHit.first().doubleValue())
                     val (s, id) = lastHit
 
                     val req =
