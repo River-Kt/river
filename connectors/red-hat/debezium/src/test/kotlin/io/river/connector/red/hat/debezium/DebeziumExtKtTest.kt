@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.*
 import java.util.*
 
 class DebeziumExtKtTest : FeatureSpec({
+    val objectMapper = ObjectMapper()
+
     feature("Debezium CDC as flow") {
         scenario("Successful flow") {
             val jdbc = Jdbc(
@@ -26,6 +28,8 @@ class DebeziumExtKtTest : FeatureSpec({
                 connectionPoolSize = 10,
                 credentials = "root" to "root"
             )
+
+            val numberOfRecords = 1000
 
             with(jdbc) {
                 val dropTable =
@@ -41,7 +45,7 @@ class DebeziumExtKtTest : FeatureSpec({
                     """.trimIndent()
                 )
 
-                val insertRows = (1..10)
+                val insertRows = (1..numberOfRecords)
                     .asFlow()
                     .map { """ { "counter": $it } """ }
                     .let {
@@ -55,13 +59,11 @@ class DebeziumExtKtTest : FeatureSpec({
                     .onFailure { it.printStackTrace() }
             }
 
-            val objectMapper = ObjectMapper()
-
             debeziumFlow { create(Json::class.java).using(Properties().apply { putAll(config) }) }
                 .onEach { it.markProcessed() }
                 .map { objectMapper.readValue(it.record.value(), ObjectNode::class.java) }
                 .map { it["payload"]["after"] }
-                .take(10)
+                .take(numberOfRecords)
                 .collectIndexed { index, row ->
                     val i = index + 1
 
@@ -84,7 +86,8 @@ val config = mapOf(
     "database.user" to "root",
     "database.password" to "root",
     "topic.prefix" to "events",
-    "max.batch.size" to "2500",
-    "max.queue.size" to "5000",
-    "include.schema.changes" to "false"
+    "max.batch.size" to "500",
+    "max.queue.size" to "1000",
+    "include.schema.changes" to "false",
+    "database.allowPublicKeyRetrieval" to "true"
 )
