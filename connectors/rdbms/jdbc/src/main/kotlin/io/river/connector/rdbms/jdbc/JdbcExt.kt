@@ -54,7 +54,6 @@ fun <T> Jdbc.batchUpdate(
         .mapParallel(parallelism) { chunk ->
             connectionPool.use {
                 IO {
-                    println("Running $sql with ${chunk.size} elements.")
                     logger.debug("Running $sql with ${chunk.size} elements.")
 
                     it.prepareStatement(sql)
