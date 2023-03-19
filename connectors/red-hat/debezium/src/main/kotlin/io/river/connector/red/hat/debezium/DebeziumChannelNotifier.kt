@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 
 internal class DebeziumChannelNotifier<R>(
@@ -25,13 +26,17 @@ internal class DebeziumChannelNotifier<R>(
             val committableOffset = CommittableOffset<R>(
                 numberOfRecords = batchSize,
                 markProcessed = {
-                    logger.debug("Marking item as processed.")
-                    committer.markProcessed(it)
-                    semaphore.release()
+                    withContext(Dispatchers.IO) {
+                        logger.debug("Marking item as processed.")
+                        committer.markProcessed(it)
+                        semaphore.release()
+                    }
                 },
                 markBatchFinished = {
-                    logger.debug("Marking batch with $batchSize items as finished.")
-                    committer.markBatchFinished()
+                    withContext(Dispatchers.IO) {
+                        logger.debug("Marking batch with $batchSize items as finished.")
+                        committer.markBatchFinished()
+                    }
                 }
             )
 
