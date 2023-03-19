@@ -17,6 +17,31 @@ import kotlin.time.Duration.Companion.milliseconds
 internal val SqsAsyncClient.logger: Logger
     get() = LoggerFactory.getLogger(javaClass)
 
+/**
+ * Returns a Flow of messages from an Amazon SQS queue using the AWS SDK asynchronous client.
+ *
+ * Customize the polling parallelism providing custom [minimumParallelism], [maxParallelism] and [increaseStrategy] values.
+ *
+ * If you want the Flow to stop consuming the queue if the queue is empty, provide [stopOnEmptyList] as true.
+ *
+ * Example usage:
+ *
+ * ```
+ * val sqsClient = SqsAsyncClient.create()
+ *
+ * val queueUrl = sqsClient.getQueueUrl { it.queueUrl("my-queue") }.await().queueUrl()
+ *
+ * val messagesFlow = sqsClient.receiveMessagesFlow {
+ *     queueUrl(queueUrl)
+ *     maxNumberOfMessages(10)
+ *     waitTimeSeconds(20)
+ * }
+ *
+ * messagesFlow.collect { message ->
+ *     println("Received message: ${message.body()}")
+ * }
+ * ```
+ */
 fun SqsAsyncClient.receiveMessagesFlow(
     maxParallelism: Int = 1,
     stopOnEmptyList: Boolean = false,

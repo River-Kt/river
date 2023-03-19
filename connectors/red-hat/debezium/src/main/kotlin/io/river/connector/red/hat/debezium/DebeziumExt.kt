@@ -10,6 +10,34 @@ import java.util.concurrent.Executors
 
 private val logger = LoggerFactory.getLogger("io.river.connector.red.hat.debezium.DebeziumFlow")
 
+/**
+ * The debeziumFlow function creates a Kotlin Flow that consumes records from a Debezium engine
+ * and emits them as CommittableRecords.
+ *
+ * Each CommittableRecord carries the original record and a CommittableOffset that allows the caller
+ * to commit the record's offset to the Debezium engine once it has been successfully processed downstream.
+ *
+ * The capacity of the internal buffer that stores the unconsumed records is defined by [bufferCapacity].
+ *
+ * If the buffer fills up, the flow will start to suspend producers until more capacity becomes available again.
+ *
+ * In the other hand, [maxRecordsInFlight] represents the maximum number of records that can be outstanding at the same
+ * time, waiting for their corresponding offsets to be committed. If this limit is reached, the flow will start to
+ * suspend producers until more offsets are committed.
+ *
+ * Example usage:
+ *
+ * ```
+ * val debeziumProperties: Properties = TODO("provide the debezium properties here")
+ *
+ * val flow = debeziumFlow { create(Json::class.java).using(debeziumProperties) }
+ *
+ * flow.collect { record ->
+ *     println(record)
+ *     record.markProcessed()
+ * }
+ * ```
+ */
 fun <R> debeziumFlow(
     bufferCapacity: Int = Channel.BUFFERED,
     maxRecordsInFlight: Int = 2048,

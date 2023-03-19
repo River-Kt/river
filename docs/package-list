@@ -16,6 +16,8 @@ io.river.connector.ftp
 module:jms
 io.river.connector.jms
 io.river.connector.jms.model
+module:mongodb
+io.river.connector.mongodb
 module:twilio
 io.river.connector.twilio
 io.river.connector.twilio.model

@@ -20,6 +20,23 @@ import java.util.*
 
 private const val MINIMUM_UPLOAD_SIZE = 1024 * 1024 * 5
 
+/**
+ * Downloads an S3 object from the specified [bucket] and [key].
+ * Returns a [Flow] of a pair containing the [GetObjectResponse] and a [Flow] of [ByteArray] chunks.
+ *
+ * Example usage:
+ *
+ * ```
+ * s3Client.download("my-bucket", "my-key")
+ *     .collect { (response, data) ->
+ *         println("Response: $response")
+ *         data.collect { chunk ->
+ *             println("Received chunk of size ${chunk.size}")
+ *             // process chunk data
+ *         }
+ *     }
+ * ```
+ */
 fun S3AsyncClient.download(
     bucket: String,
     key: String
@@ -30,6 +47,33 @@ fun S3AsyncClient.download(
             .let { it.response() to it.asFlow().asByteArray() }
     }
 
+/**
+ * Uploads the given [upstream] flow of bytes as a multipart upload to the specified [bucket] and [key] in Amazon S3,
+ * with the specified [parallelism]. Each chunk of bytes emitted by the [upstream] flow is uploaded as a separate part,
+ * with a minimum size of 5 MB.
+ *
+ * The resulting flow emits [S3Response]s for each upload action, including the initial creation of the multipart upload,
+ * the upload of each part, and the completion of the multipart upload.
+ *
+ * Example usage:
+ *
+ * ```
+ * val myFlow: Flow<Byte> =
+ *     "Hello, world! I am going to be on S3 pretty soon!"
+ *         .toByteArray(Charsets.UTF_8)
+ *         .toList()
+ *         .let(::flowOf)
+ *         .flatten()
+ *
+ * val s3AsyncClient = S3AsyncClient.builder().build()
+ * val bucket = "my-bucket"
+ * val key = "file.txt"
+ *
+ * s3AsyncClient
+ *     .uploadBytes(bucket, key, myFlow)
+ *     .collect()
+ * ```
+ */
 fun S3AsyncClient.uploadBytes(
     bucket: String,
     key: String,
@@ -59,6 +103,31 @@ fun S3AsyncClient.uploadBytes(
     )
 }
 
+/**
+ * Uploads the given [upstream] flow of bytes as a multipart upload to the specified [bucket] and [key] in Amazon S3,
+ * with the specified [parallelism]. Each chunk of bytes emitted by the [upstream] flow is uploaded as a separate part,
+ * with a minimum size of 5 MB.
+ *
+ * The resulting flow emits [S3Response]s for each upload action, including the initial creation of the multipart upload,
+ * the upload of each part, and the completion of the multipart upload.
+ *
+ * Example usage:
+ *
+ * ```
+ * val myFlow: Flow<Byte> =
+ *     "Hello, world! I am going to be on S3 pretty soon!"
+ *         .toByteArray(Charsets.UTF_8)
+ *         .let(::flowOf)
+ *
+ * val s3AsyncClient = S3AsyncClient.builder().build()
+ * val bucket = "my-bucket"
+ * val key = "file.txt"
+ *
+ * s3AsyncClient
+ *     .upload(bucket, key, myFlow)
+ *     .collect()
+ * ```
+ */
 fun S3AsyncClient.upload(
     bucket: String,
     key: String,
