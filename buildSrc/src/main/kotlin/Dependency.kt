@@ -84,5 +84,7 @@ object Dependencies {
         val MySQL = "io.debezium:debezium-connector-mysql:${Version.Debezium}"
     }
 
+    val MongoDB = "org.mongodb:mongodb-driver-reactivestreams:${Version.MongoDB}"
+
     val CommonTest = listOf(Kotest.JUnit5)
 }

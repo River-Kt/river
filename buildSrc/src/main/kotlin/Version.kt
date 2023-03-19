@@ -19,6 +19,7 @@ object Version {
     const val MySQLJDBC = "8.0.31"
     const val Debezium = "2.0.0.Final"
     const val Groovy = "4.0.6"
+    const val MongoDB = "4.8.0"
 
     const val Kotest = "5.5.3"
 }
