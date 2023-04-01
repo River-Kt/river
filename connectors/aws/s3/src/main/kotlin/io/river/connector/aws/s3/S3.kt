@@ -21,18 +21,27 @@ import java.util.*
 private const val MINIMUM_UPLOAD_SIZE = 1024 * 1024 * 5
 
 /**
- * Downloads an S3 object from the specified [bucket] and [key].
- * Returns a [Flow] of a pair containing the [GetObjectResponse] and a [Flow] of [ByteArray] chunks.
+ * Creates a flow that downloads a file from an Amazon S3 bucket.
+ *
+ * This function takes a [bucket] and [key] and returns a [Flow] of pairs containing the
+ * [GetObjectResponse] and a flow of byte arrays.
+ *
+ * @param bucket The name of the S3 bucket.
+ * @param key The key of the file to download.
+ * @return A [Flow] of pairs containing the [GetObjectResponse] and a flow of byte arrays.
  *
  * Example usage:
  *
  * ```
- * s3Client.download("my-bucket", "my-key")
- *     .collect { (response, data) ->
- *         println("Response: $response")
- *         data.collect { chunk ->
- *             println("Received chunk of size ${chunk.size}")
- *             // process chunk data
+ * val s3Client: S3AsyncClient = ...
+ * val bucket = "my-bucket"
+ * val key = "path/to/myfile.txt"
+ *
+ * s3Client.download(bucket, key)
+ *     .collect { (response, contentFlow) ->
+ *         println("Downloaded file with response: $response")
+ *         contentFlow.collect { byteArray ->
+ *             // Process byteArray
  *         }
  *     }
  * ```
@@ -48,30 +57,28 @@ fun S3AsyncClient.download(
     }
 
 /**
- * Uploads the given [upstream] flow of bytes as a multipart upload to the specified [bucket] and [key] in Amazon S3,
- * with the specified [parallelism]. Each chunk of bytes emitted by the [upstream] flow is uploaded as a separate part,
- * with a minimum size of 5 MB.
+ * Creates a flow that uploads bytes to an Amazon S3 bucket.
  *
- * The resulting flow emits [S3Response]s for each upload action, including the initial creation of the multipart upload,
- * the upload of each part, and the completion of the multipart upload.
+ * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
+ * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
+ *
+ * @param bucket The name of the S3 bucket.
+ * @param key The key of the file to upload.
+ * @param upstream A [Flow] of bytes to upload.
+ * @param parallelism The level of parallelism for uploading bytes.
+ * @return A [Flow] of [S3Response] objects.
  *
  * Example usage:
- *
  * ```
- * val myFlow: Flow<Byte> =
- *     "Hello, world! I am going to be on S3 pretty soon!"
- *         .toByteArray(Charsets.UTF_8)
- *         .toList()
- *         .let(::flowOf)
- *         .flatten()
- *
- * val s3AsyncClient = S3AsyncClient.builder().build()
+ * val s3Client: S3AsyncClient = ...
  * val bucket = "my-bucket"
- * val key = "file.txt"
+ * val key = "path/to/myfile.txt"
+ * val byteFlow = flowOf<Byte> { ... } // A Flow<Byte> containing the bytes to upload.
  *
- * s3AsyncClient
- *     .uploadBytes(bucket, key, myFlow)
- *     .collect()
+ * s3Client.uploadBytes(bucket, key, byteFlow)
+ *     .collect { response ->
+ *         println("Upload response: $response")
+ *     }
  * ```
  */
 fun S3AsyncClient.uploadBytes(
@@ -104,28 +111,29 @@ fun S3AsyncClient.uploadBytes(
 }
 
 /**
- * Uploads the given [upstream] flow of bytes as a multipart upload to the specified [bucket] and [key] in Amazon S3,
- * with the specified [parallelism]. Each chunk of bytes emitted by the [upstream] flow is uploaded as a separate part,
- * with a minimum size of 5 MB.
+ * Creates a flow that uploads byte arrays to an Amazon S3 bucket.
  *
- * The resulting flow emits [S3Response]s for each upload action, including the initial creation of the multipart upload,
- * the upload of each part, and the completion of the multipart upload.
+ * This function takes a [bucket], [key], and [upstream] flow of byte arrays and uploads them
+ * to the specified S3 bucket. The function processes byte arrays in parallel using [parallelism].
+ *
+ * @param bucket The name of the S3 bucket.
+ * @param key The key of the file to upload.
+ * @param upstream A [Flow] of byte arrays to upload.
+ * @param parallelism The level of parallelism for uploading byte arrays.
+ * @return A [Flow] of [S3Response] objects.
  *
  * Example usage:
  *
  * ```
- * val myFlow: Flow<Byte> =
- *     "Hello, world! I am going to be on S3 pretty soon!"
- *         .toByteArray(Charsets.UTF_8)
- *         .let(::flowOf)
- *
- * val s3AsyncClient = S3AsyncClient.builder().build()
+ * val s3Client: S3AsyncClient = ...
  * val bucket = "my-bucket"
- * val key = "file.txt"
+ * val key = "path/to/myfile.txt"
+ * val byteArrayFlow = flowOf<ByteArray> { ... } // A Flow<ByteArray> containing the byte arrays to upload.
  *
- * s3AsyncClient
- *     .upload(bucket, key, myFlow)
- *     .collect()
+ * s3Client.upload(bucket, key, byteArrayFlow)
+ *     .collect { response ->
+ *         println("Upload response: $response")
+ *     }
  * ```
  */
 fun S3AsyncClient.upload(
