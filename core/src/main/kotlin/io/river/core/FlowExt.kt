@@ -9,83 +9,42 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 
+/**
+ * Applies a timeout to the [Flow]. If the flow does not complete within the specified [duration],
+ * it will be cancelled.
+ *
+ * @param duration The maximum duration the flow is allowed to run before being cancelled.
+ * @return A [Flow] with a timeout applied.
+ */
 fun <T> Flow<T>.timeout(duration: Duration): Flow<T> =
     flow { withTimeoutOrNull(duration) { collect { emit(it) } } }
 
-fun <T> stoppableFlow(block: suspend StoppableFlowCollector<T>.() -> Unit): Flow<T> =
-    StoppableFlow { block(StoppableFlowCollector(this)) }
-
-suspend fun <T> Flow<T>.joinToString(
-    f: suspend (T) -> String = { it.toString() }
-): String =
-    map(f).fold("") { acc, element -> acc + element }
-
-suspend fun <T> Flow<T>.joinToString(
-    between: String,
-    f: suspend (T) -> String
-): String =
-    map(f)
-        .intersperse(between)
-        .fold("") { acc, element -> acc + element }
-
-suspend fun <T> Flow<T>.joinToString(
-    start: String,
-    between: String,
-    end: String,
-    f: suspend (T) -> String
-): String =
-    map(f)
-        .intersperse(start, between, end)
-        .fold("") { acc, element -> acc + element }
-
-fun <T> Flow<T>.intersperse(
-    between: T
-): Flow<T> = intersperse(start = null, between = between, end = null)
-
-fun <T> Flow<T>.intersperse(
-    start: T? = null,
-    between: T,
-    end: T? = null
-): Flow<T> =
-    flow {
-        var first = true
-        var last = false
-
-        if (start != null) emit(start)
-
-        onCompletion {
-            last = true
-            if (end != null) emit(end)
-        }.collect {
-            if (!first && !last) emit(between)
-            emit(it)
-            first = false
-        }
-    }
-
+/**
+ * Introduces a delay between the emissions of the [Flow].
+ *
+ * @param duration The duration of the delay between emissions.
+ * @return A [Flow] with a delay applied between emissions.
+ */
 fun <T> Flow<T>.delay(duration: Duration): Flow<T> =
     onEach { kotlinx.coroutines.delay(duration) }
 
-fun <T> Flow<T>.throttle(
-    elementsPerInterval: Int,
-    interval: Duration,
-    strategy: ThrottleStrategy = ThrottleStrategy.Suspend
-): Flow<T> = ThrottleFlow(elementsPerInterval, interval, strategy, this)
-
-fun <T> Flow<T>.earlyCompleteIf(
-    stopPredicate: suspend (T) -> Boolean
-): Flow<T> =
-    stoppableFlow {
-        collect {
-            val matches = stopPredicate(it)
-            if (matches) halt("got a false predicate, completing the flow")
-            else emit(it)
-        }
-    }
-
+/**
+ * Collects the specified number of items [size] from the [Flow] into a [List].
+ *
+ * @param size The maximum number of items to collect.
+ * @return A [List] of collected items, with a maximum size of [size].
+ */
 suspend fun <T> Flow<T>.toList(size: Int): List<T> =
     take(size).toList()
 
+/**
+ * Collects the specified number of items [size] from the [Flow] into a [List] within
+ * the given [duration].
+ *
+ * @param size The maximum number of items to collect.
+ * @param duration The maximum duration allowed for collecting items.
+ * @return A [List] of collected items, with a maximum size of [size].
+ */
 suspend fun <T> Flow<T>.toList(
     size: Int,
     duration: Duration
@@ -104,67 +63,70 @@ suspend fun <T> Flow<T>.toList(
     }.toList()
 
 /**
- * The [chunked] function is used to split the elements emitted by the current [Flow] into chunks.
+ * Flattens a [Flow] of [Iterable] items into a [Flow] of individual items.
  *
- * The chunks are emitted as a [List] of elements, with each chunk containing size elements or each chunk lasting
- * duration time, depending on the [ChunkStrategy] provided.
- **
- * Note that the chunks may not be of exactly the same size, depending on the number of elements emitted and the
- * specified size. Additionally, the order of elements in the output flow is preserved from the input flow.
+ * @return A [Flow] of individual items.
  */
-fun <T> Flow<T>.chunked(strategy: ChunkStrategy): Flow<List<T>> =
-    Chunk(this, strategy)
-
-/**
- * The [windowedChunk] function is used to split the elements emitted by the current [Flow] into fixed size chunks based
- * on a time window.
- *
- * The chunks are emitted as a [List] of elements, with each chunk containing size elements or each chunk lasting
- * duration time.
- *
- * Note that the chunks may not be of exactly the same size, depending on the number of elements emitted and the
- * specified size. Additionally, the order of elements in the output flow is preserved from the input flow.
- */
-fun <T> Flow<T>.windowedChunk(
-    size: Int,
-    duration: Duration
-): Flow<List<T>> =
-    chunked(ChunkStrategy.TimeWindow(size, duration))
-
-/**
- * The [chunked] function is used to split the elements emitted by the current [Flow] into chunks of a fixed size.
- *
- * The chunks are emitted as a [List] of elements, with each chunk containing size elements.
- *
- * Note that the chunks may not be of exactly the same size, depending on the number of elements emitted and the
- * specified size. Additionally, the order of elements in the output flow is preserved from the input flow.
- */
-fun <T> Flow<T>.chunked(size: Int): Flow<List<T>> =
-    chunked(ChunkStrategy.Count(size))
-
 fun <T> Flow<Iterable<T>>.flatten(): Flow<T> =
     flatMapConcat { it.asFlow() }
 
+/**
+ * Performs the provided [f] action concurrently on each item emitted by the flow. The action
+ * is applied with the specified [concurrencyLevel].
+ *
+ * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param f The action to apply to each item emitted by the flow.
+ * @return A [Flow] of items with the action applied concurrently.
+ */
 inline fun <T> Flow<T>.onEachParallel(
     concurrencyLevel: Int,
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Flow<T> = mapParallel(concurrencyLevel) { it.also { f(it) } }
 
+/**
+ * Performs the provided [f] action concurrently on each item emitted by the flow. The action
+ * is applied with the specified [concurrencyLevel]. The order of items might not be preserved.
+ *
+ * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param f The action to apply to each item emitted by the flow.
+ * @return A [Flow] of items with the action applied concurrently and possibly unordered.
+ */
 inline fun <T> Flow<T>.unorderedOnEachParallel(
     concurrencyLevel: Int,
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Flow<T> = unorderedMapParallel(concurrencyLevel) { it.also { f(it) } }
 
+/**
+ * Collects the flow and performs the provided [f] action concurrently on each item emitted by the
+ * flow. The action is applied with the specified [concurrencyLevel].
+ *
+ * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param f The action to apply to each item emitted by the flow.
+ */
 suspend inline fun <T> Flow<T>.collectParallel(
     concurrencyLevel: Int,
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Unit = onEachParallel(concurrencyLevel, f).collect()
 
+/**
+ * Collects the flow and performs the provided [f] action concurrently on each item emitted by the
+ * flow. The action is applied with the specified [concurrencyLevel]. The order of items might
+ * not be preserved.
+ *
+ * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param f The action to apply to each item emitted by the flow.
+ */
 suspend inline fun <T> Flow<T>.unorderedCollectParallel(
     concurrencyLevel: Int,
     crossinline f: suspend ConcurrencyInfo.(T) -> Unit
 ): Unit = unorderedOnEachParallel(concurrencyLevel, f).collect()
 
+/**
+ * Counts the number of items emitted by the flow within the specified [duration] window.
+ *
+ * @param duration The duration of the counting window.
+ * @return The number of items emitted by the flow within the specified duration.
+ */
 suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
     var counter = 0
     return withTimeoutOrNull(duration) { collect { counter++ }; counter } ?: counter
@@ -263,48 +225,47 @@ suspend fun <T> Flow<T>.collectCatching(
     collector: FlowCollector<T> = FlowCollector { },
 ): Result<Unit> = runCatching { collect(collector) }
 
+/**
+ * Catches exceptions that occur while collecting the flow and emits the result of the provided
+ * function [f] with the caught exception as a parameter.
+ *
+ * @param f A function that takes a [FlowCollector] and a [Throwable] and returns a value of type [T].
+ * @return A [Flow] that emits the original flow's values and the result of the [f] function in case
+ *         of an exception.
+ */
 fun <T> Flow<T>.catchAndEmitLast(
     f: FlowCollector<T>.(Throwable) -> T
 ): Flow<T> =
     catch { emit(f(this, it)) }
 
+/**
+ * Collects the flow with a specified timeout duration. If the flow takes longer than the provided
+ * [duration] to complete, it throws a [TimeoutCancellationException].
+ *
+ * @param duration The maximum time allowed for the flow collection to complete.
+ * @param collector An optional [FlowCollector] for handling the flow's emissions.
+ * @throws TimeoutCancellationException if the flow collection takes longer than the specified duration.
+ */
 suspend fun <T> Flow<T>.collectWithTimeout(
     duration: Duration,
     collector: FlowCollector<T> = FlowCollector { },
 ): Unit = withTimeout(duration) { collect(collector) }
 
-fun <T> Flow<T>.broadcast(
-    number: Int,
-    buffer: Int = Channel.BUFFERED,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-): List<Flow<T>> = Broadcast(scope, buffer, this, number).flows()
-
-fun <E, F, S> Flow<E>.broadcast(
-    firstFlowMap: Flow<E>.() -> Flow<F>,
-    secondFlowMap: Flow<E>.() -> Flow<S>,
-    buffer: Int = Channel.BUFFERED,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-): Flow<Pair<F, S>> =
-    broadcast(2, buffer, scope).let { (first, second) ->
-        firstFlowMap(first)
-            .zip(secondFlowMap(second)) { f, s -> f to s }
-    }
-
-fun <E, F, S, T> Flow<E>.broadcast(
-    firstFlowMap: Flow<E>.() -> Flow<F>,
-    secondFlowMap: Flow<E>.() -> Flow<S>,
-    thirdFlowMap: Flow<E>.() -> Flow<T>,
-    buffer: Int = Channel.BUFFERED,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-): Flow<Triple<F, S, T>> =
-    broadcast(3, buffer, scope).let { (first, second, third) ->
-        firstFlowMap(first)
-            .zip(secondFlowMap(second)) { f, s -> f to s }
-            .zip(thirdFlowMap(third)) { (f, s), t -> Triple(f, s, t) }
-    }
-
+/**
+ * Creates a [Flow] that emits a single item, which is the result of invoking the provided
+ * suspending function [item].
+ *
+ * @param item The suspending function to be invoked when the flow is collected.
+ * @return A [Flow] that emits the result of the suspending function.
+ */
 fun <T> flowOf(item: suspend () -> T) = flow { emit(item()) }
 
+/**
+ * Creates an infinite [Flow] that repeatedly emits the provided [item].
+ *
+ * @param item The item to be repeatedly emitted by the flow.
+ * @return An infinite [Flow] that repeatedly emits the provided item.
+ */
 fun <T> repeat(item: T): Flow<T> =
     flow {
         while (true) {
@@ -312,8 +273,19 @@ fun <T> repeat(item: T): Flow<T> =
         }
     }
 
-inline fun <T, R> Flow<T>.via(flow: Flow<T>.() -> Flow<R>) = flow(this)
-
+/**
+ * Allows the [Flow] to be collected and transformed into another [Flow] in parallel. The
+ * transformed [Flow] is collected asynchronously in the provided [scope]. The original flow
+ * and the transformed flow share the same buffer with the specified [bufferCapacity],
+ * [onBufferOverflow] policy, and [onUndeliveredElement] handler.
+ *
+ * @param bufferCapacity The capacity of the shared buffer.
+ * @param onBufferOverflow The policy to apply when the buffer overflows.
+ * @param onUndeliveredElement The function to be invoked when an element cannot be delivered.
+ * @param scope The [CoroutineScope] to collect the transformed flow asynchronously.
+ * @param flow The transformation function that maps the original flow to a new flow.
+ * @return A [Flow] of the original items.
+ */
 fun <E, S> Flow<E>.alsoTo(
     bufferCapacity: Int = Channel.BUFFERED,
     onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
@@ -332,7 +304,21 @@ fun <E, S> Flow<E>.alsoTo(
         }
 }
 
+/**
+ * Combines two [Flow]s of the same base type [T] into a single [Flow] by concatenating their elements.
+ *
+ * @param other The [Flow] to concatenate with the current [Flow].
+ *
+ * @return A new [Flow] containing the concatenated elements of both the current and the [other] [Flow]s.
+ *
+ * Example usage:
+ *
+ * ```
+ *  val flow1 = flowOf(1, 2, 3)
+ *  val flow2 = flowOf(4, 5, 6)
+ *  val combinedFlow = flow1 + flow2 //1, 2, 3, 4, 5, 6
+ * ```
+ */
 operator fun <T, R : T> Flow<T>.plus(other: Flow<R>) =
     flowOf(this, other)
         .flattenConcat()
-
