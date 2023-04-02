@@ -1,1 +1,1 @@
-io.river.connector.aws.Java11HttpClientService
+com.river.connector.aws.Java11HttpClientService
