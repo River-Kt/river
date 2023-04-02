@@ -102,7 +102,7 @@ fun SqsAsyncClient.sendMessageFlow(
     }
 
 /**
- * Creates a flow that changes the visibility of messages in an Amazon SQS queue.
+ * Creates a flow that changes the visibility of messages in an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
  * in parallel using [parallelism] and the specified [chunkStrategy].
@@ -155,7 +155,7 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
     .flatten()
 
 /**
- * Creates a flow that deletes messages from an Amazon SQS queue.
+ * Creates a flow that deletes messages from an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects with a [Delete]
  * acknowledgment and processes them in parallel using [parallelism] and the specified [chunkStrategy].
@@ -212,7 +212,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
         .flatten()
 
 /**
- * Creates a flow that processes acknowledgments for messages in an Amazon SQS queue.
+ * Creates a flow that processes acknowledgments for messages in an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
  * based on their acknowledgment type: [ChangeMessageVisibility], [Delete], or [Ignore].
@@ -236,7 +236,12 @@ fun SqsAsyncClient.deleteMessagesFlow(
  *
  * sqsClient.acknowledgmentMessageFlow(queueUrl, messageAcknowledgments)
  *     .collect { result ->
- *         println("Processed message: ${result.message.messageId()}, acknowledgment: ${result.acknowledgment}, response: ${result.response}")
+ *         println(
+ *             """Processed message:
+ *             ${result.message.messageId()},
+ *             acknowledgment: ${result.acknowledgment},
+ *             response: ${result.response}"""
+ *         )
  *     }
  * ```
  */
@@ -292,5 +297,26 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
         .map { (ack, response) -> AcknowledgmentResult(ack.message, ack.acknowledgment, response) }
 }
 
+/**
+ * Util function to create a MessageAcknowledgment from a [Message] and an [Acknowledgment].
+ *
+ * Be aware that this function alone do not perform any operation. You must send a [Flow] of [MessageAcknowledgment]
+ * to [acknowledgmentMessageFlow] in order to delete or change the visibility of a message.
+ *
+ * @param acknowledgment The acknowledgment of the received SQS Message
+ *
+ * @return An [MessageAcknowledgment] object, which is basically a tuple of [Message] and [Acknowledgment].
+ *
+ * Example usage:
+ *
+ * ```
+ *  val messageFlow: Flow<Message> = ...
+ *
+ *  messageFlow
+ *      .map { message -> message.acknowledgeWith(Acknowledgment.Delete) }
+ *      .let { flow -> sqsClient.acknowledgmentMessageFlow(queueUrl, flow) }
+ *      .collect(::println)
+ * ```
+ */
 fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
     MessageAcknowledgment(this, acknowledgment)
