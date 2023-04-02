@@ -1,7 +1,6 @@
 package io.river.connector.aws.sqs
 
 import io.kotest.core.spec.style.FeatureSpec
-import io.river.core.via
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
