@@ -6,7 +6,6 @@ import com.river.util.http.send
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.future.future
-import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.asPublisher
 import org.reactivestreams.FlowAdapters
 import software.amazon.awssdk.http.SdkHttpResponse
@@ -22,11 +21,11 @@ class Java11HttpClient(
     companion object {
         private val headersToSkip = setOf("Host", "Content-Length", "Expect")
 
-        fun builder(): com.river.connector.aws.Java11HttpClientBuilder =
-            com.river.connector.aws.Java11HttpClientBuilder()
+        fun builder(): Java11HttpClientBuilder =
+            Java11HttpClientBuilder()
 
         fun buildDefault(): SdkAsyncHttpClient =
-            com.river.connector.aws.Java11HttpClient.Companion.builder().build()
+            builder().build()
     }
 
     override fun close() {

@@ -5,5 +5,5 @@ import software.amazon.awssdk.http.async.SdkAsyncHttpService
 
 class Java11HttpClientService : SdkAsyncHttpService {
     override fun createAsyncHttpClientFactory(): SdkAsyncHttpClient.Builder<*> =
-        com.river.connector.aws.Java11HttpClient.builder()
+        Java11HttpClient.builder()
 }

@@ -16,7 +16,7 @@ class Java11HttpClientBuilder(
     ) = Java11HttpClientBuilder(httpClient, scope)
 
     override fun buildWithDefaults(serviceDefaults: AttributeMap): SdkAsyncHttpClient =
-        com.river.connector.aws.Java11HttpClient(
+        Java11HttpClient(
             httpClient = httpClient ?: HttpClient.newHttpClient(),
             scope = scope ?: CoroutineScope(Dispatchers.Default)
         )
