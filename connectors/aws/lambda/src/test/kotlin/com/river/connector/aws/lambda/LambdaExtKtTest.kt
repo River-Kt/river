@@ -27,7 +27,7 @@ class LambdaExtKtTest : FeatureSpec({
                 payload()
                     .asUtf8String()
                     .replace("\n", "") shouldBe
-                    """{"message":"hello, world! your message was my name is gabs"}"""
+                    """{"message": "hello, world! your message was my name is gabs"}"""
             }
         }
     }
