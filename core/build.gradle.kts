@@ -1,6 +1,9 @@
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
+    id("maven-publish")
+    id("signing")
+    id("io.github.gradle-nexus.publish-plugin") version ("1.3.0") apply false
 }
 
 repositories {

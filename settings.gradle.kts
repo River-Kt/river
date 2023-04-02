@@ -2,6 +2,9 @@ pluginManagement {
     plugins {
         kotlin("jvm") version "1.7.22"
         id("org.jetbrains.dokka") version ("1.7.20")
+        id("maven-publish")
+        id("signing")
+        id("io.github.gradle-nexus.publish-plugin") version ("1.3.0")
     }
 }
 
