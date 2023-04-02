@@ -2,9 +2,6 @@ package io.river.connector.format.csv
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
-import io.river.core.asBytes
-import io.river.core.chunked
-import io.river.core.intersperse
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.map
@@ -54,10 +51,6 @@ class CsvExtKtTest : FeatureSpec({
                 .asFlow()
                 .map { ItemV(it.toString(), (it * 2).toString()) }
                 .csv()
-                .intersperse("\n")
-                .asBytes()
-                .chunked(8)
-                .map { String(it.toByteArray()) }
                 .parseCsvWithHeaders {
                     ItemV(it.getValue("item"), it.getValue("item * 2"))
                 }
@@ -72,10 +65,6 @@ class CsvExtKtTest : FeatureSpec({
                 .asFlow()
                 .map { ItemV(it.toString(), (it * 2).toString()) }
                 .csv(false)
-                .intersperse("\n")
-                .asBytes()
-                .chunked(8)
-                .map { String(it.toByteArray()) }
                 .parseCsv {
                     val (i, doubleI) = it
                     ItemV(i, doubleI)
