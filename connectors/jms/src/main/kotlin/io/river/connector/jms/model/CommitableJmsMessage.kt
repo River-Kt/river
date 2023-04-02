@@ -2,7 +2,7 @@ package io.river.connector.jms.model
 
 import javax.jms.*
 
-sealed class CommitableMessage(
+sealed class CommittableMessage(
     private val coAcknowledge: suspend () -> Unit,
 ) : Message {
     suspend fun coAcknowledge() = coAcknowledge.invoke()
@@ -10,40 +10,40 @@ sealed class CommitableMessage(
     class DefaultMessage(
         inner: Message,
         coAcknowledge: suspend () -> Unit
-    ) : CommitableMessage(coAcknowledge), Message by inner {
+    ) : CommittableMessage(coAcknowledge), Message by inner {
         override fun acknowledge(): Unit =
             error("You must not call acknowledge directly. Please, call coAcknowledge.")
     }
 
-    class CommitableMapMessage(
+    class CommittableMapMessage(
         inner: MapMessage,
         coAcknowledge: suspend () -> Unit
-    ) : CommitableMessage(coAcknowledge), MapMessage by inner {
+    ) : CommittableMessage(coAcknowledge), MapMessage by inner {
         override fun acknowledge(): Unit =
             error("You must not call acknowledge directly. Please, call coAcknowledge.")
     }
 
-    class CommitableObjectMessage(
+    class CommittableObjectMessage(
         inner: ObjectMessage,
         coAcknowledge: suspend () -> Unit
-    ) : CommitableMessage(coAcknowledge), ObjectMessage by inner {
+    ) : CommittableMessage(coAcknowledge), ObjectMessage by inner {
         override fun acknowledge(): Unit {
             error("You must not call acknowledge directly. Please, call coAcknowledge.")
         }
     }
 
-    class CommitableTextMessage(
+    class CommittableTextMessage(
         inner: TextMessage,
         coAcknowledge: suspend () -> Unit
-    ) : CommitableMessage(coAcknowledge), TextMessage by inner {
+    ) : CommittableMessage(coAcknowledge), TextMessage by inner {
         override fun acknowledge(): Unit =
             error("You must not call acknowledge directly. Please, call coAcknowledge.")
     }
 
-    class CommitableBytesMessage(
+    class CommittableBytesMessage(
         inner: BytesMessage,
         coAcknowledge: suspend () -> Unit
-    ) : CommitableMessage(coAcknowledge), BytesMessage by inner {
+    ) : CommittableMessage(coAcknowledge), BytesMessage by inner {
         override fun acknowledge(): Unit =
             error("You must not call acknowledge directly. Please, call coAcknowledge.")
     }
@@ -53,10 +53,10 @@ sealed class CommitableMessage(
             message: Message,
             ack: suspend () -> Unit
         ) = when (message) {
-            is MapMessage -> CommitableMapMessage(message, ack)
-            is TextMessage -> CommitableTextMessage(message, ack)
-            is ObjectMessage -> CommitableObjectMessage(message, ack)
-            is BytesMessage -> CommitableBytesMessage(message, ack)
+            is MapMessage -> CommittableMapMessage(message, ack)
+            is TextMessage -> CommittableTextMessage(message, ack)
+            is ObjectMessage -> CommittableObjectMessage(message, ack)
+            is BytesMessage -> CommittableBytesMessage(message, ack)
             else -> DefaultMessage(message, ack)
         }
     }

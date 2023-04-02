@@ -6,7 +6,6 @@ import io.kotest.matchers.shouldBe
 import io.river.connector.jms.model.JmsDestination
 import io.river.connector.jms.model.JmsMessage
 import io.river.core.toList
-import io.river.core.via
 import kotlinx.coroutines.flow.*
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl
 import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ
