@@ -14,6 +14,23 @@ import software.amazon.awssdk.http.async.SdkAsyncHttpClient
 import java.net.http.HttpClient
 import java.util.concurrent.CompletableFuture
 
+/**
+ * This class implements the SdkAsyncHttpClient interface using Java 11's HttpClient, allowing
+ * it to be used with AWS SDK for Java v2. It provides asynchronous, non-blocking HTTP communication
+ * with AWS services.
+ *
+ * Choosing this implementation over the Netty HTTP Client helps minimize additional dependencies and enhances
+ * native JVM support.
+ *
+ * Java 11's HttpClient is highly optimized for handling reactive-streams,
+ * making it an excellent alternative for an SdkAsyncHttpClient.
+ *
+ * You can keep using Netty's implementation by removing this `java-11-http-spi` dependency from the classpath.
+ *
+ * @property httpClient The Java 11 HttpClient instance to use for executing HTTP requests.
+ * @property scope The CoroutineScope instance for executing coroutines.
+ *
+ */
 class Java11HttpClient(
     private val httpClient: HttpClient,
     private val scope: CoroutineScope
