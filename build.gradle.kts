@@ -16,6 +16,22 @@ tasks.dokkaHtmlMultiModule.configure {
 
 subprojects {
     apply(plugin = "maven-publish")
+    apply(plugin = "org.jetbrains.dokka")
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
+            jvmTarget = "17"
+        }
+    }
 
     publishing {
         publications {

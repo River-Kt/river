@@ -49,6 +49,7 @@ module:jdbc
 com.river.connector.rdbms.jdbc
 module:r2dbc
 com.river.connector.rdbms.r2dbc
+com.river.connector.rdbms.r2dbc.model
 module:debezium
 com.river.connector.red.hat.debezium
 com.river.connector.red.hat.debezium.model

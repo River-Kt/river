@@ -1,21 +1,30 @@
 package com.river.connector.rdbms.r2dbc
 
 import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import io.r2dbc.spi.ConnectionFactories
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.fold
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.withIndex
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactive.awaitFirst
 
 class R2dbcFlowExtTest : FeatureSpec({
     feature("Test statement execution") {
-        val connection = h2Client.awaitFirst()
+        val connection =
+            ConnectionFactories
+                .get("r2dbc:h2:mem:///testdb")
+                .create()
+                .awaitFirst()
+
+        beforeTest {
+            connection
+                .singleUpdate(
+                    """DROP TABLE IF EXISTS books;
+                    CREATE TABLE books (
+                        id int auto_increment,
+                        name varchar not null
+                    )""".trimIndent()
+                ).collect()
+        }
 
         scenario("Single update flow") {
             val size = 10
@@ -27,6 +36,25 @@ class R2dbcFlowExtTest : FeatureSpec({
                 .fold(0L) { acc, i -> acc + i } shouldBe size
 
             connection.singleUpdate("delete from books")
+                .first() shouldBe size
+        }
+
+        scenario("Batch update flow") {
+            val size = 10
+
+            val batchUpdateFlow =
+                connection
+                    .batchUpdate(
+                        sql = "insert into books (name) values (?)",
+                        upstream = (1..size).asFlow()
+                    ) { bind(0, "book $it") }
+
+            batchUpdateFlow
+                .mapRow { it["id"] }
+                .toList() shouldContainInOrder (1..10).toList()
+
+            connection
+                .singleUpdate("delete from books")
                 .first() shouldBe size
         }
 
@@ -53,7 +81,3 @@ class R2dbcFlowExtTest : FeatureSpec({
         }
     }
 })
-
-val h2Client = ConnectionFactories.get(
-    "r2dbc:h2:mem:///testdb;INIT=RUNSCRIPT%20FROM%20'src/test/resources/h2.sql'"
-).create()

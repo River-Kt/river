@@ -1,14 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka")
-}
-
-repositories {
-    mavenCentral()
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
 }
 
 dependencies {
