@@ -8,7 +8,7 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem
 fun server(
     username: String = "admin",
     password: String = "admin",
-    port: Int = 21,
+    port: Int = 0,
     homeDir: String = "/data"
 ): FakeFtpServer =
     FakeFtpServer().also { fakeFtpServer ->
@@ -21,11 +21,11 @@ fun server(
 inline fun <T> withServer(
     username: String = "admin",
     password: String = "admin",
-    port: Int = 21,
+    port: Int = 0,
     homeDir: String = "/data",
-    f: () -> T
+    f: (Int) -> T
 ): T {
     val server = server(username, password, port, homeDir)
     server.start()
-    return runCatching(f).also { server.stop() }.getOrThrow()
+    return runCatching { f(server.serverControlPort) }.also { server.stop() }.getOrThrow()
 }

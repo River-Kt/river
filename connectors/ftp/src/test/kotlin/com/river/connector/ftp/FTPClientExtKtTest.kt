@@ -10,15 +10,15 @@ import org.junit.jupiter.api.assertDoesNotThrow
 
 class FTPClientExtKtTest : FeatureSpec({
     feature("FTP operations as Flow") {
-        suspend fun client() =
-            connect("localhost") {
-                credentials {
-                    username = "admin"
-                    password = "admin"
-                }
-            }.single()
+        withServer { port ->
+            suspend fun client() =
+                connect("localhost", port) {
+                    credentials {
+                        username = "admin"
+                        password = "admin"
+                    }
+                }.single()
 
-        withServer {
             scenario("FTP connect works properly") {
                 assertDoesNotThrow { client() }
             }
