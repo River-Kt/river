@@ -1,9 +1,6 @@
 package com.river.core
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 fun CoroutineScope.tick(
@@ -11,7 +8,8 @@ fun CoroutineScope.tick(
     f: suspend () -> Unit
 ): Job =
     launch {
-        delay(intervalDuration)
-        f()
-        tick(intervalDuration, f)
+        while (isActive) {
+            delay(intervalDuration)
+            f()
+        }
     }

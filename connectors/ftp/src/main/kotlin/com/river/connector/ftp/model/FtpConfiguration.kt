@@ -1,4 +1,4 @@
-package com.river.connector.ftp
+package com.river.connector.ftp.model
 
 class FtpConfiguration(
     internal val host: String,

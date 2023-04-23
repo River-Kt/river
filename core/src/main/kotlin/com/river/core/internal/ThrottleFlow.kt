@@ -2,12 +2,10 @@ package com.river.core.internal
 
 import com.river.core.ThrottleStrategy
 import com.river.core.tick
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.sync.Semaphore
 import kotlin.time.Duration
 
@@ -20,7 +18,7 @@ internal class ThrottleFlow<T>(
 
     private val inner = flow {
         coroutineScope {
-            val tuple by lazy {
+            val (semaphore, job) =
                 Semaphore(elementsPerInterval)
                     .let { s ->
                         s to tick(intervalDuration = interval) {
@@ -28,24 +26,21 @@ internal class ThrottleFlow<T>(
                                 .forEach { _ -> s.release() }
                         }
                     }
-            }
-
-            fun semaphore() = tuple.first
-            fun job() = tuple.second
 
             upstream
-                .onCompletion { job().cancelAndJoin() }
                 .collect {
                     when (strategy) {
                         ThrottleStrategy.Suspend -> {
-                            semaphore().acquire()
+                            semaphore.acquire()
                             emit(it)
                         }
 
                         ThrottleStrategy.Drop ->
-                            if (semaphore().tryAcquire()) emit(it)
+                            if (semaphore.tryAcquire()) emit(it)
                     }
                 }
+
+            job.cancelAndJoin()
         }
     }
 

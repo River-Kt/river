@@ -1,6 +1,6 @@
 
 object Version {
-    const val Kotlin = "1.7.20"
+    const val Kotlin = "1.8.20"
     const val River = "0.0.1-SNAPSHOT"
     const val AwsSdk = "2.18.9"
     const val Coroutine = "1.6.4"
@@ -20,6 +20,7 @@ object Version {
     const val Debezium = "2.0.0.Final"
     const val Groovy = "4.0.6"
     const val MongoDB = "4.8.0"
-
+    const val ApacheFtpServer = "1.2.0"
+    const val MockFtpServer = "2.7.1"
     const val Kotest = "5.5.3"
 }

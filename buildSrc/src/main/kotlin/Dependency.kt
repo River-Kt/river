@@ -16,6 +16,9 @@ object Dependencies {
     val DependencyHandlerScope.Jdbc
         get() = project(mapOf("path" to ":connectors:rdbms:jdbc"))
 
+    val DependencyHandlerScope.File
+        get() = project(mapOf("path" to ":connectors:file"))
+
     val Coroutines =
         listOf(
             "core",
@@ -46,6 +49,10 @@ object Dependencies {
     }
 
     val CommonsNet = "commons-net:commons-net:${Version.CommonsNet}"
+
+    val ApacheFtpServer = "org.apache.ftpserver:ftpserver-core:${Version.ApacheFtpServer}"
+
+    val MockFtpServer = "org.mockftpserver:MockFtpServer:${Version.MockFtpServer}"
 
     val Twilio = "com.twilio.sdk:twilio:${Version.Twilio}"
 

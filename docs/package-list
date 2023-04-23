@@ -13,6 +13,7 @@ module:file
 com.river.connector.file
 module:ftp
 com.river.connector.ftp
+com.river.connector.ftp.model
 module:jms
 com.river.connector.jms
 com.river.connector.jms.model
