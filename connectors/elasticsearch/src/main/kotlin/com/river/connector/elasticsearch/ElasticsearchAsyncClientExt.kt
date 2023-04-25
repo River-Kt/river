@@ -42,7 +42,7 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
  *
  * @param upstream A Flow of Document<T> objects to be indexed asynchronously into Elasticsearch
  * @param parallelism Optional parameter that specifies the number of concurrent bulk requests that can be executed at a time. Default value is 1.
- * @param chunkStrategy Optional parameter that specifies the ChunkStrategy to be used for splitting the input stream into chunks. Default value is TimeWindow(100, 250.milliseconds).
+ * @param groupStrategy Optional parameter that specifies the ChunkStrategy to be used for splitting the input stream into chunks. Default value is TimeWindow(100, 250.milliseconds).
  *
  * @return A Flow of BulkResponseItem objects that represent the results of indexing each individual document
  *
@@ -66,10 +66,10 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
 fun <T> ElasticsearchAsyncClient.indexFlow(
     upstream: Flow<Document<T>>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds)
 ): Flow<BulkResponseItem> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { chunk ->
             BulkRequest.Builder()
                 .also { builder ->

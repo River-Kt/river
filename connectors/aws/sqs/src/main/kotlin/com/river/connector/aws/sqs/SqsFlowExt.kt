@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.*
-import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
 internal val SqsAsyncClient.logger: Logger
@@ -72,7 +71,7 @@ fun SqsAsyncClient.receiveMessagesFlow(
  * @param queueUrl The URL of the Amazon SQS queue to which messages will be sent.
  * @param upstream A [Flow] of [RequestMessage] objects to be sent to the specified SQS queue.
  * @param parallelism The number of concurrent send operations. Defaults to 1.
- * @param chunkStrategy Determines how to group messages for sending in batches. Defaults to [ChunkStrategy.TimeWindow].
+ * @param groupStrategy Determines how to group messages for sending in batches. Defaults to [GroupStrategy.TimeWindow].
  *
  * @return A [Flow] of [SendMessageBatchResponse] objects representing the results of sending messages in batches.
  *
@@ -92,10 +91,10 @@ fun SqsAsyncClient.sendMessageFlow(
     queueUrl: String,
     upstream: Flow<RequestMessage>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 ) = upstream
     .map { it.asMessageRequestEntry() }
-    .chunked(chunkStrategy)
+    .chunked(groupStrategy)
     .mapParallel(parallelism) { entries ->
         sendMessageBatch { it.queueUrl(queueUrl).entries(entries) }
             .await()
@@ -105,12 +104,12 @@ fun SqsAsyncClient.sendMessageFlow(
  * Creates a flow that changes the visibility of messages in an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
- * in parallel using [parallelism] and the specified [chunkStrategy].
+ * in parallel using [parallelism] and the specified [groupStrategy].
  *
  * @param queueUrl The URL of the SQS queue.
  * @param upstream A [Flow] of [MessageAcknowledgment] objects.
  * @param parallelism The level of parallelism for processing messages.
- * @param chunkStrategy The strategy to use when chunking messages for processing.
+ * @param groupStrategy The strategy to use when chunking messages for processing.
  * @return A [Flow] that emits pairs of [MessageAcknowledgment] and [ChangeMessageVisibilityBatchResponse].
  *
  * Example usage:
@@ -132,9 +131,9 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
     queueUrl: String,
     upstream: Flow<MessageAcknowledgment<ChangeMessageVisibility>>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 ) = upstream
-    .chunked(chunkStrategy)
+    .chunked(groupStrategy)
     .mapParallel(parallelism) { messages ->
         changeMessageVisibilityBatch {
             it.queueUrl(queueUrl)
@@ -158,12 +157,12 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
  * Creates a flow that deletes messages from an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects with a [Delete]
- * acknowledgment and processes them in parallel using [parallelism] and the specified [chunkStrategy].
+ * acknowledgment and processes them in parallel using [parallelism] and the specified [groupStrategy].
  *
  * @param queueUrl The URL of the SQS queue.
  * @param upstream A [Flow] of [MessageAcknowledgment] objects with a [Delete] acknowledgment.
  * @param parallelism The level of parallelism for processing messages.
- * @param chunkStrategy The strategy to use when chunking messages for processing.
+ * @param groupStrategy The strategy to use when chunking messages for processing.
  * @return A [Flow] that emits pairs of [MessageAcknowledgment] and [DeleteMessageBatchResponse].
  *
  * Example usage:
@@ -185,10 +184,10 @@ fun SqsAsyncClient.deleteMessagesFlow(
     queueUrl: String,
     upstream: Flow<MessageAcknowledgment<Delete>>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 ): Flow<Pair<MessageAcknowledgment<Delete>, DeleteMessageBatchResponse>> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { messages ->
             deleteMessageBatch {
                 logger.info("Deleting ${messages.size} messages from queue $queueUrl")
@@ -216,12 +215,12 @@ fun SqsAsyncClient.deleteMessagesFlow(
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
  * based on their acknowledgment type: [ChangeMessageVisibility], [Delete], or [Ignore].
- * The function processes acknowledgments in parallel using [parallelism] and the specified [chunkStrategy].
+ * The function processes acknowledgments in parallel using [parallelism] and the specified [groupStrategy].
  *
  * @param queueUrl The URL of the SQS queue.
  * @param upstream A [Flow] of [MessageAcknowledgment] objects.
  * @param parallelism The level of parallelism for processing messages.
- * @param chunkStrategy The strategy to use when chunking messages for processing.
+ * @param groupStrategy The strategy to use when chunking messages for processing.
  * @return A [Flow] of [AcknowledgmentResult] objects that contain the message, acknowledgment, and response.
  *
  * Example usage:
@@ -249,7 +248,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
     queueUrl: String,
     upstream: Flow<MessageAcknowledgment<out Acknowledgment>>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 ): Flow<AcknowledgmentResult<SdkResponse>> {
     val deleteMessageChannel: Channel<MessageAcknowledgment<Delete>> = Channel()
     val changeMessageVisibilityChannel: Channel<MessageAcknowledgment<ChangeMessageVisibility>> = Channel()
@@ -260,7 +259,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
             queueUrl,
             deleteMessageChannel.receiveAsFlow(),
             parallelism,
-            chunkStrategy
+            groupStrategy
         )
 
     val changeVisibilityFlow =
@@ -268,7 +267,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
             queueUrl,
             changeMessageVisibilityChannel.receiveAsFlow(),
             parallelism,
-            chunkStrategy
+            groupStrategy
         )
 
     val ignoreFlow =

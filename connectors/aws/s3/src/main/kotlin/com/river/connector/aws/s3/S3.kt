@@ -4,7 +4,6 @@ package com.river.connector.aws.s3
 
 import com.river.core.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.reactive.asFlow
@@ -15,7 +14,6 @@ import software.amazon.awssdk.core.async.AsyncResponseTransformer
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.*
 import software.amazon.awssdk.services.s3.model.CompletedPart.builder
-import java.util.*
 
 private const val ONE_KB = 1024
 private const val ONE_MB = ONE_KB * ONE_KB
@@ -196,49 +194,24 @@ fun S3AsyncClient.uploadSplit(
     parallelism: Int = 1,
     key: (Int) -> String
 ): Flow<S3Response> =
-    channelFlow {
-        coroutineScope {
-            var part = 1
-            var byteCounter = 0
-            val channel = Channel<ByteArray>(byteCounter)
-
-            suspend fun upload() =
-                if (splitEach <= FIVE_MB) {
-                    launch {
-                        send(putObject(bucket, key(part), channel.receiveAsFlow().take(splitEach / ONE_KB)))
-                    }
-                } else {
-                    upload(
-                        bucket = bucket,
-                        key = key(part),
-                        upstream = channel.receiveAsFlow().take(splitEach / ONE_KB),
-                        parallelism = parallelism
-                    ).collectAsync { send(it) }
-                }
-
-            var uploadJob = upload()
-
-            upstream
-                .chunked(ONE_KB)
-                .onCompletion { uploadJob.join() }
-                .collect {
-                    when (byteCounter) {
-                        splitEach -> {
-                            part++
-                            byteCounter = it.size
-                            uploadJob.join()
-                            uploadJob = upload()
-                        }
-
-                        else -> {
-                            byteCounter += it.size
-                        }
-                    }
-
-                    channel.send(it.toByteArray())
-                }
+    upstream
+        .chunked(ONE_KB)
+        .split(splitEach / ONE_KB)
+        .map { flow -> flow.map { it.toByteArray() } }
+        .withIndex()
+        .mapParallel(parallelism) { (part, bytes) ->
+            if (splitEach <= FIVE_MB) {
+                flowOf { putObject(bucket, key(part + 1), bytes) }
+            } else {
+                upload(
+                    bucket = bucket,
+                    key = key(part + 1),
+                    upstream = bytes,
+                    parallelism = parallelism
+                )
+            }
         }
-    }
+        .flattenConcat()
 
 /**
  * This function performs a multipart upload copy operation using the S3AsyncClient. It copies

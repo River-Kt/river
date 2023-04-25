@@ -9,9 +9,9 @@ import java.nio.charset.Charset
  * @return A new [Flow] of [ByteArray] converted from the original [Flow] of [Byte].
  */
 fun Flow<Byte>.asByteArray(
-    chunkStrategy: ChunkStrategy = ChunkStrategy.Count(8)
+    groupStrategy: GroupStrategy = GroupStrategy.Count(8)
 ): Flow<ByteArray> =
-    chunked(chunkStrategy)
+    chunked(groupStrategy)
         .map { it.toByteArray() }
 
 /**

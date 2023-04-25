@@ -7,7 +7,7 @@ import com.mongodb.client.result.InsertManyResult
 import com.mongodb.client.result.InsertOneResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
-import com.river.core.ChunkStrategy
+import com.river.core.GroupStrategy
 import com.river.core.chunked
 import com.river.core.mapParallel
 import kotlinx.coroutines.FlowPreview
@@ -46,7 +46,7 @@ fun <T> MongoCollection<T>.insert(
  * @param flow The flow of documents to insert.
  * @param parallelism The parallelism for this operation. Defaults to 1.
  * @param options The InsertManyOptions to use when inserting the documents. Defaults to InsertManyOptions().
- * @param chunkStrategy The strategy for chunking the documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
+ * @param groupStrategy The strategy for chunking the documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
  *
  * @return A flow of InsertManyResult objects.
  *
@@ -62,10 +62,10 @@ fun <T> MongoCollection<T>.insertMany(
     flow: Flow<T>,
     parallelism: Int = 1,
     options: InsertManyOptions = InsertManyOptions(),
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 500.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 500.milliseconds)
 ): Flow<InsertManyResult> =
     flow
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { insertMany(it, options).asFlow() }
         .flattenConcat()
 
@@ -99,7 +99,7 @@ fun MongoCollection<Document>.update(
  * @param flow The flow of update documents.
  * @param filter The BSON filter to apply when updating documents.
  * @param parallelism The parallelism for this operation. Defaults to 1.
- * @param chunkStrategy The strategy for chunking the update documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
+ * @param groupStrategy The strategy for chunking the update documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
  *
  * @return A flow of UpdateResult objects.
  *
@@ -116,10 +116,10 @@ fun MongoCollection<Document>.updateMany(
     flow: Flow<Document>,
     filter: Bson,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 500.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 500.milliseconds)
 ): Flow<UpdateResult> =
     flow
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { updateMany(filter, it).asFlow() }
         .flattenConcat()
 

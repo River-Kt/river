@@ -2,8 +2,8 @@
 
 package com.river.connector.rdbms.jdbc
 
-import com.river.core.ChunkStrategy
-import com.river.core.ChunkStrategy.*
+import com.river.core.GroupStrategy
+import com.river.core.GroupStrategy.*
 import com.river.core.chunked
 import com.river.core.mapParallel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -90,13 +90,13 @@ fun <T> Jdbc.singleUpdate(
 
 /**
  * Executes a batch update for the given SQL statement using the provided [upstream] Flow as input.
- * The batch update is performed in chunks, as specified by the [chunkStrategy] parameter, and can be executed in parallel
+ * The batch update is performed in chunks, as specified by the [groupStrategy] parameter, and can be executed in parallel
  * using the specified [parallelism] level.
  *
  * @param sql the SQL statement to be executed
  * @param upstream the Flow of input elements to be used in the batch update
  * @param parallelism the level of parallelism to be used in the batch update (default: 1)
- * @param chunkStrategy the chunking strategy to be used for processing the input elements (default: TimeWindow(100, 250.milliseconds))
+ * @param groupStrategy the chunking strategy to be used for processing the input elements (default: TimeWindow(100, 250.milliseconds))
  * @param prepare a function that prepares the PreparedStatement using the current input element (default: {})
  * @return A [Flow] of the number of rows affected by the update for each batch.
  *
@@ -115,11 +115,11 @@ fun <T> Jdbc.batchUpdate(
     sql: String,
     upstream: Flow<T>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = TimeWindow(100, 250.milliseconds),
+    groupStrategy: GroupStrategy = TimeWindow(100, 250.milliseconds),
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { chunk ->
             connectionPool.use {
                 IO {

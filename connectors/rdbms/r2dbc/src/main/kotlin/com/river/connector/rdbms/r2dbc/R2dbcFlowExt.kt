@@ -3,7 +3,7 @@
 package com.river.connector.rdbms.r2dbc
 
 import com.river.connector.rdbms.r2dbc.model.Returning
-import com.river.core.ChunkStrategy
+import com.river.core.GroupStrategy
 import com.river.core.chunked
 import com.river.core.mapParallel
 import io.r2dbc.spi.Connection
@@ -181,7 +181,7 @@ fun <T> Flow<Result>.mapRow(f: suspend (Row) -> T): Flow<T> =
  * @param upstream The flow of items to insert/update
  * @param returning The type of generated values to return (if any)
  * @param parallelism The number of parallel database connections to use
- * @param chunkStrategy The chunking strategy to use when batching updates
+ * @param groupStrategy The chunking strategy to use when batching updates
  * @param prepare A function to prepare the SQL statement before executing it for a given item from the upstream flow
  *
  * @return a [Flow] of [Result]s
@@ -212,11 +212,11 @@ fun <T> Connection.batchUpdate(
     upstream: Flow<T>,
     returning: Returning = Returning.Default,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds),
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds),
     prepare: Statement.(T) -> Unit = {}
 ): Flow<Result> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { items ->
             createStatement(sql)
                 .let {
@@ -243,13 +243,13 @@ fun <T> Connection.batchUpdate(
         .flattenConcat()
 
 /**
- * Executes a batch update for a specified [upstream] flow of items using a given [chunkStrategy] and [parallelism].
+ * Executes a batch update for a specified [upstream] flow of items using a given [groupStrategy] and [parallelism].
  * The [query] function transforms each item in the [upstream] flow into a respective SQL query string.
  * Returns a flow of long values representing the number of rows updated in the database for each chunk.
  *
  * @param upstream The flow of items to insert/update
  * @param parallelism The number of parallel database connections to use
- * @param chunkStrategy The chunking strategy to use when batching updates
+ * @param groupStrategy The chunking strategy to use when batching updates
  * @param query the function that transforms each item into a SQL query
  *
  * @return a [Flow] of [Result]s
@@ -274,11 +274,11 @@ fun <T> Connection.batchUpdate(
 fun <T> Connection.batchUpdate(
     upstream: Flow<T>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(100, 250.milliseconds),
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds),
     query: (T) -> String
 ): Flow<Result> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) { items ->
             createBatch()
                 .also { batch -> items.forEach { batch.add(query(it)) } }

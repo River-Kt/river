@@ -5,7 +5,7 @@ import com.mongodb.reactivestreams.client.MongoClients
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
-import com.river.core.ChunkStrategy
+import com.river.core.GroupStrategy
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -29,7 +29,7 @@ class MongoCollectionExtTest : FeatureSpec({
             (1..numberOfRecords)
                 .asFlow()
                 .map { Document(mapOf("number" to it)) }
-                .let { collection.insertMany(it, 1, chunkStrategy = ChunkStrategy.Count(1000)) }
+                .let { collection.insertMany(it, 1, groupStrategy = GroupStrategy.Count(1000)) }
                 .collect()
 
             collection.countDocuments().awaitFirstOrNull() shouldBe numberOfRecords

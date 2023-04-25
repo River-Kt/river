@@ -167,7 +167,7 @@ class FlowExtKtTest : FeatureSpec({
         scenario("should chunk the items based on the time window") {
             flowOf(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
                 .onEach { delay(250.milliseconds) }
-                .windowedChunk(10, 400.milliseconds)
+                .chunked(10, 400.milliseconds)
                 .toList() shouldBe listOf(listOf(2, 4), listOf(6, 8), listOf(10, 12), listOf(14, 16), listOf(18, 20))
         }
     }

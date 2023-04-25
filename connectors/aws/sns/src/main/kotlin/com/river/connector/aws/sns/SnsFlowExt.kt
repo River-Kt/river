@@ -1,6 +1,6 @@
 package com.river.connector.aws.sns
 
-import com.river.core.ChunkStrategy
+import com.river.core.GroupStrategy
 import com.river.core.chunked
 import com.river.core.mapParallel
 import kotlinx.coroutines.flow.Flow
@@ -17,12 +17,12 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * This function takes an [upstream] flow of [PublishBatchRequestEntry] objects and publishes
  * them to an SNS topic specified by [topicArn]. The function processes messages in parallel
- * using [parallelism] and the specified [chunkStrategy].
+ * using [parallelism] and the specified [groupStrategy].
  *
  * @param topicArn The ARN of the SNS topic.
  * @param upstream A [Flow] of [PublishBatchRequestEntry] objects.
  * @param parallelism The level of parallelism for processing messages.
- * @param chunkStrategy The strategy to use when chunking messages for processing.
+ * @param groupStrategy The strategy to use when chunking messages for processing.
  * @return A [Flow] of [PublishBatchResponse] objects.
  *
  * Example usage:
@@ -45,10 +45,10 @@ fun SnsAsyncClient.publishFlow(
     topicArn: String,
     upstream: Flow<PublishBatchRequestEntry>,
     parallelism: Int = 1,
-    chunkStrategy: ChunkStrategy = ChunkStrategy.TimeWindow(10, 250.milliseconds)
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 ): Flow<PublishBatchResponse> =
     upstream
-        .chunked(chunkStrategy)
+        .chunked(groupStrategy)
         .mapParallel(parallelism) {
             publishBatch { builder -> builder.publishBatchRequestEntries(it).topicArn(topicArn) }
                 .await()

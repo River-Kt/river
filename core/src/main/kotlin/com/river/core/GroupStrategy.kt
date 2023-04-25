@@ -2,11 +2,11 @@ package com.river.core
 
 import kotlin.time.Duration
 
-sealed interface ChunkStrategy {
-    class Count(val size: Int) : ChunkStrategy
+sealed interface GroupStrategy {
+    class Count(val size: Int) : GroupStrategy
 
     class TimeWindow(
         val size: Int,
         val duration: Duration
-    ) : ChunkStrategy
+    ) : GroupStrategy
 }
