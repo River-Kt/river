@@ -1,5 +1,6 @@
 package com.river.connector.aws.sns
 
+import com.river.connector.aws.sns.model.PublishMessageRequest
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -15,24 +16,23 @@ import java.net.URI
 class SnsFlowExtKtTest : FeatureSpec({
     feature("SNS publish flow") {
         with(snsClient) {
-            val topic = createTopic { it.name("topic_sample") }.await().topicArn()
-
             scenario("Successful message publishing") {
                 val totalSize = 20
 
                 val flow = (1..totalSize).asFlow().map {
-                    PublishRequestEntry(it.toString())
+                    PublishMessageRequest(it.toString())
                 }
 
                 snsClient
-                    .publishFlow(topic, flow)
-                    .map { it.successful() }
-                    .flatten()
+                    .publishFlow(flow) {
+                        createTopic { it.name("topic_sample") }
+                            .await()
+                            .topicArn()
+                    }
                     .toList() shouldHaveSize totalSize
             }
         }
     }
-
 })
 
 val snsClient: SnsAsyncClient =

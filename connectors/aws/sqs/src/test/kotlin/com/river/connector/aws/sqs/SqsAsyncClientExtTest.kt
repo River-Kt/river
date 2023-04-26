@@ -3,7 +3,7 @@ package com.river.connector.aws.sqs
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import com.river.connector.aws.sqs.model.Acknowledgment
-import com.river.connector.aws.sqs.model.RequestMessage
+import com.river.connector.aws.sqs.model.SendMessageRequest
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -18,6 +18,8 @@ import software.amazon.awssdk.services.sqs.model.QueueAttributeName.APPROXIMATE_
 import java.net.URI
 
 class SqsFlowExtKtTest : FeatureSpec({
+    val queueName = "queue-test"
+
     with(sqsClient) {
         feature("SQS as stream") {
             suspend fun purge() =
@@ -26,7 +28,7 @@ class SqsFlowExtKtTest : FeatureSpec({
                     .queueUrls()
                     .map { url -> purgeQueue { it.queueUrl(url) }.await() }
 
-            val queue = createQueue { it.queueName("queue-test") }.await().queueUrl()
+            val queue = createQueue { it.queueName(queueName) }.await().queueUrl()
 
             suspend fun count() =
                 getQueueAttributes { it.queueUrl(queue).attributeNames(QueueAttributeName.ALL) }
@@ -39,8 +41,8 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { RequestMessage("hello, $it!") }
-                    .let { sendMessageFlow(queue, it) }
+                    .map { SendMessageRequest("hello, $it!") }
+                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
                     .collect()
 
                 count() shouldBe 100
@@ -51,12 +53,12 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { RequestMessage("hello, $it!") }
-                    .let { sendMessageFlow(queue, it) }
+                    .map { SendMessageRequest("hello, $it!") }
+                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
                     .collect()
 
                 val messages =
-                    receiveMessagesFlow(stopOnEmptyList = true) {
+                    receiveMessagesAsFlow(stopOnEmptyList = true) {
                         queueUrl = queue
                         waitTimeSeconds = 0
                     }.toList()
@@ -73,17 +75,17 @@ class SqsFlowExtKtTest : FeatureSpec({
 
                 (1..100)
                     .asFlow()
-                    .map { RequestMessage("hello, $it!") }
-                    .let { sendMessageFlow(queue, it) }
+                    .map { SendMessageRequest("hello, $it!") }
+                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
                     .collect()
 
                 val messages =
-                    receiveMessagesFlow(stopOnEmptyList = true) {
+                    receiveMessagesAsFlow(stopOnEmptyList = true) {
                         queueUrl = queue
                         waitTimeSeconds = 0
                     }
                     .map { it.acknowledgeWith(Acknowledgment.Delete) }
-                    .let { acknowledgmentMessageFlow(queue, it) }
+                    .let { acknowledgmentMessageFlow(it) { getQueueUrlByName(queueName)} }
                     .toList()
 
                 messages.size shouldBe 100
