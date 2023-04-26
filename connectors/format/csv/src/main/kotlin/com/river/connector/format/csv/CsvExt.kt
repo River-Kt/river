@@ -1,6 +1,5 @@
 package com.river.connector.format.csv
 
-import com.river.core.lines
 import kotlinx.coroutines.flow.*
 
 /**

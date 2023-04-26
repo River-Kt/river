@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
@@ -11,7 +13,8 @@ repositories {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-    outputDirectory.set(project.file("docs"))
+    outputDirectory.set(file("docs"))
+    moduleName.set(project.name)
 }
 
 subprojects {
@@ -30,6 +33,19 @@ subprojects {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
             jvmTarget = "17"
+        }
+    }
+
+    tasks.withType<Jar> {
+        val joinToString = project.path.replaceFirst(":", "").split(":").joinToString(".")
+        archiveBaseName.set(joinToString)
+    }
+
+    tasks.dokkaHtml.configure {
+        dokkaSourceSets {
+            configureEach {
+                samples.from("src/sample/kotlin")
+            }
         }
     }
 

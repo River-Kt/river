@@ -1,3 +1,4 @@
+import Dependencies.File
 import Dependencies.RiverCore
 
 plugins {
@@ -6,13 +7,8 @@ plugins {
 
 dependencies {
     implementation(RiverCore)
-    implementation(project(":connectors:file"))
+    implementation(File)
+    Dependencies.Common.forEach { implementation(it) }
 
-    Dependencies.Coroutines.forEach { implementation(it) }
-
-    compileOnly("org.slf4j:slf4j-api:${Version.Slf4j}")
-
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("io.kotest:kotest-runner-junit5:${Version.Kotest}")
+    Dependencies.CommonTest.forEach { testImplementation(it) }
 }

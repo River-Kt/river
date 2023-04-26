@@ -27,7 +27,6 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-//    implementation("ch.qos.logback:logback-classic:1.2.11")
 
     testImplementation("io.kotest:kotest-runner-junit5:${Version.Kotest}")
 }
