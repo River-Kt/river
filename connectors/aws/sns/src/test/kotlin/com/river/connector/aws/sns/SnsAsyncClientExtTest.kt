@@ -3,8 +3,6 @@ package com.river.connector.aws.sns
 import com.river.connector.aws.sns.model.PublishMessageRequest
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.shouldBe
-import com.river.core.flatten
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
