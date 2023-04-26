@@ -36,6 +36,7 @@ module:ses
 com.river.connector.aws.sqs
 module:sns
 com.river.connector.aws.sns
+com.river.connector.aws.sns.model
 module:sqs
 com.river.connector.aws.sqs
 com.river.connector.aws.sqs.model

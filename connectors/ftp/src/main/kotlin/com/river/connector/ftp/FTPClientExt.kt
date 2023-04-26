@@ -160,11 +160,16 @@ fun FTPClient.download(
  */
 fun FTPClient.upload(
     remotePath: String,
-    content: Flow<ByteArray>
+    content: Flow<ByteArray>,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): Flow<Unit> =
     flow {
         logger.info("Uploading the file to $remotePath...")
-        content.asInputStream().use { storeFile(remotePath, it) }
+
+        content
+            .asInputStream(dispatcher = dispatcher)
+            .use { storeFile(remotePath, it) }
+
         logger.info("Done uploading.")
         emit(Unit)
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(dispatcher)
