@@ -7,6 +7,7 @@ plugins {
     id("signing")
     id("io.github.gradle-nexus.publish-plugin") apply false
     `java-library`
+    id("org.jreleaser")
 }
 
 repositories {
@@ -22,6 +23,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "java-library")
+    apply(plugin = "signing")
 
     java {
         withJavadocJar()
@@ -58,6 +60,14 @@ subprojects {
     }
 
     publishing {
+        repositories {
+            maven {
+                val releasesRepoUrl = uri(layout.buildDirectory.dir("repos/releases"))
+                val snapshotsRepoUrl = uri(layout.buildDirectory.dir("repos/snapshots"))
+                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            }
+        }
+
         publications {
             create<MavenPublication>("maven") {
                 groupId = "com.river"
@@ -99,5 +109,9 @@ subprojects {
                 }
             }
         }
+    }
+
+    signing {
+        sign(publishing.publications["maven"])
     }
 }
