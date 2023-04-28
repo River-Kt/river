@@ -4,7 +4,7 @@ pluginManagement {
         id("org.jetbrains.dokka") version ("1.8.10")
         id("maven-publish")
         id("signing")
-        id("org.jreleaser") version "1.5.1"
+        id("org.jreleaser") version "1.4.0"
         id("io.github.gradle-nexus.publish-plugin") version ("1.3.0")
     }
 }
