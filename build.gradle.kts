@@ -70,7 +70,7 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = "com.river"
-                version = "0.0.1"
+                version = "1.0.0-alpha01"
                 artifactId = fullname
 
                 afterEvaluate {
