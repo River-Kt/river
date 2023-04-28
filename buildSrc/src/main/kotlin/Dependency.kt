@@ -5,7 +5,7 @@ object Dependencies {
         get() = project(mapOf("path" to ":core"))
 
     val DependencyHandlerScope.AwsHttp11Spi
-        get() = project(mapOf("path" to ":connector:aws:java-11-http-spi"))
+        get() = project(mapOf("path" to connector("aws-java-11-http-spi")))
 
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":utils:http"))
@@ -14,10 +14,14 @@ object Dependencies {
         get() = project(mapOf("path" to ":utils:pool"))
 
     val DependencyHandlerScope.Jdbc
-        get() = project(mapOf("path" to ":connector:rdbms:jdbc"))
+        get() = project(mapOf("path" to connector("rdbms-jdbc")))
 
     val DependencyHandlerScope.File
-        get() = project(mapOf("path" to ":connector:file"))
+        get() = project(mapOf("path" to ":connector:connector-file"))
+
+
+    fun connector(name: String) =
+        ":connector:connector-${name.split("-").first()}:connector-$name"
 
     val Coroutines =
         listOf(

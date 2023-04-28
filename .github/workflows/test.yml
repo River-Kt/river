@@ -1,15 +1,14 @@
-name: Tests
+name: Run lint and tests
 
 on:
+  workflow_call:
+
   push:
     branches-ignore:
       - main
 
-permissions:
-  contents: read
-
 jobs:
-  build:
+  run:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -22,6 +21,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Build with Gradle
+    - name: Run tests
+      uses: gradle/gradle-build-action@v2
       with:
-        arguments: ./gradlew test
+        arguments: test --parallel

@@ -1,5 +1,4 @@
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
-import org.jreleaser.model.Active
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 plugins {
     kotlin("jvm")
@@ -7,7 +6,7 @@ plugins {
     id("maven-publish")
     id("io.github.gradle-nexus.publish-plugin") apply false
     `java-library`
-    id("org.jreleaser")
+    signing
 }
 
 repositories {
@@ -25,9 +24,15 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "java-library")
-    apply(plugin = "org.jreleaser")
+    apply(plugin = "signing")
 
     version = "0.0.1-alpha01"
+
+    val fullname =
+        project
+            .path
+            .replaceFirst(":", "")
+            .split(":").joinToString("-")
 
     java {
         withJavadocJar()
@@ -49,12 +54,6 @@ subprojects {
         }
     }
 
-    val fullname =
-        project
-            .path
-            .replaceFirst(":", "")
-            .split(":").joinToString(".")
-
     tasks.dokkaHtml.configure {
         dokkaSourceSets {
             configureEach {
@@ -66,16 +65,25 @@ subprojects {
     publishing {
         repositories {
             maven {
-                val releasesRepoUrl = uri(layout.buildDirectory.dir("repos/releases"))
-                val snapshotsRepoUrl = uri(layout.buildDirectory.dir("repos/snapshots"))
-                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                url = uri(layout.buildDirectory.dir("staging-deploy"))
+            }
+        }
+
+        repositories {
+            maven {
+                name = "OSSRH"
+                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                credentials {
+                    username = System.getenv("RELEASER_NEXUS2_USERNAME")
+                    password = System.getenv("RELEASER_NEXUS2_PASSWORD")
+                }
             }
         }
 
         publications {
             create<MavenPublication>("maven") {
                 groupId = "com.river"
-                artifactId = fullname
+                artifactId = project.name
                 version = "${project.version}"
 
                 afterEvaluate {
@@ -115,56 +123,13 @@ subprojects {
         }
     }
 
-    jreleaser {
-        project {
-            description.set("Extensions & Enterprise Integrations for Kotlin flows.")
-            copyright.set("MIT License")
-            author("gabfssilva")
-            inceptionYear.set("2023")
-        }
+    signing {
+        val keyId = System.getenv("SIGNING_KEY_ID")
+        val password = System.getenv("SIGNING_PASSWORD")
+        val secretKey = System.getenv("SIGNING_SECRET_FILE")
 
-        signing {
-            active.set(Active.ALWAYS)
-            armored.set(true)
-        }
+        useInMemoryPgpKeys(keyId, secretKey, password)
 
-        release {
-            github {
-                repoOwner.set("gabfssilva")
-                overwrite.set(true)
-
-                changelog {
-                    formatted.set(Active.ALWAYS)
-                    preset.set("conventional-commits")
-                }
-            }
-        }
-
-        assemble {
-            javaArchive {
-                create("app") {
-                    active.set(Active.ALWAYS)
-                    exported.set(true)
-
-                    mainJar {
-                        path.set(file("build/libs/{{distributionName}}-{{projectVersion}}.jar"))
-                    }
-                }
-            }
-        }
-
-        deploy {
-            maven {
-                nexus2 {
-                    create("maven-central") {
-                        active.set(Active.ALWAYS)
-                        url.set("https://s01.oss.sonatype.org/service/local")
-                        snapshotUrl.set("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                        closeRepository.set(false)
-                        releaseRepository.set(true)
-                    }
-                }
-            }
-        }
+        sign(publishing.publications["maven"])
     }
 }

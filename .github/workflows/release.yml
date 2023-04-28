@@ -1,0 +1,53 @@
+name: Assembly and release
+
+on:
+  workflow_call:
+    secrets:
+      SIGNING_KEY_ID:
+        required: true
+      SIGNING_PASSWORD:
+        required: true
+      SIGNING_SECRET_FILE:
+        required: true
+      RELEASER_NEXUS2_USERNAME:
+        required: true
+      RELEASER_NEXUS2_PASSWORD:
+        required: true
+
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Assembly
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: jar sourcesJar javadocJar
+      - name: Sign maven publication
+        uses: gradle/gradle-build-action@v2
+        env:
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_SECRET_FILE: ${{ secrets.SIGNING_SECRET_FILE }}
+        with:
+          arguments: sign
+      - name: Publish to Maven Central
+        uses: gradle/gradle-build-action@v2
+        env:
+          RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
+          RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
+        with:
+          arguments: publish

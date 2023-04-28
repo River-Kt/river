@@ -4,7 +4,6 @@ pluginManagement {
         id("org.jetbrains.dokka") version ("1.8.10")
         id("maven-publish")
         id("signing")
-        id("org.jreleaser") version "1.5.1"
         id("io.github.gradle-nexus.publish-plugin") version ("1.3.0")
     }
 }
@@ -43,8 +42,16 @@ include(
 )
 
 fun replaceConnectorsToSingular(project: ProjectDescriptor) {
-    project.name = project.name.replace("connectors", "connector")
-    project.children.forEach { replaceConnectorsToSingular(it) }
+    project.name =
+        project
+            .path
+            .replaceFirst(":", "")
+            .replace(":", "-")
+            .replace("connectors", "connector")
+
+    project.children.forEach {
+        replaceConnectorsToSingular(it)
+    }
 }
 
 replaceConnectorsToSingular(project(":connectors"))
