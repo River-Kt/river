@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import org.jreleaser.model.Active
 
 plugins {
@@ -17,6 +18,8 @@ tasks.dokkaHtmlMultiModule.configure {
     outputDirectory.set(file("docs"))
     moduleName.set(project.name)
 }
+
+version = "0.0.1-alpha01"
 
 subprojects {
     apply(plugin = "maven-publish")
@@ -113,9 +116,41 @@ subprojects {
     }
 
     jreleaser {
+        project {
+            description.set("Extensions & Enterprise Integrations for Kotlin flows.")
+            copyright.set("MIT License")
+            author("gabfssilva")
+            inceptionYear.set("2023")
+        }
+
         signing {
             active.set(Active.ALWAYS)
             armored.set(true)
+        }
+
+        release {
+            github {
+                repoOwner.set("gabfssilva")
+                overwrite.set(true)
+
+                changelog {
+                    formatted.set(Active.ALWAYS)
+                    preset.set("conventional-commits")
+                }
+            }
+        }
+
+        assemble {
+            javaArchive {
+                create("app") {
+                    active.set(Active.ALWAYS)
+                    exported.set(true)
+
+                    mainJar {
+                        path.set(file("build/libs/{{distributionName}}-{{projectVersion}}.jar"))
+                    }
+                }
+            }
         }
 
         deploy {
