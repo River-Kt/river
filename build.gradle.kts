@@ -109,11 +109,11 @@ subprojects {
         }
     }
 
-    signing {
-        val keyId = System.getenv("SIGNING_KEY_ID")
-        val password = System.getenv("SIGNING_PASSWORD")
-        val secretKey = System.getenv("SIGNING_SECRET_FILE")
+    val keyId by lazy { System.getenv("SIGNING_KEY_ID") }
+    val password by lazy { System.getenv("SIGNING_PASSWORD") }
+    val secretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
 
+    signing {
         useInMemoryPgpKeys(keyId, secretKey, password)
 
         sign(publishing.publications["maven"])
@@ -123,6 +123,12 @@ subprojects {
     tasks.javadoc {
         if (JavaVersion.current().isJava9Compatible) {
             (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
+    }
+
+    tasks.withType<Sign>().configureEach {
+        onlyIf {
+            keyId != null && password != null && secretKey != null
         }
     }
 }

@@ -24,4 +24,4 @@ jobs:
       - name: Build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build jar sourcesJar javadocJar -x test
+          arguments: build -x test
