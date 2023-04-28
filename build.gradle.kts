@@ -24,6 +24,8 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jreleaser")
 
+    version = "0.0.1-alpha01"
+
     java {
         withJavadocJar()
         withSourcesJar()
@@ -70,8 +72,8 @@ subprojects {
         publications {
             create<MavenPublication>("maven") {
                 groupId = "com.river"
-                version = "1.0.0-alpha01"
                 artifactId = fullname
+                version = "${project.version}"
 
                 afterEvaluate {
                     from(components["kotlin"])
