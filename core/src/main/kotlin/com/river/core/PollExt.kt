@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.*
  * ```
  *  suspend fun fetchData(): List<Data> = ... // fetch data from somewhere
  *
- *  poll(ParallelismStrategy.increaseByOne(1, 4), stopOnEmptyList = true) { fetchData() }
+ *  poll(ParallelismStrategy.increaseByOne(4), stopOnEmptyList = true) { fetchData() }
  *      .collect { println(it) }
  * ```
  */
