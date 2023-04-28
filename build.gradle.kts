@@ -28,12 +28,6 @@ subprojects {
 
     version = "0.0.1-alpha01"
 
-    val fullname =
-        project
-            .path
-            .replaceFirst(":", "")
-            .split(":").joinToString("-")
-
     java {
         withJavadocJar()
         withSourcesJar()
@@ -84,20 +78,17 @@ subprojects {
                     from(components["kotlin"])
                 }
 
-                versionMapping {
-                    usage("java-api") {
-                        fromResolutionOf("runtimeClasspath")
-                    }
-                    usage("java-runtime") {
-                        fromResolutionResult()
-                    }
-                }
-
                 pom {
                     name.set(project.name)
                     description.set("Extensions & Enterprise Integrations for Kotlin flows.")
 
                     url.set("https://river-kt.com")
+
+                    scm {
+                        connection.set("scm:git:git:github.com/River-Kt/river.git")
+                        developerConnection.set("scm:git:ssh://github.com/River-Kt/river.git")
+                        url.set("https://github.com/River-Kt/river")
+                    }
 
                     licenses {
                         license {
@@ -126,5 +117,12 @@ subprojects {
         useInMemoryPgpKeys(keyId, secretKey, password)
 
         sign(publishing.publications["maven"])
+        sign(tasks["javadocJar"])
+    }
+
+    tasks.javadoc {
+        if (JavaVersion.current().isJava9Compatible) {
+            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+        }
     }
 }
