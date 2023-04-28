@@ -1,6 +1,6 @@
 package com.river.core
 
-import com.river.core.internal.Split
+import com.river.core.internal.SplitFlow
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 
@@ -50,7 +50,7 @@ import kotlin.time.Duration
  */
 fun <T> Flow<T>.split(
     strategy: GroupStrategy
-): Flow<Flow<T>> = Split(this, strategy)
+): Flow<Flow<T>> = SplitFlow(this, strategy)
 
 /**
  * The [split] function is used to group the elements emitted by the current [Flow] into smaller Flows based a max number of items.

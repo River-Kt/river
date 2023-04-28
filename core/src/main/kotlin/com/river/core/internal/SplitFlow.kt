@@ -5,31 +5,31 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.RENDEZVOUS
 import kotlinx.coroutines.flow.*
 
-internal class Split<T>(
+internal class SplitFlow<T>(
     private val upstream: Flow<T>,
     private val strategy: GroupStrategy
 ) : Flow<Flow<T>> {
     sealed interface Strategy<S : GroupStrategy> {
         companion object {
-            fun <T> chunkedFlow(
+            fun <T> splitFlow(
                 strategy: GroupStrategy,
                 upstream: Flow<T>
             ) = when (strategy) {
                 is GroupStrategy.Count ->
-                    Count.chunkedFlow(strategy, upstream)
+                    Count.splitFlow(strategy, upstream)
 
                 is GroupStrategy.TimeWindow ->
-                    TimeWindow.chunkedFlow(strategy, upstream)
+                    TimeWindow.splitFlow(strategy, upstream)
             }
         }
 
-        fun <T> chunkedFlow(
+        fun <T> splitFlow(
             strategy: S,
             upstream: Flow<T>
         ): Flow<Flow<T>>
 
         object Count : Strategy<GroupStrategy.Count> {
-            override fun <T> chunkedFlow(
+            override fun <T> splitFlow(
                 strategy: GroupStrategy.Count,
                 upstream: Flow<T>
             ): Flow<Flow<T>> =
@@ -68,7 +68,7 @@ internal class Split<T>(
         }
 
         object TimeWindow : Strategy<GroupStrategy.TimeWindow> {
-            override fun <T> chunkedFlow(
+            override fun <T> splitFlow(
                 strategy: GroupStrategy.TimeWindow,
                 upstream: Flow<T>
             ): Flow<Flow<T>> =
@@ -89,7 +89,7 @@ internal class Split<T>(
 
     override suspend fun collect(collector: FlowCollector<Flow<T>>): Unit =
         Strategy
-            .chunkedFlow(strategy, upstream)
+            .splitFlow(strategy, upstream)
             .buffer(RENDEZVOUS)
             .collect(collector)
 }

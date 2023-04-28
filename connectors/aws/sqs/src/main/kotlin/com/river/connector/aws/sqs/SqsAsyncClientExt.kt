@@ -46,25 +46,19 @@ internal val SqsAsyncClient.logger: Logger
  * ```
  */
 fun SqsAsyncClient.receiveMessagesAsFlow(
-    maxParallelism: Int = 1,
+    parallelism: ParallelismStrategy = ParallelismStrategy.disabled,
     stopOnEmptyList: Boolean = false,
-    minimumParallelism: Int = 1,
-    increaseStrategy: ParallelismIncreaseStrategy = ParallelismIncreaseStrategy.ByOne,
     builder: suspend ReceiveMessageRequestBuilder.() -> Unit
 ): Flow<Message> =
     flow {
         val request = ReceiveMessageRequestBuilder().also { builder(it) }.build()
 
-        val elements = poll(
-            maxParallelism = maxParallelism,
-            stopOnEmptyList = stopOnEmptyList,
-            minimumParallelism = minimumParallelism,
-            increaseStrategy = increaseStrategy
-        ) {
-            receiveMessage(request)
-                .await()
-                .messages()
-        }
+        val elements =
+            poll(parallelism, stopOnEmptyList) {
+                receiveMessage(request)
+                    .await()
+                    .messages()
+            }
 
         emitAll(elements)
     }
@@ -126,7 +120,7 @@ fun SqsAsyncClient.sendMessageFlow(
                         id = it.id(),
                         code = it.code(),
                         message = it.message(),
-                        senderFault =  it.senderFault(),
+                        senderFault = it.senderFault(),
                         internalBatchResponse = response
                     )
                 }

@@ -4,7 +4,7 @@ import com.azure.storage.queue.QueueAsyncClient
 import com.azure.storage.queue.models.QueueMessageItem
 import com.azure.storage.queue.models.SendMessageResult
 import com.river.connector.azure.queue.storage.model.SendMessageRequest
-import com.river.core.ParallelismIncreaseStrategy
+import com.river.core.ParallelismStrategy
 import com.river.core.mapParallel
 import com.river.core.poll
 import kotlinx.coroutines.flow.Flow
@@ -38,19 +38,12 @@ import kotlin.time.toJavaDuration
  * ```
  */
 fun QueueAsyncClient.receiveMessagesAsFlow(
-    maxParallelism: Int = 1,
+    parallelism: ParallelismStrategy = ParallelismStrategy.disabled,
     pollSize: Int = 32,
     visibilityTimeout: Duration = 30.seconds,
     stopOnEmptyList: Boolean = false,
-    minimumParallelism: Int = 1,
-    increaseStrategy: ParallelismIncreaseStrategy = ParallelismIncreaseStrategy.ByOne
 ): Flow<QueueMessageItem> =
-    poll(
-        maxParallelism = maxParallelism,
-        stopOnEmptyList = stopOnEmptyList,
-        minimumParallelism = minimumParallelism,
-        increaseStrategy = increaseStrategy
-    ) {
+    poll(parallelism, stopOnEmptyList) {
         receiveMessages(pollSize, visibilityTimeout.toJavaDuration())
             .asFlow()
             .toList()

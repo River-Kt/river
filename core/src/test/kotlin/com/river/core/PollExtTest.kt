@@ -1,5 +1,7 @@
 package com.river.core
 
+import com.river.core.ParallelismStrategy.Companion.increaseByOne
+import com.river.core.ParallelismStrategy.Companion.maximumAllowedAfterFirstIteration
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
@@ -12,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference
 class PollExtTest : FeatureSpec({
     this as PollExtTest
 
-    feature("unfold | unfoldParallel: Flow<T>") {
+    feature("poll: Flow<T>") {
         scenario("building a simple non-stopping flow") {
             val count = 100
             val counter = AtomicInteger()
@@ -24,21 +26,11 @@ class PollExtTest : FeatureSpec({
             counter.get() shouldBe count
         }
 
-        scenario("building an arithmetic series flow using pollWithState") {
-            val count = 100
-
-            val flow = pollWithState(1, { it > count }) { state ->
-                (state + 1) to (0..state).toList()
-            }
-
-            flow.sum() shouldBe 166650
-        }
-
         scenario("building a parallelized non-stopping flow") {
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = poll(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
+            val flow = poll(increaseByOne(5)) { listOf(counter.incrementAndGet()) }
             val list = flow.take(count).toList()
 
             list shouldContainInOrder (1..count).toList()
@@ -49,7 +41,7 @@ class PollExtTest : FeatureSpec({
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = poll(maxParallelism = 5, stopOnEmptyList = true) {
+            val flow = poll(increaseByOne(5), stopOnEmptyList = true) {
                 if (counter.get() == count) emptyList()
                 else listOf(counter.incrementAndGet())
             }
@@ -68,7 +60,7 @@ class PollExtTest : FeatureSpec({
             val changedParallelism = AtomicReference(1 to 0)
 
             val flow =
-                poll(maxParallelism = maxParallelism, increaseStrategy = ParallelismIncreaseStrategy.MaxAllowedAfterReceive) {
+                poll(maximumAllowedAfterFirstIteration(maxParallelism)) {
                     val c = counter.incrementAndGet()
 
                     val (last, count) = changedParallelism.get()
@@ -86,6 +78,18 @@ class PollExtTest : FeatureSpec({
             val expected = ((1..1000) - gap).toList()
             list shouldBe expected
             changedParallelism.get() shouldBe (10 to 7)
+        }
+    }
+
+    feature("pollWithState: Flow<T>") {
+        scenario("building an arithmetic series flow") {
+            val count = 100
+
+            val flow = pollWithState(1, { it > count }) { state ->
+                (state + 1) to (0..state).toList()
+            }
+
+            flow.sum() shouldBe 166650
         }
     }
 }) {

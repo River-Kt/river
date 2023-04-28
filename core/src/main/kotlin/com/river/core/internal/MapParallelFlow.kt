@@ -3,12 +3,8 @@ package com.river.core.internal
 import com.river.core.ConcurrencyInfo
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Semaphore
 import org.slf4j.LoggerFactory
 
@@ -23,16 +19,18 @@ internal class MapParallelFlow<T, R>(
         Semaphore(permits = concurrencyLevel)
             .let { semaphore ->
                 val channel: Flow<Deferred<R>> =
-                    channelFlow {
-                        val info = ConcurrencyInfo(concurrencyLevel, semaphore)
+                    flow {
+                        coroutineScope {
+                            val info = ConcurrencyInfo(concurrencyLevel, semaphore)
 
-                        upstream
-                            .collect {
-                                semaphore.acquire()
-                                logger.debug("Running mapParallel. ${info.availableSlots} " +
+                            upstream
+                                .collect {
+                                    semaphore.acquire()
+                                    logger.debug("Running mapParallel. ${info.availableSlots} " +
                                         "slots available of $concurrencyLevel")
-                                send(async { f(info, it) })
-                            }
+                                    emit(async { f(info, it) })
+                                }
+                        }
                     }
 
                 channel

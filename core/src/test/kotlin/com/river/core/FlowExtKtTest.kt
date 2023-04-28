@@ -7,93 +7,15 @@ import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContainAll
 import io.kotest.matchers.shouldBe
-import com.river.core.ParallelismIncreaseStrategy.Companion.MaxAllowedAfterReceive
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.flow.*
 import org.junit.jupiter.api.assertThrows
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 class FlowExtKtTest : FeatureSpec({
-    feature("unfold | unfoldParallel: Flow<T>") {
-        scenario("building a simple non-stopping flow") {
-            val count = 100
-            val counter = AtomicInteger()
-
-            val flow = poll { listOf(counter.incrementAndGet()) }
-            val list = flow.take(count).toList()
-
-            list shouldContainInOrder (1..count).toList()
-            counter.get() shouldBe count
-        }
-
-        scenario("building a parallelized non-stopping flow") {
-            val count = 1000
-            val counter = AtomicInteger()
-
-            val flow = poll(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
-            val list = flow.take(count).toList()
-
-            list shouldContainInOrder (1..count).toList()
-            counter.get() shouldBe count
-        }
-
-        scenario("building a parallelized repeat flow that stops on empty lists") {
-            val count = 1000
-            val counter = AtomicInteger()
-
-            val flow = poll(maxParallelism = 5, stopOnEmptyList = true) {
-                if (counter.get() == count) emptyList()
-                else listOf(counter.incrementAndGet())
-            }
-
-            val list = flow.toList()
-
-            list shouldContainInOrder (1..count).toList()
-            counter.get() shouldBe count
-        }
-
-        scenario("asserting the increase strategy is working properly") {
-            val counter = AtomicInteger()
-            val maxParallelism = 10
-
-            val gap = ((100..120) + (250..270) + (850..980))
-            val changedParallelism = AtomicReference(1 to 0)
-
-            val flow =
-                poll(maxParallelism = maxParallelism, increaseStrategy = MaxAllowedAfterReceive) {
-                    val c = counter.incrementAndGet()
-
-                    val (last, count) = changedParallelism.get()
-
-                    if (last != currentParallelism) {
-                        changedParallelism.set(currentParallelism to count + 1)
-                    }
-
-                    if (c in gap) emptyList()
-                    else listOf(c)
-                }
-
-            val list = flow.earlyCompleteIf { it > 1000 }.toList()
-
-            val expected = ((1..1000) - gap).toList()
-            list shouldBe expected
-            changedParallelism.get() shouldBe (10 to 7)
-        }
-    }
-
     feature("stoppableFlow") {
         val infiniteFlow = poll { listOf("hello!") }
 
