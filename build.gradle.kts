@@ -65,12 +65,6 @@ subprojects {
     publishing {
         repositories {
             maven {
-                url = uri(layout.buildDirectory.dir("staging-deploy"))
-            }
-        }
-
-        repositories {
-            maven {
                 name = "OSSRH"
                 url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
@@ -82,7 +76,7 @@ subprojects {
 
         publications {
             create<MavenPublication>("maven") {
-                groupId = "com.river"
+                groupId = "com.river-kt"
                 artifactId = project.name
                 version = "${project.version}"
 
@@ -100,8 +94,9 @@ subprojects {
                 }
 
                 pom {
-                    name.set("River-Kt")
+                    name.set(project.name)
                     description.set("Extensions & Enterprise Integrations for Kotlin flows.")
+
                     url.set("https://river-kt.com")
 
                     licenses {
