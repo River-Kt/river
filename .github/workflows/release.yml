@@ -43,11 +43,11 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_SECRET_FILE: ${{ secrets.SIGNING_SECRET_FILE }}
         with:
-          arguments: sign
+          arguments: sign --stacktrace
       - name: Publish to Maven Central
         uses: gradle/gradle-build-action@v2
         env:
           RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
           RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
         with:
-          arguments: publish
+          arguments: publish --stacktrace
