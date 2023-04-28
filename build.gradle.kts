@@ -1,10 +1,9 @@
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jreleaser.model.Active
 
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
     id("maven-publish")
-    id("signing")
     id("io.github.gradle-nexus.publish-plugin") apply false
     `java-library`
     id("org.jreleaser")
@@ -23,7 +22,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "java-library")
-    apply(plugin = "signing")
+    apply(plugin = "org.jreleaser")
 
     java {
         withJavadocJar()
@@ -111,7 +110,24 @@ subprojects {
         }
     }
 
-    signing {
-        sign(publishing.publications["maven"])
+    jreleaser {
+        signing {
+            active.set(Active.ALWAYS)
+            armored.set(true)
+        }
+
+        deploy {
+            maven {
+                nexus2 {
+                    create("maven-central") {
+                        active.set(Active.ALWAYS)
+                        url.set("https://s01.oss.sonatype.org/service/local")
+                        snapshotUrl.set("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                        closeRepository.set(false)
+                        releaseRepository.set(true)
+                    }
+                }
+            }
+        }
     }
 }
