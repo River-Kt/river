@@ -32,7 +32,7 @@ class FlowExtKtTest : FeatureSpec({
             val count = 100
             val counter = AtomicInteger()
 
-            val flow = unfold { listOf(counter.incrementAndGet()) }
+            val flow = poll { listOf(counter.incrementAndGet()) }
             val list = flow.take(count).toList()
 
             list shouldContainInOrder (1..count).toList()
@@ -43,7 +43,7 @@ class FlowExtKtTest : FeatureSpec({
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = unfoldParallel(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
+            val flow = poll(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
             val list = flow.take(count).toList()
 
             list shouldContainInOrder (1..count).toList()
@@ -54,7 +54,7 @@ class FlowExtKtTest : FeatureSpec({
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = unfoldParallel(maxParallelism = 5, stopOnEmptyList = true) {
+            val flow = poll(maxParallelism = 5, stopOnEmptyList = true) {
                 if (counter.get() == count) emptyList()
                 else listOf(counter.incrementAndGet())
             }
@@ -73,7 +73,7 @@ class FlowExtKtTest : FeatureSpec({
             val changedParallelism = AtomicReference(1 to 0)
 
             val flow =
-                unfoldParallel(maxParallelism = maxParallelism, increaseStrategy = MaxAllowedAfterReceive) {
+                poll(maxParallelism = maxParallelism, increaseStrategy = MaxAllowedAfterReceive) {
                     val c = counter.incrementAndGet()
 
                     val (last, count) = changedParallelism.get()
@@ -95,7 +95,7 @@ class FlowExtKtTest : FeatureSpec({
     }
 
     feature("stoppableFlow") {
-        val infiniteFlow = unfold { listOf("hello!") }
+        val infiniteFlow = poll { listOf("hello!") }
 
         scenario("Assert that using cancel() is working properly and the flow no longer emits new values") {
             val stoppableFlow =

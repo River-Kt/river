@@ -2,7 +2,7 @@
 
 package com.river.connector.console
 
-import com.river.core.unfold
+import com.river.core.poll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +31,7 @@ enum class OutType { DEFAULT, ERROR }
 fun consoleIn(
     dispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
 ): Flow<String> =
-    unfold { dispatcher { listOf(String(System.`in`.readBytes())) } }
+    poll { dispatcher { listOf(String(System.`in`.readBytes())) } }
 
 /**
  * Outputs the flow of objects to the console (stdout or stderr) using the specified dispatcher, print, and mapper.

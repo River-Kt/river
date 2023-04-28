@@ -52,19 +52,22 @@ fun SqsAsyncClient.receiveMessagesAsFlow(
     increaseStrategy: ParallelismIncreaseStrategy = ParallelismIncreaseStrategy.ByOne,
     builder: suspend ReceiveMessageRequestBuilder.() -> Unit
 ): Flow<Message> =
-    flowOf { ReceiveMessageRequestBuilder().also { builder(it) }.build() }
-        .flatMapConcat { request ->
-            unfoldParallel(
-                maxParallelism = maxParallelism,
-                stopOnEmptyList = stopOnEmptyList,
-                minimumParallelism = minimumParallelism,
-                increaseStrategy = increaseStrategy
-            ) {
-                receiveMessage(request)
-                    .await()
-                    .messages()
-            }
+    flow {
+        val request = ReceiveMessageRequestBuilder().also { builder(it) }.build()
+
+        val elements = poll(
+            maxParallelism = maxParallelism,
+            stopOnEmptyList = stopOnEmptyList,
+            minimumParallelism = minimumParallelism,
+            increaseStrategy = increaseStrategy
+        ) {
+            receiveMessage(request)
+                .await()
+                .messages()
         }
+
+        emitAll(elements)
+    }
 
 /**
  * Sends messages to an Amazon Simple Queue Service (SQS) queue using the provided [SqsAsyncClient].

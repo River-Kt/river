@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.toList
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
-class UnfoldTest : FeatureSpec({
-    this as UnfoldTest
+class PollExtTest : FeatureSpec({
+    this as PollExtTest
 
     feature("unfold | unfoldParallel: Flow<T>") {
         scenario("building a simple non-stopping flow") {
@@ -24,11 +24,21 @@ class UnfoldTest : FeatureSpec({
             counter.get() shouldBe count
         }
 
+        scenario("building an arithmetic series flow using pollWithState") {
+            val count = 100
+
+            val flow = pollWithState(1, { it > count }) { state ->
+                (state + 1) to (0..state).toList()
+            }
+
+            flow.sum() shouldBe 166650
+        }
+
         scenario("building a parallelized non-stopping flow") {
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = unfoldParallel(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
+            val flow = poll(maxParallelism = 5) { listOf(counter.incrementAndGet()) }
             val list = flow.take(count).toList()
 
             list shouldContainInOrder (1..count).toList()
@@ -39,7 +49,7 @@ class UnfoldTest : FeatureSpec({
             val count = 1000
             val counter = AtomicInteger()
 
-            val flow = unfoldParallel(maxParallelism = 5, stopOnEmptyList = true) {
+            val flow = poll(maxParallelism = 5, stopOnEmptyList = true) {
                 if (counter.get() == count) emptyList()
                 else listOf(counter.incrementAndGet())
             }
@@ -58,7 +68,7 @@ class UnfoldTest : FeatureSpec({
             val changedParallelism = AtomicReference(1 to 0)
 
             val flow =
-                unfoldParallel(maxParallelism = maxParallelism, increaseStrategy = ParallelismIncreaseStrategy.MaxAllowedAfterReceive) {
+                poll(maxParallelism = maxParallelism, increaseStrategy = ParallelismIncreaseStrategy.MaxAllowedAfterReceive) {
                     val c = counter.incrementAndGet()
 
                     val (last, count) = changedParallelism.get()
@@ -80,5 +90,5 @@ class UnfoldTest : FeatureSpec({
     }
 }) {
     fun counterBasedFlow(counter: AtomicInteger): Flow<Int> =
-        unfold { listOf(counter.incrementAndGet()) }
+        poll { listOf(counter.incrementAndGet()) }
 }

@@ -3,7 +3,7 @@ package com.river.connector.console
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import com.river.core.lines
-import com.river.core.unfold
+import com.river.core.poll
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.*
@@ -49,7 +49,7 @@ class ConsoleExtKtTest : FeatureSpec({
 
             out.close()
 
-            unfold { listOf(inS.readBytes()) }
+            poll { listOf(inS.readBytes()) }
                 .map { String(it) }
                 .lines()
                 .withIndex()

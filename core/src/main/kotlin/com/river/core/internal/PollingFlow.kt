@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import org.slf4j.LoggerFactory
 
-internal class UnfoldFlow<T>(
+internal class PollingFlow<T>(
     private val minimumParallelism: Int,
     private val maxParallelism: Int,
     private val stopOnEmptyList: Boolean = false,
@@ -24,7 +24,6 @@ internal class UnfoldFlow<T>(
 
     private val isCoroutineContextActive: Boolean
         get() = GlobalScope.coroutineContext[Job]?.isActive != false
-
 
     override suspend fun collect(collector: FlowCollector<T>) =
         flow {
@@ -68,6 +67,6 @@ internal class UnfoldFlow<T>(
                 gotEmptyResponse = emptyResultOnResponse
             }
 
-            logger.debug("Stopping unfold...")
+            logger.debug("Stopping poll...")
         }.collect(collector)
 }

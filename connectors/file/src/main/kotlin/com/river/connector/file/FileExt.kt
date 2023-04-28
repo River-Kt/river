@@ -1,11 +1,8 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package com.river.connector.file
 
 import com.river.core.collectAsync
-import com.river.core.unfold
+import com.river.core.poll
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -95,7 +92,7 @@ fun InputStream.asFlow(
 ): Flow<Byte> =
     flow {
         use {
-            unfold(true) { readNBytes(8).toList() }
+            poll(stopOnEmptyList = true) { readNBytes(8).toList() }
                 .collect { emit(it) }
         }
     }.flowOn(dispatcher)
