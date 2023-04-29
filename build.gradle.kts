@@ -113,15 +113,25 @@ subprojects {
         }
     }
 
-    val keyId by lazy { System.getenv("SIGNING_KEY_ID") }
-    val password by lazy { System.getenv("SIGNING_PASSWORD") }
-    val secretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
+    val signingKeyId by lazy { System.getenv("SIGNING_KEY_ID") }
+    val signingPassword by lazy { System.getenv("SIGNING_PASSWORD") }
+    val signingSecretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
+
+    tasks.withType<Sign>().configureEach {
+        onlyIf {
+            signingKeyId != null && signingPassword != null && signingSecretKey != null
+        }
+    }
 
     signing {
-        useInMemoryPgpKeys(keyId, secretKey, password)
+        useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
 
         sign(publishing.publications["maven"])
         sign(tasks["javadocJar"])
+    }
+
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        dependsOn(tasks.withType<Sign>())
     }
 
     tasks.javadoc {
@@ -130,9 +140,6 @@ subprojects {
         }
     }
 
-    tasks.withType<Sign>().configureEach {
-        onlyIf {
-            keyId != null && password != null && secretKey != null
-        }
-    }
+//    tasks["dokkaHtmlMultiModule"]
+//        .dependsOn(":$name:dokkaHtmlMultiModule")
 }

@@ -12,6 +12,7 @@ rootProject.name = "river"
 
 include(
     "core",
+    "connectors",
     "connectors:amqp",
     "connectors:apache:kafka",
     "connectors:aws:dynamodb",

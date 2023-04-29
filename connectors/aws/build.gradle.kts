@@ -16,7 +16,3 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
         jvmTarget = "17"
     }
 }
-
-tasks.dokkaHtmlMultiModule {
-    moduleName.set("aws")
-}

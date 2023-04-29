@@ -2,7 +2,6 @@ import Dependencies.RiverCore
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka")
 }
 
 repositories {

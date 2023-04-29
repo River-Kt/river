@@ -55,8 +55,7 @@ fun <T> poll(
  * ```
  * data class ApiResponse<T>(
  *     val items: List<T>,
- *     val nextPage: Int?,
- *     val totalItems: Int
+ *     val nextPage: Int?
  * )
  *
  * suspend fun fetchPage(page: Int): ApiResponse<String> = // Fetch data from some API
