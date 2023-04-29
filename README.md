@@ -13,9 +13,16 @@ Whether you're building a new application or integrating with existing systems, 
 In order to start using River, you have to install the desired dependencies:
 
 ```kotlin
+val riverVersion = "0.0.1-alpha01"
+val coroutinesVersion = "1.6.4"
+
 dependencies {
-    // The core library is mandatory
+    // Mandatory libraries
     implementation("com.river-kt:core:$riverVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk9:$coroutinesVersion")
 
     // Utilities for Kotlin Flow and HTTP
     implementation("com.river-kt:http:$riverVersion")
