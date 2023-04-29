@@ -8,12 +8,70 @@ Whether you're building a new application or integrating with existing systems, 
 
 #### Disclaimer: This project is heavily under development, anything is subject to change until the first final release.
 
+## Getting started
+
+In order to start using River, you have to install the desired dependencies:
+
+```kotlin
+dependencies {
+    // The core library is mandatory
+    implementation("com.river-kt:core:$riverVersion")
+
+    // Utilities for Kotlin Flow and HTTP
+    implementation("com.river-kt:http:$riverVersion")
+    
+    // Utilities for object pooling using coroutines
+    implementation("com.river-kt:pool:$riverVersion")
+
+    // Add the desired connectors (some of them are not implemented yet, be patient. ;)
+    implementation("com.river-kt:connector-amqp:$riverVersion")
+    implementation("com.river-kt:connector-apache-kafka:$riverVersion")
+    
+    implementation("com.river-kt:connector-aws-dynamodb:$riverVersion")
+    implementation("com.river-kt:connector-aws-java-11-http-spi:$riverVersion")
+    implementation("com.river-kt:connector-aws-kinesis:$riverVersion")
+    implementation("com.river-kt:connector-aws-lambda:$riverVersion")
+    implementation("com.river-kt:connector-aws-s3:$riverVersion")
+    implementation("com.river-kt:connector-aws-ses:$riverVersion")
+    implementation("com.river-kt:connector-aws-sns:$riverVersion")
+    implementation("com.river-kt:connector-aws-sqs:$riverVersion")
+    
+    implementation("com.river-kt:connector-azure-queue-storage:$riverVersion")
+    
+    implementation("com.river-kt:connector-console:$riverVersion")
+    
+    implementation("com.river-kt:connector-elasticsearch:$riverVersion")
+    
+    implementation("com.river-kt:connector-file:$riverVersion")
+    
+    implementation("com.river-kt:connector-format-csv:$riverVersion")
+    implementation("com.river-kt:connector-format-json:$riverVersion")
+    
+    implementation("com.river-kt:connector-ftp:$riverVersion")
+    
+    implementation("com.river-kt:connector-jms:$riverVersion")
+    
+    implementation("com.river-kt:connector-mongodb:$riverVersion")
+    
+    implementation("com.river-kt:connector-mqtt:$riverVersion")
+    
+    implementation("com.river-kt:connector-rdbms-jdbc:$riverVersion")
+    implementation("com.river-kt:connector-rdbms-r2dbc:$riverVersion")
+    
+    implementation("com.river-kt:connector-red-hat-debezium:$riverVersion")
+    
+    implementation("com.river-kt:connector-twilio:$riverVersion")
+}
+```
+
 ## Talking is cheap, show me the code!
 
 <details>
     <summary>Azure queue storage to PostgreSQL via JDBC</summary>
 
-The code bellow allows non-blocking execution, quick queue fetching, simple grouped database inserts, and balanced resource utilization, achieving optimal speed with minimal overhead:
+<br/>
+The following example demonstrates how to transfer data from Azure Queue Storage to a PostgreSQL database using JDBC with River, using non-blocking execution, quick queue fetching, batched database inserts, and balanced resource utilization, achieving optimal speed with minimal overhead:
+
 
 ```kotlin
 val queue = 
