@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
@@ -74,8 +72,14 @@ subprojects {
                 artifactId = project.name
                 version = "${project.version}"
 
-                afterEvaluate {
-                    from(components["kotlin"])
+                artifact(tasks["jar"])
+
+                artifact(tasks["sourcesJar"]) {
+                    classifier = "sources"
+                }
+
+                artifact(tasks["javadocJar"]) {
+                    classifier = "javadoc"
                 }
 
                 pom {
