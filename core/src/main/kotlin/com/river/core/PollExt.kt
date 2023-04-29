@@ -1,9 +1,6 @@
-@file:OptIn(FlowPreview::class)
-
 package com.river.core
 
 import com.river.core.internal.PollingFlow
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
 /**
@@ -66,13 +63,13 @@ fun <T> poll(
  *
  * pollWithState(
  *     initial = 1, // Initial page number
- *     shouldStop = { it == null } // Stop when there are no more pages to fetch
+ *     shouldStop = { it == -1 } // Stop when there are no more pages to fetch
  * ) { currentPage ->
  *     val response = fetchPage(currentPage)
  *     val nextState = response.nextPage
  *     val items = response.items
  *
- *     nextState to items
+ *     (nextState ?: -1) to items
  * }.collect { item -> println(item) }
  * ```
  */
@@ -84,7 +81,10 @@ fun <T, S> pollWithState(
     var last: S = initial
 
     poll { listOf(f(last).also { last = it.first }) }
-        .takeWhile { (state, _) -> !shouldStop(state) }
-        .flatMapConcat { (_, list) -> list.asFlow() }
+        .transformWhile { (state, items) ->
+            emit(items)
+            !shouldStop(state)
+        }
+        .flatten()
         .also { emitAll(it) }
 }

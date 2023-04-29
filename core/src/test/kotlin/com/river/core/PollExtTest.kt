@@ -89,7 +89,7 @@ class PollExtTest : FeatureSpec({
                 (state + 1) to (0..state).toList()
             }
 
-            flow.sum() shouldBe 166650
+            flow.sum() shouldBe 171700
         }
     }
 }) {

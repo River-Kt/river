@@ -32,6 +32,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Assembly
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: jar sourcesJar javadocJar --parallel --stacktrace
+
       - name: Sign & publish to Maven Central
         uses: gradle/gradle-build-action@v2
         env:
