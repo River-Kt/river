@@ -1,11 +1,13 @@
-import Dependencies.Common
 import Dependencies.CommonTest
+import Dependencies.CoroutinesCore
+import Dependencies.Slf4j
 
 plugins {
     kotlin("jvm")
 }
 
 dependencies {
-    Common.forEach { implementation(it) }
+    implementation(CoroutinesCore)
+    implementation(Slf4j)
     CommonTest.forEach { testImplementation(it) }
 }

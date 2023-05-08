@@ -26,6 +26,9 @@ object Dependencies {
     fun connector(name: String) =
         ":connector:connector-${name.split("-").first()}:connector-$name"
 
+    val CoroutinesCore =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.Coroutine}"
+
     val Coroutines =
         listOf(
             "core",
