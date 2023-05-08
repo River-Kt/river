@@ -136,8 +136,8 @@ suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
  * The [mapParallel] function is similar to the [map] function
  * since it transforms each element via the [transform] function.
  *
- * It works, however, in a parallel way, which means that multiple elements can be processed at the same time,
- * especially useful for more intensive tasks.
+ * It works, however, in a parallel way, which means that multiple elements can be
+ * processed at the same time, especially useful for more intensive tasks.
  *
  * Use [concurrencyLevel] to configure the parallelism number.
  *
@@ -165,9 +165,9 @@ fun <T, R> Flow<T>.unorderedMapParallel(
 
 /**
  * The [flatMapParallel] function is similar to the [flatMap] function but works in a parallel way
- * to transform each element of the [Flow], which is an Iterable, with the provided [f] function.
+ * to transform each element of the [Flow] with the provided [f] function.
  *
- * This function transforms each Iterable element of the input Flow by applying the [f] function in a
+ * This function transforms each element of the input Flow by applying the [f] function in a
  * parallel way. This means that multiple elements can be processed at the same time, especially useful
  * for more intensive tasks.
  *
@@ -177,16 +177,16 @@ fun <T, R> Flow<T>.unorderedMapParallel(
  * This means that the output Flow will contain the same elements as the input Flow, but with each element
  * transformed according to the provided function.
  */
-fun <T, R> Flow<Iterable<T>>.flatMapParallel(
+fun <T, R> Flow<T>.flatMapParallel(
     concurrencyLevel: Int,
-    f: suspend ConcurrencyInfo.(Iterable<T>) -> Iterable<R>
+    f: suspend ConcurrencyInfo.(T) -> Iterable<R>
 ): Flow<R> = mapParallel(concurrencyLevel, f).flatten()
 
 /**
  * The [unorderedFlatMapParallel] function is similar to the [flatMapParallel] function but does not guarantee
  * the order of the output elements.
  *
- * This function transforms each Iterable element of the input Flow by applying the [f] function in a parallel way.
+ * This function transforms each element of the input Flow by applying the [f] function in a parallel way.
  * This means that multiple elements can be processed at the same time, especially useful for more intensive tasks.
  *
  * Use [concurrencyLevel] to configure the parallelism number.
@@ -198,7 +198,7 @@ fun <T, R> Flow<Iterable<T>>.flatMapParallel(
 fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
     concurrencyLevel: Int,
     f: suspend ConcurrencyInfo.(Iterable<T>) -> Iterable<R>
-): Flow<R> = mapParallel(concurrencyLevel, f).flatten()
+): Flow<R> = unorderedMapParallel(concurrencyLevel, f).flatten()
 
 /**
  * The [collectAsync] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
