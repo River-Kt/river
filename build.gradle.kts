@@ -16,13 +16,13 @@ tasks.dokkaHtmlMultiModule.configure {
     moduleName.set(project.name)
 }
 
-version = "0.0.1-alpha02"
-
 subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "java-library")
     apply(plugin = "signing")
+
+    version = "0.0.1-alpha02"
 
     java {
         withJavadocJar()
