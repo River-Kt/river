@@ -10,6 +10,9 @@ object Dependencies {
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":utils:http"))
 
+    val DependencyHandlerScope.Json
+        get() = project(mapOf("path" to connector("format-json")))
+
     val DependencyHandlerScope.Pool
         get() = project(mapOf("path" to ":utils:pool"))
 
@@ -98,4 +101,7 @@ object Dependencies {
     val MongoDB = "org.mongodb:mongodb-driver-reactivestreams:${Version.MongoDB}"
 
     val CommonTest = listOf(Kotest.JUnit5)
+
+    val KotlinWiremock = "com.marcinziolo:kotlin-wiremock:${Version.KotlinWiremock}"
+    val KotestWiremock = "io.kotest.extensions:kotest-extensions-wiremock:${Version.KotestWiremock}"
 }
