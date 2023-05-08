@@ -125,7 +125,7 @@ fun connect(configuration: FtpConfiguration): Flow<FTPClient> =
 fun FTPClient.download(
     remotePath: String,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-): Flow<Byte> =
+): Flow<ByteArray> =
     flow {
         logger.info("Retrieving file as input stream...")
         val retrieveFileStream = retrieveFileStream(remotePath)
