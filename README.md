@@ -55,14 +55,11 @@ To get to know the core module a bit further, you can refer to the [site's kdoc]
 To start using it, simply add the following dependencies:
 
 ```kotlin
-val riverVersion = "0.0.1-alpha01"
+val riverVersion = "0.0.1-alpha02"
 val coroutinesVersion = "1.6.4"
 
 implementation("com.river-kt:core:$riverVersion")
 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:$coroutinesVersion")
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutinesVersion")
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk9:$coroutinesVersion")
 ```
 
 ## The connectors
