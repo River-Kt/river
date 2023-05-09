@@ -25,6 +25,12 @@ object Dependencies {
     val DependencyHandlerScope.SqsConnector
         get() = project(mapOf("path" to ":connector:connector-aws:connector-aws-sqs"))
 
+    val DependencyHandlerScope.S3Connector
+        get() = project(mapOf("path" to ":connector:connector-aws:connector-aws-s3"))
+
+    val DependencyHandlerScope.CsvConnector
+        get() = project(mapOf("path" to ":connector:connector-format:connector-format-csv"))
+
     fun connector(name: String) =
         ":connector:connector-${name.split("-").first()}:connector-$name"
 

@@ -43,7 +43,8 @@ include(
 
     "utils:pool",
 
-    "examples:sqs-to-http"
+    "examples:sqs-to-http",
+    "examples:s3-csv-jdbc"
 )
 
 fun replaceConnectorsToSingular(project: ProjectDescriptor) {
