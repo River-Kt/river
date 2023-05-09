@@ -1,4 +1,4 @@
-package com.river.util.http
+package com.river.connector.http
 
 import com.river.core.asByteArray
 import com.river.core.asByteBuffer
@@ -13,14 +13,16 @@ import java.nio.ByteBuffer
 import java.util.concurrent.Flow.Publisher
 
 class RequestBuilder(
-    val url: String,
-    val method: String,
+    private val url: String,
+    private val method: String,
     var body: BodyPublisher = BodyPublishers.noBody(),
     val query: MutableMap<String, List<String>> = mutableMapOf(),
     val headers: MutableMap<String, List<String>> = mutableMapOf(),
     var expectContinue: Boolean = false
 ) {
-    fun stringBody(body: String) = byteArrayBody(flowOf(body).asByteArray())
+    fun stringBody(body: String) {
+        this.body = BodyPublishers.ofString(body)
+    }
 
     fun byteArrayBody(body: Flow<ByteArray>, contentLength: Long? = null) =
         body(body.asByteBuffer(), contentLength)

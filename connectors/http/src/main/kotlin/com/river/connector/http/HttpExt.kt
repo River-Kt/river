@@ -3,10 +3,7 @@ package com.river.connector.http
 import com.river.core.mapParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.jdk9.asPublisher
@@ -22,19 +19,19 @@ import java.util.concurrent.Flow.Publisher
 
 private val DefaultHttpClient: HttpClient = HttpClient.newHttpClient()
 
+suspend fun <T> HttpClient.coSend(request: HttpRequest, bodyHandler: BodyHandler<T>) =
+    sendAsync(request, bodyHandler).await()
+
 fun Flow<ByteBuffer>.asBodyPublisher(
     contentLength: Long = 0
 ): HttpRequest.BodyPublisher =
     if (contentLength < 1) fromPublisher(asPublisher())
     else fromPublisher(asPublisher(), contentLength)
 
-suspend fun <T> HttpRequest.sendAndHandle(
+suspend fun <T> HttpRequest.coSend(
     bodyHandler: BodyHandler<T>,
     client: HttpClient = DefaultHttpClient
-): HttpResponse<T> =
-    client
-        .sendAsync(this, bodyHandler)
-        .await()
+): HttpResponse<T> = client.coSend(this, bodyHandler)
 
 fun method(
     name: String,
@@ -70,34 +67,6 @@ fun patch(
 fun <T> HttpResponse<Publisher<T>>.bodyAsFlow(): Flow<T> =
     flow { body().collect { emit(it) } }
 
-fun BodyHandler<Publisher<List<ByteBuffer>>>.asFlow(): BodyHandler<Flow<ByteBuffer>> =
-    BodyHandler {
-        val subscriber = apply(it)
-
-        object : BodySubscriber<Flow<ByteBuffer>> {
-            override fun onSubscribe(subscription: java.util.concurrent.Flow.Subscription?) {
-                subscriber.onSubscribe(subscription)
-            }
-
-            override fun onNext(item: MutableList<ByteBuffer>?) {
-                subscriber.onNext(item)
-            }
-
-            override fun onError(throwable: Throwable?) {
-                subscriber.onError(throwable)
-            }
-
-            override fun onComplete() {
-                subscriber.onComplete()
-            }
-
-            override fun getBody(): CompletionStage<Flow<ByteBuffer>> =
-                subscriber
-                    .body
-                    .thenApply { s -> flow { s.collect { it.forEach { emit(it) } } } }
-        }
-    }
-
 fun <T, R> CoroutineScope.coMapping(
     handler: BodyHandler<T>,
     f: suspend ResponseInfo.(T) -> R
@@ -124,34 +93,52 @@ fun <T, R> CoroutineScope.coMapping(
     }
 
 val ofString = BodyHandlers.ofString()
-val ofFlow = BodyHandlers.ofPublisher().asFlow()
 val ofLines = BodyHandlers.ofLines()
 val ofByteArray = BodyHandlers.ofByteArray()
 val discarding = BodyHandlers.discarding()
+
+val ofFlow: BodyHandler<Flow<ByteBuffer>> =
+    BodyHandler {
+        val subscriber = BodySubscribers.ofPublisher()
+
+        object : BodySubscriber<Flow<ByteBuffer>> {
+            override fun onSubscribe(subscription: java.util.concurrent.Flow.Subscription?) {
+                subscriber.onSubscribe(subscription)
+            }
+
+            override fun onNext(item: MutableList<ByteBuffer>?) {
+                subscriber.onNext(item)
+            }
+
+            override fun onError(throwable: Throwable?) {
+                subscriber.onError(throwable)
+            }
+
+            override fun onComplete() {
+                subscriber.onComplete()
+            }
+
+            override fun getBody(): CompletionStage<Flow<ByteBuffer>> =
+                subscriber
+                    .body
+                    .thenApply { s -> flow { s.collect { it.forEach { emit(it) } } } }
+        }
+    }
 
 fun <T> Flow<HttpRequest>.sendAndHandle(
     bodyHandler: BodyHandler<T>,
     parallelism: Int = 1,
     httpClient: HttpClient = DefaultHttpClient,
 ): Flow<HttpResponse<T>> =
-    mapParallel(parallelism) { it.sendAndHandle(bodyHandler, httpClient) }
+    mapParallel(parallelism) { it.coSend(bodyHandler, httpClient) }
 
 fun <T> Flow<HttpRequest>.sendAndHandle(
     parallelism: Int = 1,
     httpClient: HttpClient = DefaultHttpClient,
     handle: CoroutineScope.() -> BodyHandler<T>,
 ): Flow<HttpResponse<T>> =
-    mapParallel(parallelism) { request ->
-        coroutineScope {
-            request.sendAndHandle(handle(), httpClient)
-        }
+    flow {
+        emitAll(
+            coroutineScope { sendAndHandle(handle(), parallelism, httpClient) }
+        )
     }
-
-suspend fun main() {
-    (1..10)
-        .map { get("https://api64.ipify.org/?format=json") }
-        .asFlow()
-        .sendAndHandle(ofString)
-        .map { it.body() }
-        .collect(::println)
-}
