@@ -7,8 +7,8 @@ import com.river.connector.github.model.query.CommitQuery
 import com.river.connector.github.model.query.PullRequestQuery
 import com.river.connector.github.model.query.RepositoryIssueQuery
 import com.river.connector.github.model.query.RepositoryQuery
-import com.river.util.http.get
-import com.river.util.http.send
+import com.river.connector.http.get
+import com.river.connector.http.coSend
 import java.net.http.HttpResponse
 
 /**
@@ -46,7 +46,7 @@ internal suspend fun GithubApi.tree(
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofByteArray(), client)
+        .coSend(HttpResponse.BodyHandlers.ofByteArray(), client)
         .body()
 
     return objectMapper.readValue(response)
@@ -86,7 +86,7 @@ internal suspend fun GithubApi.issues(
 
     val response =
         request
-            .send(HttpResponse.BodyHandlers.ofByteArray(), client)
+            .coSend(HttpResponse.BodyHandlers.ofByteArray(), client)
             .body()
 
     return objectMapper.readValue(response)
@@ -125,7 +125,7 @@ internal suspend fun GithubApi.repositories(
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofByteArray(), client)
+        .coSend(HttpResponse.BodyHandlers.ofByteArray(), client)
         .body()
 
     return objectMapper.readValue(response)
@@ -165,7 +165,7 @@ internal suspend fun GithubApi.pullRequests(
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofByteArray(), client)
+        .coSend(HttpResponse.BodyHandlers.ofByteArray(), client)
         .body()
 
     return objectMapper.readValue(response)
@@ -194,7 +194,7 @@ internal suspend fun GithubApi.blob(repositoryName: String, sha: String): BlobCo
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofByteArray(), client)
+        .coSend(HttpResponse.BodyHandlers.ofByteArray(), client)
         .body()
 
     return objectMapper.readValue(response)
@@ -230,7 +230,7 @@ internal suspend fun GithubApi.commits(repositoryName: String, filter: CommitQue
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofString(), client)
+        .coSend(HttpResponse.BodyHandlers.ofString(), client)
         .body()
 
     return objectMapper.readValue(response)
@@ -262,7 +262,7 @@ internal suspend fun GithubApi.commit(
     }
 
     val response = request
-        .send(HttpResponse.BodyHandlers.ofString(), client)
+        .coSend(HttpResponse.BodyHandlers.ofString(), client)
         .body()
 
     return objectMapper.readValue(response)

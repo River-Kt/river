@@ -23,6 +23,7 @@ object Version {
     const val ApacheFtpServer = "1.2.0"
     const val MockFtpServer = "2.7.1"
     const val Kotest = "5.5.3"
+    const val Wiremock = "2.27.2"
     const val KotlinWiremock = "2.0.2"
     const val KotestWiremock = "2.0.0"
 }

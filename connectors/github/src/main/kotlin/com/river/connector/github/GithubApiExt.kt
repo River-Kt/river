@@ -1,6 +1,5 @@
 package com.river.connector.github
 
-import com.river.connector.format.json.defaultObjectMapper
 import com.river.connector.github.internal.*
 import com.river.connector.github.model.*
 import com.river.connector.github.model.query.CommitQuery
@@ -8,9 +7,9 @@ import com.river.connector.github.model.query.PullRequestQuery
 import com.river.connector.github.model.query.RepositoryIssueQuery
 import com.river.connector.github.model.query.RepositoryQuery
 import com.river.core.*
-import com.river.util.http.get
-import com.river.util.http.ofFlow
-import com.river.util.http.send
+import com.river.connector.http.get
+import com.river.connector.http.ofFlow
+import com.river.connector.http.coSend
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
@@ -219,5 +218,5 @@ fun GithubApi.downloadRepositoryArchive(
         header("Authorization", "Bearer $apiKey")
     }
 
-    emitAll(request.send(ofFlow, client).body())
+    emitAll(request.coSend(ofFlow, client).body())
 }

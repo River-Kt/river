@@ -1,7 +1,7 @@
 package com.river.connector.twilio.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.river.util.http.get
+import com.river.connector.http.get
 import java.net.http.HttpRequest
 
 sealed class Destination(

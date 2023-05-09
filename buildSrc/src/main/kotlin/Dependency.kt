@@ -8,7 +8,7 @@ object Dependencies {
         get() = project(mapOf("path" to connector("aws-java-11-http-spi")))
 
     val DependencyHandlerScope.Http
-        get() = project(mapOf("path" to ":utils:http"))
+        get() = project(mapOf("path" to ":connector:connector-http"))
 
     val DependencyHandlerScope.Json
         get() = project(mapOf("path" to connector("format-json")))
@@ -22,6 +22,8 @@ object Dependencies {
     val DependencyHandlerScope.File
         get() = project(mapOf("path" to ":connector:connector-file"))
 
+    val DependencyHandlerScope.SqsConnector
+        get() = project(mapOf("path" to ":connector:connector-aws:connector-aws-sqs"))
 
     fun connector(name: String) =
         ":connector:connector-${name.split("-").first()}:connector-$name"
@@ -105,6 +107,7 @@ object Dependencies {
 
     val CommonTest = listOf(Kotest.JUnit5)
 
+    val Wiremock = "com.github.tomakehurst:wiremock:${Version.Wiremock}"
     val KotlinWiremock = "com.marcinziolo:kotlin-wiremock:${Version.KotlinWiremock}"
     val KotestWiremock = "io.kotest.extensions:kotest-extensions-wiremock:${Version.KotestWiremock}"
 }

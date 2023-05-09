@@ -1,8 +1,8 @@
 package com.river.connector.aws
 
-import com.river.util.http.method
-import com.river.util.http.ofFlow
-import com.river.util.http.send
+import com.river.connector.http.method
+import com.river.connector.http.ofFlow
+import com.river.connector.http.coSend
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.future.future
@@ -57,7 +57,7 @@ class Java11HttpClient(
 
                 val request =
                     method(awsReq.method().name, awsReq.uri.toString()) {
-                        headers.putAll(awsReq.headers().filterKeys { it !in com.river.connector.aws.Java11HttpClient.Companion.headersToSkip })
+                        headers.putAll(awsReq.headers().filterKeys { it !in headersToSkip })
                         expectContinue = awsReq.headers()["Expect"]?.firstOrNull()?.equals("100-continue") ?: false
 
                         body(
@@ -66,7 +66,7 @@ class Java11HttpClient(
                         )
                     }
 
-                val response = request.send(ofFlow, httpClient)
+                val response = request.coSend(ofFlow, httpClient)
 
                 val awsHeaders = SdkHttpResponse
                     .builder()

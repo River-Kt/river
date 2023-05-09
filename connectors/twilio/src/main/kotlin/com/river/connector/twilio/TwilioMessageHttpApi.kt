@@ -7,8 +7,8 @@ import com.river.connector.twilio.model.CreateMessage
 import com.river.connector.twilio.model.Message
 import com.river.connector.twilio.model.TwilioConfiguration
 import com.river.connector.twilio.model.asHttpRequest
-import com.river.util.http.ofString
-import com.river.util.http.send
+import com.river.connector.http.ofString
+import com.river.connector.http.coSend
 import java.net.http.HttpClient
 
 class TwilioMessageHttpApi(
@@ -24,7 +24,7 @@ class TwilioMessageHttpApi(
     ): Message =
         createMessage
             .asHttpRequest(messageUrl, configuration.authenticationHeader)
-            .send(ofString, httpClient)
+            .coSend(ofString, httpClient)
             .let { response ->
                 assert(response.statusCode() == 200) {
                     "Twilio responded a unexpected status code: ${response.statusCode()}"
