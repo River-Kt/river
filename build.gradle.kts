@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.AbstractDokkaTask
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.dokka")
@@ -12,6 +14,8 @@ repositories {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
+    skipForExamples()
+
     outputDirectory.set(file("docs"))
     moduleName.set(project.name)
 }
@@ -22,7 +26,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "0.0.1-alpha02"
+    version = "0.0.1-alpha03"
 
     java {
         withJavadocJar()
@@ -45,6 +49,8 @@ subprojects {
     }
 
     tasks.dokkaHtml.configure {
+        skipForExamples()
+
         dokkaSourceSets {
             configureEach {
                 samples.from("src/sample/kotlin")
@@ -94,7 +100,7 @@ subprojects {
 
                     licenses {
                         license {
-                            name.set("MIT License")
+                            name.set("The MIT License")
                             url.set("https://opensource.org/license/mit/")
                         }
                     }
@@ -116,6 +122,8 @@ subprojects {
     val signingSecretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
 
     tasks.withType<Sign>().configureEach {
+        skipForExamples()
+
         onlyIf {
             signingKeyId != null && signingPassword != null && signingSecretKey != null
         }
@@ -129,7 +137,12 @@ subprojects {
     }
 
     tasks.withType<PublishToMavenRepository>().configureEach {
+        skipForExamples()
         dependsOn(tasks.withType<Sign>())
+    }
+
+    tasks.withType<AbstractDokkaTask>().configureEach {
+        skipForExamples()
     }
 
     tasks.javadoc {
@@ -137,5 +150,8 @@ subprojects {
             (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
         }
     }
+}
 
+fun Task.skipForExamples() {
+    onlyIf { !project.path.contains("examples") }
 }

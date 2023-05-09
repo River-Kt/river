@@ -24,7 +24,6 @@ include(
     "connectors:aws:sqs",
     "connectors:aws:ses",
     "connectors:azure:queue-storage",
-    "connectors:chatgpt",
     "connectors:console",
     "connectors:elasticsearch",
     "connectors:file",
@@ -32,6 +31,7 @@ include(
     "connectors:format:json",
     "connectors:ftp",
     "connectors:github",
+    "connectors:http",
     "connectors:jms",
     "connectors:mongodb",
     "connectors:mqtt",
@@ -39,8 +39,11 @@ include(
     "connectors:rdbms:r2dbc",
     "connectors:red-hat:debezium",
     "connectors:twilio",
-    "utils:http",
-    "utils:pool"
+    "connectors:openapi",
+
+    "utils:pool",
+
+    "examples:sqs-to-http"
 )
 
 fun replaceConnectorsToSingular(project: ProjectDescriptor) {
