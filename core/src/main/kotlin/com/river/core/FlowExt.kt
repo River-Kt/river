@@ -1,8 +1,9 @@
-@file:OptIn(FlowPreview::class)
+@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 
 package com.river.core
 
-import com.river.core.internal.*
+import com.river.core.internal.MapParallelFlow
+import com.river.core.internal.UnorderedMapParallelFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -290,18 +291,17 @@ fun <E, S> Flow<E>.alsoTo(
     bufferCapacity: Int = Channel.BUFFERED,
     onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
     onUndeliveredElement: ((E) -> Unit)? = null,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     flow: Flow<E>.() -> Flow<S>,
-): Flow<E> = flow {
-    val channel = Channel(bufferCapacity, onBufferOverflow, onUndeliveredElement)
-    flow(channel.consumeAsFlow()).collectAsync(scope)
+): Flow<Pair<E, S>> = flow {
+    coroutineScope {
+        val channel = Channel(bufferCapacity, onBufferOverflow, onUndeliveredElement)
+        val alsoToFlow = flow(channel.consumeAsFlow().buffer(bufferCapacity))
 
-    buffer(bufferCapacity)
-        .onCompletion { channel.cancel() }
-        .collect {
-            channel.send(it)
-            emit(it)
-        }
+        onEach { channel.send(it) }
+            .buffer(bufferCapacity)
+            .zip(alsoToFlow) { f, s -> f to s }
+            .also { emitAll(it) }
+    }
 }
 
 /**
