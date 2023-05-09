@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.river.connector.http</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>river</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-http:dokkaHtmlPartial/main">jvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="connector-http::com.river.connector.http////PointingToDeclaration//1461534035">
+  <div class="breadcrumbs"><a href="../index.html">connector-http</a><span class="delimiter">/</span><span class="current">com.river.connector.http</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button><button class="section-tab" data-togglable="PROPERTY,EXTENSION_PROPERTY">Properties</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-1040970130%2FClasslikes%2F1461534035" anchor-label="RequestBuilder" id="-1040970130%2FClasslikes%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-request-builder/index.html"><span>Request</span><wbr><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1040970130%2FClasslikes%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">method<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>body<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest.BodyPublisher///PointingToDeclaration/">HttpRequest.BodyPublisher</span><span class="token operator"> = </span>BodyPublishers.noBody()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>query<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator"> = </span>mutableMapOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>headers<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator"> = </span>mutableMapOf()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>expectContinue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-361884622%2FFunctions%2F1461534035" anchor-label="asBodyPublisher" id="-361884622%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="as-body-publisher.html"><span>as</span><wbr><span>Body</span><wbr><span><span>Publisher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-361884622%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="as-body-publisher.html"><span class="token function">asBodyPublisher</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">contentLength<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest.BodyPublisher///PointingToDeclaration/">HttpRequest.BodyPublisher</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1457697386%2FFunctions%2F1461534035" anchor-label="bodyAsFlow" id="-1457697386%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="body-as-flow.html"><span>body</span><wbr><span>As</span><wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1457697386%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="body-as-flow.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="java.net.http/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Flow.Publisher.html">Flow.Publisher</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="body-as-flow.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="body-as-flow.html"><span class="token function">bodyAsFlow</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="body-as-flow.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1415694147%2FFunctions%2F1461534035" anchor-label="coMapping" id="1415694147%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="co-mapping.html"><span>co</span><wbr><span><span>Mapping</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1415694147%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-mapping.html">T</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="co-mapping.html">R</a><span class="token operator">&gt; </span><span data-unresolved-link="kotlinx.coroutines/CoroutineScope///PointingToDeclaration/">CoroutineScope</span><span class="token punctuation">.</span><a href="co-mapping.html"><span class="token function">coMapping</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">handler<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-mapping.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpResponse.ResponseInfo///PointingToDeclaration/">HttpResponse.ResponseInfo</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword"></span><a href="co-mapping.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="co-mapping.html">R</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-mapping.html">R</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="940915928%2FFunctions%2F1461534035" anchor-label="coSend" id="940915928%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="co-send.html"><span>co</span><wbr><span><span>Send</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="940915928%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="java.net.http/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token punctuation">.</span><a href="co-send.html"><span class="token function">coSend</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span><span class="token punctuation">, </span></span><span class="parameter ">bodyHandler<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span><span class="token punctuation">.</span><a href="co-send.html"><span class="token function">coSend</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bodyHandler<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">client<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token operator"> = </span>DefaultHttpClient</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="co-send.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1168343688%2FFunctions%2F1461534035" anchor-label="delete" id="1168343688%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete.html"><span><span>delete</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1168343688%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="delete.html"><span class="token function">delete</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="475736835%2FFunctions%2F1461534035" anchor-label="get" id="475736835%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="475736835%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="175125987%2FFunctions%2F1461534035" anchor-label="method" id="175125987%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="method.html"><span><span>method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="175125987%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="method.html"><span class="token function">method</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-459645195%2FFunctions%2F1461534035" anchor-label="patch" id="-459645195%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="patch.html"><span><span>patch</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-459645195%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="patch.html"><span class="token function">patch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1401497597%2FFunctions%2F1461534035" anchor-label="post" id="1401497597%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="post.html"><span><span>post</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1401497597%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="post.html"><span class="token function">post</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1781601596%2FFunctions%2F1461534035" anchor-label="put" id="1781601596%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="put.html"><span><span>put</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1781601596%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="put.html"><span class="token function">put</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">f<span class="token operator">: </span><span class="token keyword"></span><a href="-request-builder/index.html">RequestBuilder</a><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator"> = </span>{}</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-45511880%2FFunctions%2F1461534035" anchor-label="sendAndHandle" id="-45511880%2FFunctions%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-and-handle.html"><span>send</span><wbr><span>And</span><wbr><span><span>Handle</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-45511880%2FFunctions%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="send-and-handle.html"><span class="token function">sendAndHandle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bodyHandler<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">parallelism<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter ">httpClient<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token operator"> = </span>DefaultHttpClient</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpRequest///PointingToDeclaration/">HttpRequest</span><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="send-and-handle.html"><span class="token function">sendAndHandle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parallelism<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter ">httpClient<span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpClient///PointingToDeclaration/">HttpClient</span><span class="token operator"> = </span>DefaultHttpClient<span class="token punctuation">, </span></span><span class="parameter ">handle<span class="token operator">: </span><span class="token keyword"></span><span data-unresolved-link="kotlinx.coroutines/CoroutineScope///PointingToDeclaration/">CoroutineScope</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="java.net.http/HttpResponse///PointingToDeclaration/">HttpResponse</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="send-and-handle.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="81012449%2FProperties%2F1461534035" anchor-label="discarding" id="81012449%2FProperties%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="discarding.html"><span><span>discarding</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="81012449%2FProperties%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="discarding.html">discarding</a><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1189448005%2FProperties%2F1461534035" anchor-label="ofByteArray" id="-1189448005%2FProperties%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="of-byte-array.html"><span>of</span><wbr><span>Byte</span><wbr><span><span>Array</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1189448005%2FProperties%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="of-byte-array.html">ofByteArray</a><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-116263712%2FProperties%2F1461534035" anchor-label="ofFlow" id="-116263712%2FProperties%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="of-flow.html"><span>of</span><wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-116263712%2FProperties%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="of-flow.html">ofFlow</a><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="371192109%2FProperties%2F1461534035" anchor-label="ofLines" id="371192109%2FProperties%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="of-lines.html"><span>of</span><wbr><span><span>Lines</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="371192109%2FProperties%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="of-lines.html">ofLines</a><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html">Stream</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-658461923%2FProperties%2F1461534035" anchor-label="ofString" id="-658461923%2FProperties%2F1461534035" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-http:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-http:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="of-string.html"><span>of</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-658461923%2FProperties%2F1461534035"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-http:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="of-string.html">ofString</a><span class="token operator">: </span><span data-unresolved-link="java.net.http/HttpResponse.BodyHandler///PointingToDeclaration/">HttpResponse.BodyHandler</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
+
