@@ -102,7 +102,6 @@ implementation("com.river-kt:$connectorName:$riverVersion")
 
 ## Talking is cheap, show me the code!
 
-
 <details>
     <summary>Azure queue storage to PostgreSQL via JDBC</summary>
 
@@ -143,6 +142,10 @@ In a nutshell:
 </details>
 
 We will be adding more examples here soon.
+
+## Contributing
+
+Do you want to help us? Please, read our [Contributing Guidelines](CONTRIBUTING.md). Don't forget to read our [Code of conduct](CODE_OF_CONDUCT.md) as well.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
