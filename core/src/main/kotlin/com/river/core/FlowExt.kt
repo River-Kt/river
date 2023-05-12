@@ -213,7 +213,21 @@ fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
 fun <T> Flow<T>.collectAsync(
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     collector: FlowCollector<T> = FlowCollector { }
-): Job = scope.launch { collect(collector) }
+): Job = with(scope) { collectAsync(collector) }
+
+/**
+ * The [collectAsync] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
+ *
+ * This function returns a [Job] instance that represents the coroutine launched to collect the elements.
+ *
+ * The coroutine will continue running until the flow completes or an exception is thrown.
+ *
+ * If the caller needs to cancel the coroutine before it completes, they can cancel the returned [Job].
+ */
+context(CoroutineScope)
+fun <T> Flow<T>.collectAsync(
+    collector: FlowCollector<T> = FlowCollector { }
+): Job = launch { collect(collector) }
 
 /**
  * The [collectCatching] function collects the elements emitted by the current [Flow] in a suspending way and returns
