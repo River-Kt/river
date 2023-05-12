@@ -25,7 +25,7 @@ com.river.connector.jms
 com.river.connector.jms.model
 module:connector-mongodb
 com.river.connector.mongodb
-module:connector-openapi
+module:connector-openai
 com.river.connector.openai
 module:connector-twilio
 com.river.connector.twilio

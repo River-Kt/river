@@ -1,9 +1,9 @@
 package com.river.connector.aws.sqs
 
-import io.kotest.core.spec.style.FeatureSpec
-import io.kotest.matchers.shouldBe
 import com.river.connector.aws.sqs.model.Acknowledgment
 import com.river.connector.aws.sqs.model.SendMessageRequest
+import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -21,45 +21,47 @@ class SqsFlowExtKtTest : FeatureSpec({
     val queueName = "queue-test"
 
     with(sqsClient) {
-        feature("SQS as stream") {
-            suspend fun purge() =
-                listQueues()
-                    .await()
-                    .queueUrls()
-                    .map { url -> purgeQueue { it.queueUrl(url) }.await() }
+        suspend fun purge() =
+            listQueues()
+                .await()
+                .queueUrls()
+                .map { url -> purgeQueue { it.queueUrl(url) }.await() }
 
-            val queue = createQueue { it.queueName(queueName) }.await().queueUrl()
+        suspend fun queue() = createQueue { it.queueName(queueName) }.await().queueUrl()
 
-            suspend fun count() =
-                getQueueAttributes { it.queueUrl(queue).attributeNames(QueueAttributeName.ALL) }
+        suspend fun count() =
+            queue().let { url ->
+                getQueueAttributes { it.queueUrl(url).attributeNames(QueueAttributeName.ALL) }
                     .await()
                     .attributes()[APPROXIMATE_NUMBER_OF_MESSAGES]
                     ?.toInt()
+            }
 
+        beforeTest {
+            purge()
+        }
+
+        feature("SQS as stream") {
             scenario("Publish messages") {
-                purge()
-
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest("hello, $it!") }
-                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
+                    .let { sendMessageFlow(it) { queue() } }
                     .collect()
 
                 count() shouldBe 100
             }
 
             scenario("Receive messages") {
-                purge()
-
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest("hello, $it!") }
-                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
+                    .let { sendMessageFlow(it) { queue() } }
                     .collect()
 
                 val messages =
                     receiveMessagesAsFlow(stopOnEmptyList = true) {
-                        queueUrl = queue
+                        queueUrl = queue()
                         waitTimeSeconds = 0
                     }.toList()
 
@@ -71,22 +73,19 @@ class SqsFlowExtKtTest : FeatureSpec({
             }
 
             scenario("Commit messages") {
-                purge()
-
                 (1..100)
                     .asFlow()
                     .map { SendMessageRequest("hello, $it!") }
-                    .let { sendMessageFlow(it) { getQueueUrlByName(queueName) } }
+                    .let { sendMessageFlow(it) { queue() } }
                     .collect()
 
                 val messages =
                     receiveMessagesAsFlow(stopOnEmptyList = true) {
-                        queueUrl = queue
+                        queueUrl = queue()
                         waitTimeSeconds = 0
-                    }
-                    .map { it.acknowledgeWith(Acknowledgment.Delete) }
-                    .let { acknowledgmentMessageFlow(it) { getQueueUrlByName(queueName)} }
-                    .toList()
+                    }.map { it.acknowledgeWith(Acknowledgment.Delete) }
+                        .let { acknowledgmentMessageFlow(it) { queue() } }
+                        .toList()
 
                 messages.size shouldBe 100
 
@@ -94,6 +93,33 @@ class SqsFlowExtKtTest : FeatureSpec({
                     message.acknowledgment shouldBe Acknowledgment.Delete
                 }
 
+                count() shouldBe 0
+            }
+        }
+
+        feature("SQS consumer") {
+            scenario("client.onMessage should consume messages and acknowledge them properly") {
+                (1..100)
+                    .asFlow()
+                    .map { SendMessageRequest("hello, $it!") }
+                    .let { sendMessageFlow(it) { queue() } }
+                    .collect()
+
+                count() shouldBe 100
+
+                val consumerJob =
+                    onMessage(
+                        queueName = queueName,
+                        receiveConfiguration = {
+                            stopOnEmptyList = true
+
+                            receiveRequest { waitTimeSeconds = 0 }
+                        }
+                    ) {
+                        it.acknowledgeWith(Acknowledgment.Delete)
+                    }
+
+                consumerJob.join()
                 count() shouldBe 0
             }
         }
@@ -105,9 +131,5 @@ val sqsClient: SqsAsyncClient =
         .builder()
         .endpointOverride(URI("http://localhost:4566"))
         .region(Region.US_EAST_1)
-        .credentialsProvider(
-            StaticCredentialsProvider.create(
-                AwsBasicCredentials.create("x", "x")
-            )
-        )
+        .credentialsProvider { AwsBasicCredentials.create("x", "x") }
         .build()

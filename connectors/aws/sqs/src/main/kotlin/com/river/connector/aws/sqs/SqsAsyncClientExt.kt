@@ -7,7 +7,10 @@ import com.river.connector.aws.sqs.model.Acknowledgment.*
 import com.river.connector.aws.sqs.model.SendMessageRequest
 import com.river.connector.aws.sqs.model.SendMessageResponse
 import com.river.core.*
+import com.river.core.ParallelismStrategy.Companion.increaseByOne
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
@@ -385,3 +388,118 @@ suspend fun SqsAsyncClient.getQueueUrlByName(name: String): String =
  */
 fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
     MessageAcknowledgment(this, acknowledgment)
+
+/**
+ * This function is a high-level abstraction that combines receiving messages, processing them, and sending acknowledgments.
+ * It is built on top of the [receiveMessagesAsFlow] and [acknowledgmentMessageFlow] functions.
+ *
+ * Creates a flow that continuously receives messages from an Amazon Simple Queue Service (SQS) queue, processes them
+ * using a provided function, and sends acknowledgments for processed messages.
+ *
+ * The function is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
+ *
+ * @param queueName The name of the queue from which messages will be received.
+ * @param parallelism The level of parallelism for processing messages. Defaults to 1.
+ * @param groupStrategy The strategy to use when chunking messages for processing. Defaults to [GroupStrategy.TimeWindow].
+ * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
+ * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
+ * @param f A function to process received messages. It receives a list of messages and returns a list of [MessageAcknowledgment].
+ *
+ * @return A [Job] representing the execution of the flow.
+ *
+ * Example usage:
+ *
+ * ```
+ * val sqsClient: SqsAsyncClient = ...
+ *
+ * coroutineScope {
+ *     val myQueueJob = sqsClient.onMessages("myqueue") { messages ->
+ *         messages.map { MessageAcknowledgment(it, Delete) }
+ *     }
+ *
+ *     //You may cancel myQueueJob at any time.
+ * }
+ * ```
+ */
+context(CoroutineScope)
+suspend fun SqsAsyncClient.onMessages(
+    queueName: String,
+    parallelism: Int = 1,
+    groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
+    receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
+    commitConfiguration: CommitConfiguration.() -> Unit = {},
+    f: suspend (List<Message>) -> List<MessageAcknowledgment<Acknowledgment>>
+): Job {
+    val url = getQueueUrlByName(queueName)
+
+    val receiveConfig = ReceiveConfiguration().also(receiveConfiguration)
+    val commitConfig = CommitConfiguration().also(commitConfiguration)
+
+    val messagesFlow =
+        receiveMessagesAsFlow(increaseByOne(receiveConfig.parallelism), receiveConfig.stopOnEmptyList) {
+            receiveConfig.request(this)
+            queueUrl = url
+        }
+
+    val processingFlow =
+        messagesFlow
+            .chunked(groupStrategy)
+            .mapParallel(parallelism) { f(it) }
+            .flatten()
+
+    val acknowledgmentFlow =
+        acknowledgmentMessageFlow(
+            upstream = processingFlow,
+            parallelism = commitConfig.parallelism,
+            groupStrategy = commitConfig.groupStrategy
+        ) { url }
+
+    return acknowledgmentFlow.collectAsync()
+}
+
+/**
+ * This function is a high-level abstraction that combines receiving messages, processing them, and sending acknowledgments.
+ * It is built on top of the [receiveMessagesAsFlow] and [acknowledgmentMessageFlow] functions.
+ *
+ * Creates a flow that continuously receives messages from an Amazon Simple Queue Service (SQS) queue, processes them
+ * using a provided function, and sends acknowledgments for processed messages.
+ *
+ * This function is a simplified version of [onMessages] that processes messages one by one.
+ * It is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
+ *
+ * @param queueName The name of the queue from which messages will be received.
+ * @param parallelism The level of parallelism for processing messages. Defaults to 1.
+ * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
+ * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
+ * @param f A function to process a received message. It receives a single message and returns a [MessageAcknowledgment].
+ *
+ * @return A [Job] representing the execution of the flow.
+ *
+ * Example usage:
+ *
+ * ```
+ * val sqsClient: SqsAsyncClient = ...
+ *
+ * coroutineScope {
+ *     val myQueueJob = sqsClient.onMessage("myqueue") { message ->
+ *         MessageAcknowledgment(message, Delete)
+ *     }
+ *
+ *     // You may cancel myQueueJob at any time.
+ * }
+ * ```
+ */
+context(CoroutineScope)
+suspend fun SqsAsyncClient.onMessage(
+    queueName: String,
+    parallelism: Int = 1,
+    receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
+    commitConfiguration: CommitConfiguration.() -> Unit = {},
+    f: suspend (Message) -> MessageAcknowledgment<Acknowledgment>
+): Job = onMessages(
+    queueName = queueName,
+    parallelism = parallelism,
+    groupStrategy = GroupStrategy.Count(1),
+    receiveConfiguration = receiveConfiguration,
+    commitConfiguration = commitConfiguration
+) { listOf(f(it.first())) }
