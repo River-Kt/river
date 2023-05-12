@@ -39,7 +39,7 @@ include(
     "connectors:rdbms:r2dbc",
     "connectors:red-hat:debezium",
     "connectors:twilio",
-    "connectors:openapi",
+    "connectors:openai",
 
     "utils:pool",
 
