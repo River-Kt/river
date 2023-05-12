@@ -50,7 +50,10 @@ import kotlin.time.Duration
  */
 fun <T> Flow<T>.split(
     strategy: GroupStrategy
-): Flow<Flow<T>> = SplitFlow(this, strategy)
+): Flow<Flow<T>> = when {
+    strategy is GroupStrategy.Count && strategy.size == 1 -> map { flowOf(it) }
+    else -> SplitFlow(this, strategy)
+}
 
 /**
  * The [split] function is used to group the elements emitted by the current [Flow] into smaller Flows based a max number of items.
