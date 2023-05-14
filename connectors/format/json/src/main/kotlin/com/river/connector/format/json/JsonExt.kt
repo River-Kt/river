@@ -1,15 +1,20 @@
 package com.river.connector.format.json
 
 import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.JsonToken.*
 import com.fasterxml.jackson.core.async.ByteArrayFeeder
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.river.core.asString
 import com.river.core.flatten
-import kotlinx.coroutines.flow.*
+import com.river.core.lines
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 val defaultObjectMapper by lazy { jacksonObjectMapper() }
 
@@ -27,10 +32,10 @@ val defaultObjectMapper by lazy { jacksonObjectMapper() }
  *  data class Person(val name: String, val age: Int)
  *  val peopleFlow = flowOf(Person("Alice", 30), Person("Bob", 25))
  *
- *  peopleFlow.toJson().collect { jsonNode -> println(jsonNode) }
+ *  peopleFlow.asJsonNode().collect { jsonNode -> println(jsonNode) }
  * ```
  */
-fun <T> Flow<T>.toJson(
+fun <T> Flow<T>.asJsonNode(
     objectMapper: ObjectMapper = defaultObjectMapper
 ): Flow<JsonNode> = map { objectMapper.valueToTree(it) }
 
@@ -50,14 +55,14 @@ fun <T> Flow<T>.toJson(
  *  val peopleFlow = flowOf(Person("Alice", 30), Person("Bob", 25))
  *
  *  peopleFlow
- *      .toJsonString(pretty = true)
+ *      .asJsonString(pretty = true)
  *      .collect { jsonString -> println(jsonString) }
  * ```
  */
-fun <T> Flow<T>.toJsonString(
+fun <T> Flow<T>.asJsonString(
     pretty: Boolean = false,
     objectMapper: ObjectMapper = defaultObjectMapper
-): Flow<String> = toJson(objectMapper).map { if (pretty) it.toPrettyString() else it.toString() }
+): Flow<String> = asJsonNode(objectMapper).map { if (pretty) it.toPrettyString() else it.toString() }
 
 /**
  * Converts a flow of JSON strings into a flow of objects of the specified type, using the provided ObjectMapper.
@@ -73,10 +78,10 @@ fun <T> Flow<T>.toJsonString(
  *  data class Person(val name: String, val age: Int)
  *  val jsonStringFlow = flowOf("""{"name":"Alice","age":30}""", """{"name":"Bob","age":25}""")
  *
- *  jsonStringFlow.fromJsonString<Person>().collect { person -> println(person) }
+ *  jsonStringFlow.asParsedJson<Person>().collect { person -> println(person) }
  * ```
  */
-inline fun <reified T> Flow<String>.fromJsonString(
+inline fun <reified T> Flow<String>.asParsedJson(
     objectMapper: ObjectMapper = defaultObjectMapper
 ): Flow<T> = map { objectMapper.readValue(it, T::class.java) }
 
@@ -99,27 +104,67 @@ inline fun <reified T> Flow<String>.fromJsonString(
  *      objectMapper.readTree("""{"name":"Bob","age":25}""")
  *  )
  *
- *  jsonNodeFlow.fromJson<Person>().collect { person -> println(person) }
+ *  jsonNodeFlow.asValue<Person>().collect { person -> println(person) }
  * ```
  */
-inline fun <reified T> Flow<JsonNode>.fromJson(
+inline fun <reified T> Flow<JsonNode>.asValue(
     objectMapper: ObjectMapper = defaultObjectMapper
 ): Flow<T> = map { objectMapper.treeToValue(it, T::class.java) }
 
 /**
- * Creates a flow of JsonNode objects by parsing the input byte array flow as JSON.
+ * Converts a [Flow] of byte arrays into a [Flow] of parsed JSON objects of a specified type.
  *
- * This function can parse JSON data in a streaming fashion, as it can handle each element as small chunks of bytes,
- * waiting for the whole JSON root node to be complete before emitting this node, unlike the `fromJson` function that requires
- * each element to be a whole valid JSON string.
+ * The function buffers incoming byte arrays, treating them as parts of a JSON Lines formatted string,
+ * and processes each JSON object line as soon as it's fully received.
  *
- * The ability to parse streamed JSON data is highly beneficial when working with non-standardized JSON data.
- * Regardless of indentation, whether it is a JSON array or multiple JSON objects separated by line breaks,
- * this function can effectively emit each root JSON node.
+ * This approach is especially useful when consuming data from a slow upstream, such as a network call,
+ * as it allows data processing to begin as soon as enough has been received rather than waiting for the entire data set.
  *
- * @param objectMapper The ObjectMapper instance to use for processing JSON data. Defaults to defaultObjectMapper.
+ * By not loading all the data into memory at once, it works in a memory-efficient manner.
  *
- * @return A flow of root-level JsonNode objects.
+ * Additionally, it leverages the built-in backpressure handling of Kotlin's [Flow] API to prevent the producer from
+ * overwhelming the consumer.
+ *
+ * @param T The type into which JSON objects should be parsed. This is identified at runtime using reified type parameters.
+ * @param objectMapper The `ObjectMapper` to use for JSON parsing. If not specified, a default `ObjectMapper` is used.
+ *
+ * @return A [Flow] of parsed objects of type `T`.
+ *
+ * Example usage:
+ * ```
+ * val flow: Flow<ByteArray> = flowOf(
+ *    "{ \"name\": \"John",
+ *    " Doe\" }\n",
+ *    "{ \"name\": \"Jane Doe\" }\n"
+ * ).asByteArray()
+ *
+ * val parsedFlow: Flow<Map<String, String>> = flow.parseJsonLines()
+ *
+ * parsedFlow.collect { println(it) }
+ * ```
+ */
+inline fun <reified T> Flow<ByteArray>.parseJsonLines(
+    objectMapper: ObjectMapper = defaultObjectMapper
+): Flow<T> =
+    asString()
+        .lines()
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .asParsedJson(objectMapper)
+
+/**
+ * Converts a [Flow] of byte arrays, representing a JSON array, into a [Flow] of parsed JSON objects of a specified type.
+ *
+ * This function reads from a [Flow] of byte arrays, treating the incoming data as a JSON array. As the array is streamed in,
+ * each JSON object it contains is parsed into an instance of type `T` and emitted as soon as it's fully received.
+ *
+ * This approach allows for memory-efficient and backpressure-aware processing of large JSON arrays, even when the
+ * data source is slow (e.g., a network call).
+ *
+ * @param T The type into which JSON objects should be parsed. This is identified at runtime using reified type parameters.
+ * @param objectMapper The `ObjectMapper` to use for JSON parsing. If not specified, a default `ObjectMapper` is used.
+ *
+ * @return A [Flow] of parsed objects of type `T`.
  *
  * Example usage:
  *
@@ -138,74 +183,53 @@ inline fun <reified T> Flow<JsonNode>.fromJson(
  *      .collect { jsonNode -> println(jsonNode) }
  * ```
  */
-fun Flow<ByteArray>.rootJsonNodes(
+inline fun <reified T : Any> Flow<ByteArray>.parseJsonArray(
     objectMapper: ObjectMapper = defaultObjectMapper
-): Flow<JsonNode> = flow {
-    var first: JsonToken? = null
+): Flow<T> = flow {
+    val typeRef = jacksonTypeRef<T>()
 
-    val parser: JsonParser = JsonFactory().createNonBlockingByteArrayParser()
-    val feeder = parser.nonBlockingInputFeeder as ByteArrayFeeder
+    JsonFactory()
+        .createNonBlockingByteArrayParser()
+        .use { parser ->
+            val feeder = parser.nonBlockingInputFeeder as ByteArrayFeeder
+            var buffer = ""
 
-    var buffer: String = ""
+            var depth = 0
 
-    var depth = 0
+            map { it.toList() }
+                .flatten()
+                .map { arrayOf(it).toByteArray() }
+                .collect { bytes ->
+                    feeder.feedInput(bytes, 0, bytes.size)
+                    buffer += String(bytes)
 
-    onCompletion { parser.close() }
-        .onEach { feeder.feedInput(it, 0, it.size) }
-        .onEach { buffer += String(it) }
-        .map {
-            buildList {
-                var token = parser.nextToken()
-                while (token != NOT_AVAILABLE) {
-                    add(token)
-                    token = parser.nextToken()
+                    if ((depth == 0 && buffer in listOf("[", "]")) || buffer == ",") {
+                        buffer = buffer.drop(1)
+                    }
+
+                    var token = parser.nextToken()
+
+                    while (token != NOT_AVAILABLE) {
+                        when (token) {
+                            START_OBJECT, START_ARRAY -> depth += 1
+                            END_OBJECT, END_ARRAY -> depth += -1
+                            else -> {}
+                        }
+
+                        if (depth == 1 && buffer.isNotBlank()) {
+                            if (buffer.trimEnd().last() in listOf(',', ']')) {
+                                buffer = buffer.dropLast(1)
+                            }
+
+                            runCatching { objectMapper.readValue(buffer.trim(), typeRef) }
+                                .onSuccess {
+                                    emit(it)
+                                    buffer = ""
+                                }
+                        }
+
+                        token = parser.nextToken()
+                    }
                 }
-            }
-        }
-        .flatten()
-        .collect { token ->
-            if (first == null) first = token
-
-            suspend fun emitNodeBufferedNode() {
-                buffer = buffer.trimStart().trimEnd()
-
-                if (buffer.first() in listOf(',', ']', '['))
-                    buffer = buffer.drop(1).trimStart().trimEnd()
-
-                if (buffer.lastOrNull() == ',' || (buffer.first() != '[' && buffer.lastOrNull() == ']')) {
-                    buffer = buffer.dropLast(1)
-                }
-
-                emit(objectMapper.readTree(buffer))
-                buffer = ""
-            }
-
-            when (token) {
-                START_OBJECT,
-                START_ARRAY -> {
-                    depth += 1
-                }
-
-                END_OBJECT,
-                END_ARRAY -> {
-                    depth -= 1
-                    if (depth == 1) emitNodeBufferedNode()
-                }
-
-                VALUE_STRING,
-                VALUE_NUMBER_INT,
-                VALUE_NUMBER_FLOAT,
-                VALUE_TRUE,
-                VALUE_FALSE,
-                VALUE_NULL -> {
-                    if (depth == 1) emitNodeBufferedNode()
-                }
-
-                null,
-                FIELD_NAME,
-                VALUE_EMBEDDED_OBJECT,
-                NOT_AVAILABLE -> {
-                }
-            }
         }
 }

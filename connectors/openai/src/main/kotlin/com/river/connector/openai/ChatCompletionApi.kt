@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.module.kotlin.jsonMapper
-import com.river.connector.format.json.fromJsonString
+import com.river.connector.format.json.asParsedJson
 import com.river.core.asByteArray
 import com.river.core.asString
 import com.river.core.flatten
@@ -56,6 +56,6 @@ class ChatCompletionApi(
             .map { it.trim() }
             .filter { it.isNotBlank() }
             .takeWhile { it != "[DONE]" }
-            .fromJsonString<TextCompletionResponse>(objectMapper)
+            .asParsedJson<TextCompletionResponse>(objectMapper)
     }
 }
