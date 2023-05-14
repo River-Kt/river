@@ -281,12 +281,21 @@ fun <T> flowOf(item: suspend () -> T) = flow { emit(item()) }
  * @param item The item to be repeatedly emitted by the flow.
  * @return An infinite [Flow] that repeatedly emits the provided item.
  */
-fun <T> repeat(item: T): Flow<T> =
-    flow {
-        while (true) {
-            emit(item)
-        }
+fun <T> indefinitelyRepeat(item: T): Flow<T> = flow { while (true) { emit(item) } }
+
+/**
+ * Creates an (almost) infinite [Flow] that emits sequentially incremented Long numbers starting from the [startAt] parameter.
+ *
+ * @param startAt The inclusive starting point.
+ * @return An (almost) infinite [Flow] of sequentially incremented Long numbers.
+ */
+fun unboundedLongFlow(startAt: Long = 0): Flow<Long> = flow {
+    var number = startAt
+
+    while (true) {
+        emit(number++)
     }
+}
 
 /**
  * Allows the [Flow] to be collected and transformed into another [Flow] in parallel. The

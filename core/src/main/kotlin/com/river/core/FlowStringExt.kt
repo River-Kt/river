@@ -5,24 +5,27 @@ import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
 /**
- * Splits the [Flow] of [String] into lines, emitting each line as a separate element in the resulting [Flow].
+ * Splits and buffers the [Flow] of [String] into lines, emitting each line as a separate element in the resulting [Flow].
+ *
+ * This function buffers incoming strings until it encounters a line break (`\n`). It then emits each line as a separate string.
+ * If the incoming strings do not contain any line breaks, they are buffered until a line break is encountered or the flow is completed.
  *
  * @return A new [Flow] where each element represents a line from the original [Flow] of [String].
  *
  * Example usage:
  *
  * ```
- *  val flow = flowOf(
- *                 "Hel",
- *                 "lo,",
- *                 " world!",
- *                 "\nW",
- *                 "elcome to River!"
- *             )
+ * val flow = flowOf(
+ *    "Hel",
+ *    "lo,",
+ *    " world!",
+ *    "\nW",
+ *    "elcome to River!"
+ * )
  *
- *  flow
- *      .lines()
- *      .collect(::println) //"Hello, world!", "Welcome to River!"
+ * flow
+ *     .lines()
+ *     .collect(::println) //"Hello, world!", "Welcome to River!"
  * ```
  */
 fun Flow<String>.lines() = flow {
