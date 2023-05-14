@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>parseJsonLines</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../../index.html">
+<span>river</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main">jvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageids="connector-format-json::com.river.connector.format.json//parseJsonLines/kotlinx.coroutines.flow.Flow[kotlin.ByteArray]#com.fasterxml.jackson.databind.ObjectMapper/PointingToDeclaration//-2038951936">
+  <div class="breadcrumbs"><a href="../index.html">connector-format-json</a><span class="delimiter">/</span><a href="index.html">com.river.connector.format.json</a><span class="delimiter">/</span><span class="current">parseJsonLines</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>parse</span><wbr><span>Json</span><wbr><span><span>Lines</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="parse-json-lines.html">T</a><span class="token operator">&gt; </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="parse-json-lines.html"><span class="token function">parseJsonLines</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">objectMapper<span class="token operator">: </span><span data-unresolved-link="com.fasterxml.jackson.databind/ObjectMapper///PointingToDeclaration/">ObjectMapper</span><span class="token operator"> = </span>defaultObjectMapper</span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="parse-json-lines.html">T</a><span class="token operator">&gt;</span></div><p class="paragraph">Converts a <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> of byte arrays into a <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> of parsed JSON objects of a specified type.</p><p class="paragraph">The function buffers incoming byte arrays, treating them as parts of a JSON Lines formatted string, and processes each JSON object line as soon as it's fully received.</p><p class="paragraph">This approach is especially useful when consuming data from a slow upstream, such as a network call, as it allows data processing to begin as soon as enough has been received rather than waiting for the entire data set.</p><p class="paragraph">By not loading all the data into memory at once, it works in a memory-efficient manner.</p><p class="paragraph">Additionally, it leverages the built-in backpressure handling of Kotlin's <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> API to prevent the producer from overwhelming the consumer.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> of parsed objects of type <code class="lang-kotlin">T</code>.</p><p class="paragraph">Example usage:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val flow: Flow&lt;ByteArray&gt; = flowOf(<br>   "{ \"name\": \"John",<br>   " Doe\" }\n",<br>   "{ \"name\": \"Jane Doe\" }\n"<br>).asByteArray()<br><br>val parsedFlow: Flow&lt;Map&lt;String, String&gt;&gt; = flow.parseJsonLines()<br><br>parsedFlow.collect { println(it) }</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>T</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The type into which JSON objects should be parsed. This is identified at runtime using reified type parameters.</p></div></div></div></div><div class="table-row" data-filterable-current=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-format:connector-format-json:dokkaHtmlPartial/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>object</span><wbr><span><span>Mapper</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The <code class="lang-kotlin">ObjectMapper</code> to use for JSON parsing. If not specified, a default <code class="lang-kotlin">ObjectMapper</code> is used.</p></div></div></div></div></div></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
+

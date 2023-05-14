@@ -53,6 +53,8 @@ module:connector-format-csv
 com.river.connector.format.csv
 module:connector-format-json
 com.river.connector.format.json
+module:connector-google-drive
+com.river.connector.google.drive
 module:connector-rdbms-jdbc
 com.river.connector.rdbms.jdbc
 module:connector-rdbms-r2dbc
