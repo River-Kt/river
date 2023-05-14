@@ -86,6 +86,8 @@ subprojects {
                     classifier = "javadoc"
                 }
 
+                from(components["java"])
+
                 pom {
                     name.set(project.name)
                     description.set("Extensions & Enterprise Integrations for Kotlin flows.")

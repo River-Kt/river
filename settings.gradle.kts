@@ -31,6 +31,7 @@ include(
     "connectors:format:json",
     "connectors:ftp",
     "connectors:github",
+    "connectors:google:drive",
     "connectors:http",
     "connectors:jms",
     "connectors:mongodb",
@@ -44,7 +45,8 @@ include(
     "utils:pool",
 
     "examples:sqs-to-http",
-    "examples:s3-csv-jdbc"
+    "examples:s3-csv-jdbc",
+    "examples:ktor-server-json-streaming"
 )
 
 fun replaceConnectorsToSingular(project: ProjectDescriptor) {

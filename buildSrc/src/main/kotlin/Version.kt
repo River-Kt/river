@@ -5,7 +5,6 @@ object Version {
     const val AwsSdk = "2.18.9"
     const val Coroutine = "1.6.4"
     const val Slf4j = "1.7.36"
-    const val Ktor = "2.1.3"
     const val CommonsNet = "3.8.0"
     const val Twilio = "9.1.2"
     const val Jackson = "2.14.0"
@@ -26,4 +25,6 @@ object Version {
     const val Wiremock = "2.27.2"
     const val KotlinWiremock = "2.0.2"
     const val KotestWiremock = "2.0.0"
+    const val Ktor = "2.3.0"
+    const val JavaJwt = "4.4.0"
 }

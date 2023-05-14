@@ -116,4 +116,16 @@ object Dependencies {
     val Wiremock = "com.github.tomakehurst:wiremock:${Version.Wiremock}"
     val KotlinWiremock = "com.marcinziolo:kotlin-wiremock:${Version.KotlinWiremock}"
     val KotestWiremock = "io.kotest.extensions:kotest-extensions-wiremock:${Version.KotestWiremock}"
+
+    val JavaJwt = "com.auth0:java-jwt:${Version.JavaJwt}"
+
+    object Ktor {
+        object Server {
+            val Core = "io.ktor:ktor-server-core-jvm:${Version.Ktor}"
+            val Netty = "io.ktor:ktor-server-netty-jvm:${Version.Ktor}"
+            val ContentRenegotiation = "io.ktor:ktor-server-content-negotiation:${Version.Ktor}"
+        }
+
+        val Jackson = "io.ktor:ktor-serialization-jackson:${Version.Ktor}"
+    }
 }
