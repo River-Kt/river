@@ -30,7 +30,7 @@ sealed interface PaginatedSearch {
             val maxWindow = client.maxResultWindow(index)
 
             val flow =
-                repeat(Unit)
+                indefinitelyRepeat(Unit)
                     .withIndex()
                     .map { it.index * pageSize }
                     .map { from ->

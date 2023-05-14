@@ -16,7 +16,7 @@ internal fun <T, Q : PageableQuery> paginatedFlowApi(
     filter: Q.() -> Unit,
     parallelism: Int,
     f: suspend (Q.() -> Unit) -> List<T>
-) = repeat(filter)
+) = indefinitelyRepeat(filter)
     .withIndex()
     .map { (index, filter) -> (index + 1) to filter  }
     .mapParallel(parallelism) { (page, filter) ->
