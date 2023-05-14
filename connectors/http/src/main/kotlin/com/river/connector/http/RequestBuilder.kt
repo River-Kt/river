@@ -1,15 +1,15 @@
 package com.river.connector.http
 
-import com.river.core.asByteArray
 import com.river.core.asByteBuffer
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.jdk9.asPublisher
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublisher
 import java.net.http.HttpRequest.BodyPublishers
 import java.nio.ByteBuffer
+import java.util.*
+import java.util.Base64.*
 import java.util.concurrent.Flow.Publisher
 
 class RequestBuilder(
@@ -20,6 +20,20 @@ class RequestBuilder(
     val headers: MutableMap<String, List<String>> = mutableMapOf(),
     var expectContinue: Boolean = false
 ) {
+    class AuthorizationHeader(
+        private val headers: MutableMap<String, List<String>>
+    ) {
+        fun basic(username: String, password: String) {
+            headers["Authorization"] = listOf(
+                "Basic ${getEncoder().encodeToString("$username:$password".encodeToByteArray())}"
+            )
+        }
+
+        fun bearer(token: String) {
+            headers["Authorization"] = listOf("Bearer $token")
+        }
+    }
+
     fun stringBody(body: String) {
         this.body = BodyPublishers.ofString(body)
     }
@@ -74,6 +88,10 @@ class RequestBuilder(
         vararg parameters: Pair<String, String?>,
     ) = parameters
         .map { (key, value) -> query(key, value) }
+
+    inline fun authorization(f: AuthorizationHeader.() -> Unit) {
+        AuthorizationHeader(headers).also(f)
+    }
 
     fun header(
         key: String,
