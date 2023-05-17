@@ -1,26 +1,20 @@
 package com.river.connector.http
 
 import com.river.core.asByteArray
+import com.river.core.asString
 import com.river.core.flatten
+import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.jdk9.asFlow
-import kotlinx.coroutines.stream.consumeAsFlow
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodySubscribers.mapping
 import java.nio.ByteBuffer
-import java.util.stream.Stream
 
 /**
  * This is a `BodyHandler` that handles HTTP response bodies as a String.
  */
 val ofString: BodyHandler<String> = BodyHandlers.ofString()
-
-/**
- * This is a `BodyHandler` that handles HTTP response bodies as a Flow of Strings, where each string is a line from the response.
- */
-val ofLines: BodyHandler<Flow<String>> =
-    BodyHandlers.ofLines().map { stream -> stream.consumeAsFlow() }
 
 /**
  * This is a `BodyHandler` that handles HTTP response bodies as a ByteArray.
@@ -43,6 +37,18 @@ val ofFlow: BodyHandler<Flow<ByteBuffer>> =
  */
 val ofByteArrayFlow: BodyHandler<Flow<ByteArray>> =
     ofFlow.map { it.asByteArray() }
+
+/**
+ * This is a `BodyHandler` that handles HTTP response bodies as a Flow of String.
+ */
+val ofStringFlow: BodyHandler<Flow<String>> =
+    ofByteArrayFlow.map { it.asString() }
+
+/**
+ * This is a `BodyHandler` that handles HTTP response bodies as a Flow of Strings, where each string is a line from the response.
+ */
+val ofLines: BodyHandler<Flow<String>> =
+    ofStringFlow.map { it.lines() }
 
 /**
  * This function allows to create a new `BodyHandler` by transforming the output of the current `BodyHandler`.
