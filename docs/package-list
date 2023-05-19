@@ -27,6 +27,7 @@ module:connector-mongodb
 com.river.connector.mongodb
 module:connector-openai
 com.river.connector.openai
+com.river.connector.openai.model
 module:connector-twilio
 com.river.connector.twilio
 com.river.connector.twilio.model

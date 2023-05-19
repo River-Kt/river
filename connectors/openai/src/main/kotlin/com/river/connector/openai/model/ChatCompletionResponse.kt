@@ -1,4 +1,4 @@
-package com.river.connector.openai
+package com.river.connector.openai.model
 
 import com.fasterxml.jackson.annotation.JsonValue
 
@@ -29,9 +29,27 @@ enum class Role {
     fun value() = name.lowercase()
 }
 
-data class ChatCompletion(
+data class CompletionRequest(
+    val prompt: List<String>,
+    val maxTokens: Int = 16,
+    val model: String = Models.gpt_3_5_turbo,
+    val temperature: Temperature = Temperature(),
+) {
+    val stream = true
+
+    companion object {
+        operator fun invoke(
+            vararg prompt: String,
+            maxTokens: Int = 16,
+            model: String = Models.gpt_3_5_turbo,
+            temperature: Temperature = Temperature(),
+        ) = CompletionRequest(prompt.toList(), maxTokens, model, temperature)
+    }
+}
+
+data class ChatCompletionRequest(
     val messages: List<Message>,
-    val model: Model = Model.GPT_3_5_TURBO,
+    val model: String = Models.gpt_3_5_turbo,
     val temperature: Temperature = Temperature(),
 ) {
     val stream: Boolean = true
@@ -43,16 +61,10 @@ data class ChatCompletion(
     )
 }
 
-enum class Model(
-    val type: String,
-    val maxTokens: Int,
-) {
-    GPT_4("gpt-4", 4096),
-    GPT_3_5_TURBO("gpt-3.5-turbo", 2048),
-    GPT_3_5_TURBO_0301("gpt-3.5-turbo-0301", 2048);
-
-    @JsonValue
-    fun value() = type
+object Models {
+    const val gpt_4 = "gpt-4"
+    const val gpt_3_5_turbo = "gpt-3.5-turbo"
+    const val gpt_3_5_turbo_0301 = "gpt-3.5-turbo-0301"
 }
 
 data class Temperature(@JsonValue val value: Double = 1.0) {
