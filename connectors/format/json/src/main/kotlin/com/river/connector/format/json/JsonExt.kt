@@ -1,7 +1,6 @@
 package com.river.connector.format.json
 
 import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.JsonToken.*
 import com.fasterxml.jackson.core.async.ByteArrayFeeder
 import com.fasterxml.jackson.databind.JsonNode
