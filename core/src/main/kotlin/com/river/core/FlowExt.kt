@@ -72,6 +72,14 @@ fun <T> Flow<Iterable<T>>.flatten(): Flow<T> =
     flatMapConcat { it.asFlow() }
 
 /**
+ * Flattens a [Flow] of [Iterable] items into a [Flow] of individual items.
+ *
+ * @return A [Flow] of individual items.
+ */
+fun <T, R> Flow<T>.flatIterable(f: (T) -> Iterable<R>): Flow<R> =
+    map(f).flatMapConcat { it.asFlow() }
+
+/**
  * Performs the provided [f] action concurrently on each item emitted by the flow. The action
  * is applied with the specified [concurrencyLevel].
  *
@@ -165,7 +173,7 @@ fun <T, R> Flow<T>.unorderedMapParallel(
 ): Flow<R> = UnorderedMapParallelFlow(this, concurrencyLevel, f)
 
 /**
- * The [flatMapParallel] function is similar to the [flatMap] function but works in a parallel way
+ * The [flatMapParallel] function is similar to the [flatIterable] function but works in a parallel way
  * to transform each element of the [Flow] with the provided [f] function.
  *
  * This function transforms each element of the input Flow by applying the [f] function in a
