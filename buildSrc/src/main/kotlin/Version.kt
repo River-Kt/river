@@ -3,7 +3,7 @@ object Version {
     const val Kotlin = "1.8.20"
     const val River = "0.0.1-SNAPSHOT"
     const val AwsSdk = "2.18.9"
-    const val Coroutine = "1.6.4"
+    const val Coroutine = "1.7.1"
     const val Slf4j = "1.7.36"
     const val CommonsNet = "3.8.0"
     const val Twilio = "9.1.2"
