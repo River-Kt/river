@@ -9,6 +9,7 @@ import kotlinx.coroutines.jdk9.asFlow
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodySubscribers.mapping
+import java.net.http.HttpResponse.ResponseInfo
 import java.nio.ByteBuffer
 
 /**

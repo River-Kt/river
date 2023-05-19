@@ -1,21 +1,15 @@
 package com.river.connector.http
 
-import com.river.core.flatten
 import com.river.core.mapParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
-import kotlinx.coroutines.jdk9.asFlow
-import kotlinx.coroutines.jdk9.asPublisher
 import kotlinx.coroutines.jdk9.collect
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpRequest.BodyPublishers.fromPublisher
 import java.net.http.HttpResponse
 import java.net.http.HttpResponse.*
-import java.nio.ByteBuffer
-import java.util.concurrent.CompletionStage
 import java.util.concurrent.Flow.Publisher
 
 private val DefaultHttpClient: HttpClient = HttpClient.newHttpClient()
@@ -32,6 +26,19 @@ suspend fun <T> HttpClient.coSend(
     request: HttpRequest,
     bodyHandler: BodyHandler<T>
 ): HttpResponse<T> = sendAsync(request, bodyHandler).await()
+
+/**
+ * Sends an HTTP request and returns the HTTP response.
+ *
+ * @param request The HTTP request to send.
+ * @param bodyHandler The body handler to process the HTTP response body.
+ *
+ * @return The HTTP response.
+ */
+suspend fun <T> HttpClient.coSend(
+    bodyHandler: BodyHandler<T>,
+    request: suspend () -> HttpRequest
+): HttpResponse<T> = sendAsync(request(), bodyHandler).await()
 
 /**
  * Sends this HTTP request and returns the HTTP response.
