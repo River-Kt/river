@@ -3,7 +3,8 @@
 package com.river.connector.aws.s3
 
 import com.river.core.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.reactive.asFlow
@@ -328,3 +329,57 @@ private suspend fun S3AsyncClient.putObject(
 
     return putObject(request, requestBody).await()
 }
+
+/**
+ * A function to perform select object content operation on an S3 bucket, which allows retrieving a subset of data from
+ * an object by using simple SQL expressions. The function uses an asynchronous S3 client and processes results as a flow.
+ *
+ * Example usage:
+ *
+ * ```
+ * val client = S3AsyncClient.create()
+ *
+ * val selectObjectContentFlow = client.selectObjectContent {
+ *     bucket("people-bucket")
+ *     key("people-data.csv")
+ *     expression("SELECT * FROM S3Object s WHERE s.age > 25")
+ *     expressionType(ExpressionType.SQL)
+ *     inputSerialization {
+ *         csv(CsvInputSerialization.builder().headerInfo(HeaderInfo.USE).build())
+ *     }
+ *     outputSerialization {
+ *         csv(CsvOutputSerialization.builder().build())
+ *     }
+ * }
+ *
+ * selectObjectContentFlow
+ *     .filterIsInstance<RecordsEvent>()
+ *     .collect { event ->
+ *         val record = String(event.payload().asUtf8String())
+ *         // You may use the connector-format-csv module as well
+ *         val (id, name, age) = record.split(",")
+ *         println("Id: $id, Name: $name, Age: $age")
+ *     }
+ * }
+ * ```
+ *
+ * @param f A lambda function with SelectObjectContentRequest.Builder receiver to configure the request.
+ * @return Returns a flow of SelectObjectContentEventStream representing the content of the selected object.
+ */
+fun S3AsyncClient.selectObjectContent(
+    f: SelectObjectContentRequest.Builder.() -> Unit
+): Flow<SelectObjectContentEventStream> =
+    flow {
+        val promise = CompletableDeferred<Flow<SelectObjectContentEventStream>>()
+
+        val request = SelectObjectContentRequest.builder().also(f).build()
+        val responseHandler =
+            SelectObjectContentResponseHandler
+                .builder()
+                    .onEventStream { promise.complete(it.asFlow()) }
+                    .onError { promise.completeExceptionally(it) }
+                .build()
+
+        selectObjectContent(request, responseHandler).await()
+        emitAll(promise.await())
+    }
