@@ -42,7 +42,7 @@ class OpenAIClient(
         }
     }
 
-    internal fun RequestBuilder.jsonBody(request: Any) {
+    internal fun CustomHttpRequestBuilder.jsonBody(request: Any) {
         contentType("application/json")
         stringBody(objectMapper.writeValueAsString(request))
     }

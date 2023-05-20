@@ -6,6 +6,7 @@ import com.river.core.flatten
 import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.jdk9.asFlow
+import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodySubscribers.mapping
@@ -50,6 +51,15 @@ val ofStringFlow: BodyHandler<Flow<String>> =
  */
 val ofLines: BodyHandler<Flow<String>> =
     ofStringFlow.map { it.lines() }
+
+/**
+ * This is a `BodyHandler` that parses the HTTP response into [ServerSentEvent] objects.
+ *
+ * It uses [ofStringFlow] to convert the HTTP Response body into a flow of Strings.
+ *
+ */
+val ofServerSentEventFlow: HttpResponse.BodyHandler<Flow<ServerSentEvent>> =
+    ofStringFlow.map { it.parseAsServerSentEvents() }
 
 /**
  * This function allows to create a new `BodyHandler` by transforming the output of the current `BodyHandler`.
