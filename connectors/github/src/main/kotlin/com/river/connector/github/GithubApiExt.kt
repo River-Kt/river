@@ -213,10 +213,7 @@ fun GithubApi.downloadRepositoryArchive(
 ): Flow<ByteBuffer> = flow {
     val url = "$baseUrl/repos/$repositoryName/${compressionType.type}/$ref"
 
-    val request = get(url) {
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
-    }
+    val request = get(url) { defaultHeaders() }
 
     emitAll(request.coSend(ofFlow, client).body())
 }

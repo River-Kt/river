@@ -78,7 +78,40 @@ class CustomHttpRequestBuilder(
         name: String,
         values: List<String>
     ): CustomHttpRequestBuilder {
+        queryParameters[name]?.let {
+            queryParameters[name] = it + values
+        }
+
+        return this
+    }
+
+    /**
+     * Set a query parameter with a list of values.
+     *
+     * @param name The name of the query parameter.
+     * @param values The values of the query parameter.
+     * @return Returns this builder instance.
+     */
+    fun setQuery(
+        name: String,
+        values: List<String>
+    ): CustomHttpRequestBuilder {
         queryParameters[name] = values
+        return this
+    }
+
+    /**
+     * Set a query parameter with a list of values.
+     *
+     * @param name The name of the query parameter.
+     * @param values The values of the query parameter.
+     * @return Returns this builder instance.
+     */
+    fun setQueryParameters(
+        parameters: Map<String, List<String>>
+    ): CustomHttpRequestBuilder {
+        queryParameters.clear()
+        queryParameters.putAll(parameters)
         return this
     }
 
@@ -113,6 +146,16 @@ class CustomHttpRequestBuilder(
     ): HttpRequest.Builder = header("Content-Type", value)
 
     /**
+     * Sets the Accept of the HTTP request.
+     *
+     * @param value The value of the Accept.
+     * @return Returns the HttpRequest.Builder instance.
+     */
+    fun accept(
+        value: String
+    ): HttpRequest.Builder = header("Accept", value)
+
+    /**
      * Adds an authorization to the HTTP request.
      *
      * @param f A function to create an Authorization object.
@@ -121,7 +164,7 @@ class CustomHttpRequestBuilder(
     inline fun authorization(
         f: Authorization.Companion.() -> Authorization
     ): HttpRequest.Builder = header(
-        "Content-Type", f(Authorization.Companion).headerValue()
+        "Authorization", f(Authorization.Companion).headerValue()
     )
 
     /**

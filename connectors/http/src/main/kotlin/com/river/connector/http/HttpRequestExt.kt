@@ -26,10 +26,35 @@ inline fun request(
     uri: String,
     method: HttpMethod,
     f: CustomHttpRequestBuilder.() -> Unit = {}
+): HttpRequest = request(URI(uri), method, f)
+
+/**
+ * Creates an HTTP request of the given method type to the specified URL.
+ *
+ * @param uri The URI of the request.
+ * @param method The [HttpMethod] of the request.
+ * @param f A lambda with receiver on `CustomHttpRequestBuilder` which allows to build the HTTP request.
+ *
+ * @return The created HTTP request.
+ *
+ * Example usage:
+ *
+ * ```
+ * val request = method(URI("https://example.com"), HttpMethod.Post) {
+ *     stringBody("Hello, world!")
+ * }
+ *
+ * val response: HttpResponse<String> = request.coSend(ofString)
+ * ```
+ */
+inline fun request(
+    uri: URI,
+    method: HttpMethod,
+    f: CustomHttpRequestBuilder.() -> Unit = {}
 ): HttpRequest =
     CustomHttpRequestBuilder(method)
         .also(f)
-        .uri(URI(uri))
+        .uri(uri)
         .build()
 
 /**

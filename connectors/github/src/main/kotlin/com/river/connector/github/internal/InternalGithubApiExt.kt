@@ -117,11 +117,8 @@ internal suspend fun GithubApi.repositories(
 ): List<Repository> {
     val request = get("$baseUrl/users/$username/repos") {
         val f = RepositoryQuery().also(filter)
-
-        f.asMap().forEach { (key, values) -> query(key, values) }
-
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
+        setQueryParameters(f.asMap())
+        defaultHeaders()
     }
 
     val response = request
@@ -157,11 +154,8 @@ internal suspend fun GithubApi.pullRequests(
 ): List<PullRequest> {
     val request = get("$baseUrl/$repositoryName/pulls") {
         val f = PullRequestQuery().also(filter)
-
-        f.asMap().forEach { (key, values) -> query(key, values) }
-
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
+        setQueryParameters(f.asMap())
+        defaultHeaders()
     }
 
     val response = request
@@ -189,8 +183,7 @@ internal suspend fun GithubApi.pullRequests(
  */
 internal suspend fun GithubApi.blob(repositoryName: String, sha: String): BlobContent {
     val request = get("$baseUrl/repos/$repositoryName/git/blobs/$sha") {
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
+        defaultHeaders()
     }
 
     val response = request
@@ -222,11 +215,8 @@ internal suspend fun GithubApi.blob(repositoryName: String, sha: String): BlobCo
 internal suspend fun GithubApi.commits(repositoryName: String, filter: CommitQuery.() -> Unit = {}): List<Commit> {
     val request = get("$baseUrl/repos/$repositoryName/commits") {
         val f = CommitQuery().also(filter)
-
-        f.asMap().forEach { (key, values) -> query(key, values) }
-
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
+        setQueryParameters(f.asMap())
+        defaultHeaders()
     }
 
     val response = request
@@ -257,8 +247,7 @@ internal suspend fun GithubApi.commit(
     commitSha: String = "HEAD"
 ): Commit {
     val request = get("$baseUrl/repos/$repositoryName/commits/$commitSha") {
-        header("Accept", "application/vnd.github+json")
-        header("Authorization", "Bearer $apiKey")
+        defaultHeaders()
     }
 
     val response = request
