@@ -57,6 +57,9 @@ object Dependencies {
 
     val Common: List<String> = Kotlin + Coroutines + Slf4j
 
+    val DependencyHandlerScope.ConnectorCommon
+        get() = listOf(RiverCore) + Common
+
     object Aws {
         val HttpClientSpi = "software.amazon.awssdk:http-client-spi:${Version.AwsSdk}"
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"

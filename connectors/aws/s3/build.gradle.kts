@@ -1,4 +1,5 @@
 import Dependencies.AwsHttp11Spi
+import Dependencies.ConnectorCommon
 import Dependencies.RiverCore
 
 plugins {
@@ -14,20 +15,14 @@ tasks.withType<Test>().configureEach {
 }
 
 dependencies {
-    implementation(RiverCore)
+    ConnectorCommon.forEach { implementation(it) }
+
     implementation(AwsHttp11Spi)
     implementation(Dependencies.Aws.S3){
         exclude("software.amazon.awssdk", "netty-nio-client")
     }
 
-    Dependencies.Coroutines.forEach { implementation(it) }
-    compileOnly("org.slf4j:slf4j-api:${Version.Slf4j}")
-
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    testImplementation("io.kotest:kotest-runner-junit5:${Version.Kotest}")
+    Dependencies.CommonTest.forEach { testImplementation(it) }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
