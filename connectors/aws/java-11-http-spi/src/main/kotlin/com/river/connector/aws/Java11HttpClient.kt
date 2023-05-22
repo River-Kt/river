@@ -1,19 +1,22 @@
 package com.river.connector.aws
 
-import com.river.connector.http.HttpMethod
-import com.river.connector.http.coSend
-import com.river.connector.http.ofFlow
-import com.river.connector.http.request
+import com.river.connector.http.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.reactive.asPublisher
 import org.reactivestreams.FlowAdapters
 import software.amazon.awssdk.http.SdkHttpResponse
 import software.amazon.awssdk.http.async.AsyncExecuteRequest
 import software.amazon.awssdk.http.async.SdkAsyncHttpClient
+import software.amazon.awssdk.utils.AttributeMap
+import java.net.URI
 import java.net.http.HttpClient
+import java.net.http.HttpResponse
+import java.nio.ByteBuffer
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Flow
+import kotlin.jvm.optionals.getOrElse
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * This class implements the SdkAsyncHttpClient interface using Java 11's HttpClient, allowing
@@ -34,7 +37,8 @@ import java.util.concurrent.CompletableFuture
  */
 class Java11HttpClient(
     private val httpClient: HttpClient,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val attributes: AttributeMap
 ) : SdkAsyncHttpClient {
     companion object {
         private val headersToSkip = setOf("Host", "Content-Length", "Expect")
@@ -49,44 +53,60 @@ class Java11HttpClient(
     override fun close() {
     }
 
-    override fun execute(asyncExecuteRequest: AsyncExecuteRequest): CompletableFuture<Void?> =
+    override fun execute(request: AsyncExecuteRequest): CompletableFuture<Void?> =
         scope.future {
-            val handler = asyncExecuteRequest.responseHandler()
+            val handler = request.responseHandler()
 
             runCatching {
-                val awsReq = asyncExecuteRequest.request()
-
-                val request =
-                    request(awsReq.uri.toString(), HttpMethod.valueOf(awsReq.method().name)) {
-                        setHeaders(awsReq.headers().filterKeys { it !in headersToSkip })
-                        expectContinue(awsReq.headers()["Expect"]?.firstOrNull()?.equals("100-continue") ?: false)
-
-                        publisherBody(
-                            body = FlowAdapters.toFlowPublisher(asyncExecuteRequest.requestContentPublisher()),
-                            contentLength = awsReq.headers()["Content-Length"]?.firstOrNull()?.toLong() ?: 0
-                        )
-                    }
-
-                val response = request.coSend(ofFlow, httpClient)
-
-                val awsHeaders = SdkHttpResponse
-                    .builder()
-                    .headers(response.headers().map())
-                    .statusCode(response.statusCode())
-                    .build()
-
-                handler.onHeaders(awsHeaders)
-
-                handler.onStream(
-                    response
-                        .body()
-                        .catch { handler.onError(it); throw it }
-                        .asPublisher()
+                val response = httpClient.coSend(
+                    request = request(request.uri(), request.httpMethod()) {
+                        expectContinue(request.expectContinue())
+                        request.contentLength()?.also { publisherBody(request.body(), it) }
+                        setHeaders(request.filteredHeaders())
+                    },
+                    bodyHandler = ofPublisher
                 )
+
+                handler.onHeaders(response.asSdkHttpResponse())
+                handler.onStream(response.body())
             }.getOrElse {
                 handler.onError(it)
             }
 
             null
         }
+
+    private val ofPublisher = ofFlow.map { it.asPublisher() }
+
+    private fun HttpResponse<*>.asSdkHttpResponse() =
+        SdkHttpResponse
+            .builder()
+            .headers(headers().map())
+            .statusCode(statusCode())
+            .build()
+
+    private fun AsyncExecuteRequest.uri(): URI =
+        request().uri
+
+    private fun AsyncExecuteRequest.httpMethod(): HttpMethod =
+        HttpMethod.valueOf(request().method().name)
+
+    private fun AsyncExecuteRequest.body(): Flow.Publisher<ByteBuffer> =
+        FlowAdapters.toFlowPublisher(requestContentPublisher())
+
+    private fun AsyncExecuteRequest.contentLength(): Long? =
+        request()
+            .firstMatchingHeader("Content-Length")
+            .map { it.toLong() }
+            .filter { it > 0 }
+            .getOrNull()
+
+    private fun AsyncExecuteRequest.filteredHeaders(): Map<String, List<String>> =
+        request().headers().filterKeys { it !in headersToSkip }
+
+    private fun AsyncExecuteRequest.expectContinue(): Boolean =
+        request()
+            .firstMatchingHeader("Expect")
+            .map { "100-continue" == it }
+            .getOrElse { false }
 }
