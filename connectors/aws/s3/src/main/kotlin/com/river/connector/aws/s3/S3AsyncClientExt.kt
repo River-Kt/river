@@ -1,16 +1,13 @@
-@file:OptIn(FlowPreview::class)
+@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.river.connector.aws.s3
 
 import com.river.core.*
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.asPublisher
 import software.amazon.awssdk.core.async.AsyncRequestBody.fromBytes
-import software.amazon.awssdk.core.async.AsyncRequestBody.fromPublisher
 import software.amazon.awssdk.core.async.AsyncResponseTransformer
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.*
@@ -58,13 +55,125 @@ fun S3AsyncClient.download(
     }
 
 /**
- * Creates a flow that uploads bytes to an Amazon S3 bucket.
+ * A function that performs a select object content operation on a file from an Amazon S3 bucket, which allows
+ * retrieving a subset of data from an object by using simple SQL expressions.
  *
- * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
- * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
+ * The function uses [S3AsyncClient] and processes the results as a flow.
+ *
+ * @param request A lambda function with [SelectObjectContentRequest.Builder] receiver to configure the request.
+ * @return Returns a flow of [SelectObjectContentEventStream] representing the content of the selected object.
+ *
+ * Example usage:
+ *
+ * ```
+ * val client = S3AsyncClient.create()
+ *
+ * val selectObjectContentFlow = client.selectObjectContent {
+ *     bucket("people-bucket")
+ *     key("people-data.csv")
+ *     expression("SELECT * FROM S3Object s WHERE s.age > 25")
+ *     expressionType(ExpressionType.SQL)
+ *     inputSerialization { serialization ->
+ *         serialization.csv { it.fileHeaderInfo(FileHeaderInfo.USE) }
+ *     }
+ *     outputSerialization {
+ *         csv(CsvOutputSerialization.builder().build())
+ *     }
+ * }
+ *
+ * selectObjectContentFlow
+ *     .filterIsInstance<RecordsEvent>()
+ *     .collect { event ->
+ *         val record = String(event.payload().asUtf8String())
+ *         // You may use the connector-format-csv module as well
+ *         val (id, name, age) = record.split(",")
+ *         println("Id: $id, Name: $name, Age: $age")
+ *     }
+ * }
+ * ```
+ */
+fun S3AsyncClient.selectObjectContent(
+    request: SelectObjectContentRequest.Builder.() -> Unit
+): Flow<SelectObjectContentEventStream> =
+    promiseFlow { promise ->
+        val selectObjectRequest = SelectObjectContentRequest.builder().also(request).build()
+
+        val responseHandler =
+            SelectObjectContentResponseHandler
+                .builder()
+                    .onEventStream { promise.complete(it.asFlow()) }
+                    .onError { promise.completeExceptionally(it) }
+                .build()
+
+        selectObjectContent(selectObjectRequest, responseHandler)
+    }
+
+/**
+ * Creates a flow that uploads bytes to an Amazon S3 bucket.
  *
  * This function works under the assumption that the upstream size is unknown, so it always uses the multipart upload strategy,
  * as a versatile, "one-size-fits-all" solution.
+ *
+ * This function takes a [initialRequest] for the initial multipart upload request.
+ * The function processes bytes in parallel using [parallelism].
+ *
+ * @param upstream A [Flow] of bytes to upload.
+ * @param parallelism The level of parallelism for uploading bytes.
+ * @param initialRequest A builder function for the initial multipart upload request.
+ * @return A [Flow] of [S3Response] objects.
+ *
+ * Example usage:
+ * ```
+ * val s3Client: S3AsyncClient = ...
+ * val bucket = "my-bucket"
+ * val key = "path/to/myfile.txt"
+ * val byteFlow = flowOf<Byte> { ... } // A Flow<Byte> containing the bytes to upload.
+ *
+ * s3Client.uploadBytes(bucket, key, byteFlow)
+ *     .collect { response ->
+ *         println("Upload response: $response")
+ *     }
+ * ```
+ */
+fun S3AsyncClient.uploadBytes(
+    upstream: Flow<Byte>,
+    parallelism: Int = 1,
+    initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
+): Flow<S3Response> = flow {
+    val uploadResponse = createMultipartUpload { initialRequest(it) }.await()
+    emit(uploadResponse)
+
+    val bucket = uploadResponse.bucket()
+    val key = uploadResponse.key()
+    val uploadId = uploadResponse.uploadId()
+
+    val uploadedParts =
+        upstream
+            .chunked(MINIMUM_UPLOAD_SIZE)
+            .withIndex()
+            .mapParallel(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
+            .onEach { emit(it) }
+            .map { it.eTag() }
+            .toList()
+
+    emit(
+        completeMultipartUpload(
+            bucket = bucket,
+            key = key,
+            uploadId = uploadId,
+            etags = uploadedParts
+        )
+    )
+}
+
+/**
+ * Creates a flow that uploads bytes to an Amazon S3 bucket.
+ *
+ * This function works under the assumption that the upstream size is unknown, so it always uses the multipart upload strategy,
+ * as a versatile, "one-size-fits-all" solution.
+ *
+ * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
+ * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
  *
  * @param bucket The name of the S3 bucket.
  * @param key The key of the file to upload.
@@ -89,39 +198,21 @@ fun S3AsyncClient.uploadBytes(
     bucket: String,
     key: String,
     upstream: Flow<Byte>,
-    parallelism: Int = 1
-): Flow<S3Response> = flow {
-    val uploadResponse = createMultipartUpload { it.bucket(bucket).key(key) }.await()
-    emit(uploadResponse)
-    val uploadId = uploadResponse.uploadId()
-
-    val uploadedParts =
-        upstream
-            .chunked(MINIMUM_UPLOAD_SIZE)
-            .withIndex()
-            .mapParallel(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
-            .onEach { emit(it) }
-            .map { it.eTag() }
-            .toList()
-
-    emit(
-        completeMultipartUpload(
-            bucket = bucket,
-            key = key,
-            uploadId = uploadId,
-            etags = uploadedParts
-        )
-    )
-}
+    parallelism: Int = 1,
+): Flow<S3Response> =
+    uploadBytes(upstream, parallelism) {
+        bucket(bucket)
+        key(key)
+    }
 
 /**
  * Creates a flow that uploads byte arrays to an Amazon S3 bucket.
  *
- * This function takes a [bucket], [key], and [upstream] flow of byte arrays and uploads them
- * to the specified S3 bucket. The function processes byte arrays in parallel using [parallelism].
- *
  * This function works under the assumption that the upstream size is unknown, so it always uses the multipart upload strategy,
  * as a versatile, "one-size-fits-all" solution.
+ *
+ * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
+ * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
  *
  * @param bucket The name of the S3 bucket.
  * @param key The key of the file to upload.
@@ -149,17 +240,67 @@ fun S3AsyncClient.upload(
     upstream: Flow<ByteArray>,
     parallelism: Int = 1
 ): Flow<S3Response> =
-    uploadBytes(
-        bucket = bucket,
-        key = key,
-        upstream = upstream.flatMapConcat { it.toList().asFlow() },
+    upload(
+        upstream = upstream,
         parallelism = parallelism
+    ) {
+        bucket(bucket)
+        key(key)
+    }
+
+/**
+ * Creates a flow that uploads byte arrays to an Amazon S3 bucket.
+ *
+ * This function works under the assumption that the upstream size is unknown, so it always uses the multipart upload strategy,
+ * as a versatile, "one-size-fits-all" solution.
+ *
+ * This function takes a [initialRequest] for the initial multipart upload request.
+ * The function processes bytes in parallel using [parallelism].
+ *
+ * @param upstream A [Flow] of byte arrays to upload.
+ * @param parallelism The level of parallelism for uploading byte arrays.
+ * @param initialRequest A builder function for the initial multipart upload request.
+ *
+ * @return A [Flow] of [S3Response] objects.
+ *
+ * Example usage:
+ *
+ * ```
+ * val s3Client: S3AsyncClient = ...
+ * val bucket = "my-bucket"
+ * val key = "path/to/myfile.txt"
+ * val byteArrayFlow = flowOf<ByteArray> { ... } // A Flow<ByteArray> containing the byte arrays to upload.
+ *
+ * s3Client
+ *     .upload(byteArrayFlow) {
+ *         bucket(bucket)
+ *         key(key)
+ *     }
+ *     .collect { response ->
+ *         println("Upload response: $response")
+ *     }
+ * ```
+ */
+fun S3AsyncClient.upload(
+    upstream: Flow<ByteArray>,
+    parallelism: Int = 1,
+    initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
+): Flow<S3Response> =
+    uploadBytes(
+        upstream = upstream.flatMapConcat { it.toList().asFlow() },
+        parallelism = parallelism,
+        initialRequest = initialRequest
     )
 
 /**
- * This function uploads a file in chunks to an Amazon S3 bucket using the S3AsyncClient.
+ * This function uploads a file in chunks to an Amazon S3 bucket using the [S3AsyncClient].
+ *
  * Particularly useful for handling streams of unknown size, since it automatically splits the flow into separate files,
  * allowing for seamless processing and storage.
+ *
+ * When [splitEach] exceeds 5MB, the function automatically utilizes S3's multipart file upload to prevent retaining
+ * large chunks of data in-memory. If it is smaller, the function uses the put object operation for a quicker and more
+ * efficient processing.
  *
  * @param bucket The S3 bucket to upload the file to.
  * @param upstream A flow of bytes representing the file to be uploaded.
@@ -167,10 +308,6 @@ fun S3AsyncClient.upload(
  * @param parallelism The number of parallel uploads to use. Default is 1.
  * @param key A function that takes an integer (part number) and returns the key of the object in the S3 bucket.
  * @return A flow of S3Response objects for each uploaded chunk.
- *
- * When [splitEach] exceeds 5MB, the function automatically utilizes S3's multipart file upload to prevent
- * retaining large chunks of data in-memory.
- * If it is smaller, the function uses the put object operation for a quicker and more efficient processing.
  *
  * Example usage:
  *
@@ -196,32 +333,40 @@ fun S3AsyncClient.uploadSplit(
     key: (Int) -> String
 ): Flow<S3Response> =
     upstream
-        .chunked(ONE_KB)
-        .split(splitEach / ONE_KB)
-        .map { flow -> flow.map { it.toByteArray() } }
+        .split(splitEach)
         .withIndex()
-        .mapParallel(parallelism) { (part, bytes) ->
+        .flatMapConcat { (part, chunk) ->
             if (splitEach <= FIVE_MB) {
-                flowOf { putObject(bucket, key(part + 1), bytes) }
+                val eagerChunk = chunk.toList()
+
+                val request =
+                    PutObjectRequest
+                        .builder()
+                        .bucket(bucket)
+                        .key(key(part + 1))
+                        .contentLength(eagerChunk.size.toLong())
+                        .build()
+
+                suspend { putObject(request, fromBytes(eagerChunk.toByteArray())).await() }.asFlow()
             } else {
-                upload(
+                uploadBytes(
                     bucket = bucket,
                     key = key(part + 1),
-                    upstream = bytes,
+                    upstream = chunk,
                     parallelism = parallelism
                 )
             }
         }
-        .flattenConcat()
 
 /**
- * This function performs a multipart upload copy operation using the S3AsyncClient. It copies
- * multiple source files into a single destination object in an S3 bucket.
+ * This function performs a merge by using multipart upload copy operations using the [S3AsyncClient].
+ * It copies multiple source files into a single destination object in an S3 bucket.
  *
  * @param bucket The S3 bucket where the destination object will be stored.
  * @param key The key of the destination object in the S3 bucket.
  * @param parallelism The number of parallel copy operations to perform. Default is 1.
  * @param files A flow of source file pairs, where the first element is the source bucket and the second element is the source key.
+ *
  * @return A flow of S3Response objects for each part of the multipart copy operation.
  *
  * Example usage:
@@ -246,11 +391,11 @@ fun S3AsyncClient.uploadSplit(
  *  }
  * ```
  */
-fun S3AsyncClient.multipartUploadCopy(
+fun S3AsyncClient.mergeContents(
     bucket: String,
     key: String,
     parallelism: Int = 1,
-    files: Flow<Pair<String, String>>
+    files: List<Pair<String, String>>
 ): Flow<S3Response> = flow {
     val uploadResponse = createMultipartUpload { it.bucket(bucket).key(key) }.await()
 
@@ -273,7 +418,6 @@ fun S3AsyncClient.multipartUploadCopy(
             }
             .onEach { emit(it) }
             .map { it.copyPartResult().eTag() }
-            .toList()
 
     completeMultipartUpload(bucket, key, uploadResponse.uploadId(), etags)
         .also { emit(it) }
@@ -310,76 +454,3 @@ private suspend fun S3AsyncClient.completeMultipartUpload(
                 .let { complete.parts(it) }
         }
 }.await()
-
-private suspend fun S3AsyncClient.putObject(
-    bucket: String,
-    key: String,
-    bytes: Flow<ByteArray>
-): PutObjectResponse {
-    val request =
-        PutObjectRequest
-            .builder()
-            .apply {
-                bucket(bucket)
-                key(key)
-            }
-            .build()
-
-    val requestBody = fromPublisher(bytes.asByteBuffer().asPublisher())
-
-    return putObject(request, requestBody).await()
-}
-
-/**
- * A function to perform select object content operation on an S3 bucket, which allows retrieving a subset of data from
- * an object by using simple SQL expressions. The function uses an asynchronous S3 client and processes results as a flow.
- *
- * Example usage:
- *
- * ```
- * val client = S3AsyncClient.create()
- *
- * val selectObjectContentFlow = client.selectObjectContent {
- *     bucket("people-bucket")
- *     key("people-data.csv")
- *     expression("SELECT * FROM S3Object s WHERE s.age > 25")
- *     expressionType(ExpressionType.SQL)
- *     inputSerialization {
- *         csv(CsvInputSerialization.builder().headerInfo(HeaderInfo.USE).build())
- *     }
- *     outputSerialization {
- *         csv(CsvOutputSerialization.builder().build())
- *     }
- * }
- *
- * selectObjectContentFlow
- *     .filterIsInstance<RecordsEvent>()
- *     .collect { event ->
- *         val record = String(event.payload().asUtf8String())
- *         // You may use the connector-format-csv module as well
- *         val (id, name, age) = record.split(",")
- *         println("Id: $id, Name: $name, Age: $age")
- *     }
- * }
- * ```
- *
- * @param f A lambda function with SelectObjectContentRequest.Builder receiver to configure the request.
- * @return Returns a flow of SelectObjectContentEventStream representing the content of the selected object.
- */
-fun S3AsyncClient.selectObjectContent(
-    f: SelectObjectContentRequest.Builder.() -> Unit
-): Flow<SelectObjectContentEventStream> =
-    flow {
-        val promise = CompletableDeferred<Flow<SelectObjectContentEventStream>>()
-
-        val request = SelectObjectContentRequest.builder().also(f).build()
-        val responseHandler =
-            SelectObjectContentResponseHandler
-                .builder()
-                    .onEventStream { promise.complete(it.asFlow()) }
-                    .onError { promise.completeExceptionally(it) }
-                .build()
-
-        selectObjectContent(request, responseHandler).await()
-        emitAll(promise.await())
-    }
