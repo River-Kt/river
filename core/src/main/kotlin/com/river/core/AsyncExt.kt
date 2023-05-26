@@ -80,5 +80,5 @@ suspend fun <T, R> Iterable<T>.mapParallel(f: suspend (T) -> R): List<R> =
  */
 suspend fun <T, R> Iterable<T>.mapParallel(
     concurrency: Int,
-    f: suspend ConcurrencyInfo.(T) -> R
+    f: suspend (T) -> R
 ): List<R> = asFlow().mapParallel(concurrency, f).toList()

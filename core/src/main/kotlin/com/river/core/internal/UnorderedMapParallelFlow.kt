@@ -1,6 +1,5 @@
 package com.river.core.internal
 
-import com.river.core.ConcurrencyInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.buffer
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory
 internal class UnorderedMapParallelFlow<T, R>(
     private val upstream: Flow<T>,
     private val concurrencyLevel: Int,
-    private val f: suspend ConcurrencyInfo.(T) -> R
+    private val f: suspend (T) -> R
 ) : Flow<R> {
     private val logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
@@ -21,19 +20,19 @@ internal class UnorderedMapParallelFlow<T, R>(
             .let { semaphore ->
                 val channel: Flow<R> =
                     channelFlow {
-                        val info = ConcurrencyInfo(concurrencyLevel, semaphore)
+                        fun available() = semaphore.availablePermits
 
                         upstream
                             .collect {
                                 semaphore.acquire()
 
                                 logger.debug(
-                                    "Running mapParallel. ${info.availableSlots} " +
+                                    "Running mapParallel. ${available()} " +
                                             "slots available of $concurrencyLevel"
                                 )
 
                                 launch {
-                                    send(f(info, it))
+                                    send(f(it))
                                     semaphore.release()
                                 }
                             }

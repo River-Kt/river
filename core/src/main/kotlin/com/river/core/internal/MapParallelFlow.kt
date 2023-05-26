@@ -1,6 +1,5 @@
 package com.river.core.internal
 
-import com.river.core.ConcurrencyInfo
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory
 internal class MapParallelFlow<T, R>(
     private val upstream: Flow<T>,
     private val concurrencyLevel: Int,
-    private val f: suspend ConcurrencyInfo.(T) -> R
+    private val f: suspend (T) -> R
 ) : Flow<R> {
     private val logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
@@ -21,14 +20,14 @@ internal class MapParallelFlow<T, R>(
                 val channel: Flow<Deferred<R>> =
                     flow {
                         coroutineScope {
-                            val info = ConcurrencyInfo(concurrencyLevel, semaphore)
+                            fun available() = semaphore.availablePermits
 
                             upstream
                                 .collect {
                                     semaphore.acquire()
-                                    logger.debug("Running mapParallel. ${info.availableSlots} " +
+                                    logger.debug("Running mapParallel. ${available()} " +
                                         "slots available of $concurrencyLevel")
-                                    emit(async { f(info, it) })
+                                    emit(async { f(it) })
                                 }
                         }
                     }

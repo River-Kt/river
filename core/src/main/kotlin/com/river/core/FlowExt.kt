@@ -89,7 +89,7 @@ fun <T, R> Flow<T>.flatIterable(f: (T) -> Iterable<R>): Flow<R> =
  */
 inline fun <T> Flow<T>.onEachParallel(
     concurrencyLevel: Int,
-    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+    crossinline f: suspend (T) -> Unit
 ): Flow<T> = mapParallel(concurrencyLevel) { it.also { f(it) } }
 
 /**
@@ -102,7 +102,7 @@ inline fun <T> Flow<T>.onEachParallel(
  */
 inline fun <T> Flow<T>.unorderedOnEachParallel(
     concurrencyLevel: Int,
-    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+    crossinline f: suspend (T) -> Unit
 ): Flow<T> = unorderedMapParallel(concurrencyLevel) { it.also { f(it) } }
 
 /**
@@ -114,7 +114,7 @@ inline fun <T> Flow<T>.unorderedOnEachParallel(
  */
 suspend inline fun <T> Flow<T>.collectParallel(
     concurrencyLevel: Int,
-    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+    crossinline f: suspend (T) -> Unit
 ): Unit = onEachParallel(concurrencyLevel, f).collect()
 
 /**
@@ -127,7 +127,7 @@ suspend inline fun <T> Flow<T>.collectParallel(
  */
 suspend inline fun <T> Flow<T>.unorderedCollectParallel(
     concurrencyLevel: Int,
-    crossinline f: suspend ConcurrencyInfo.(T) -> Unit
+    crossinline f: suspend (T) -> Unit
 ): Unit = unorderedOnEachParallel(concurrencyLevel, f).collect()
 
 /**
@@ -156,7 +156,7 @@ suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
  */
 fun <T, R> Flow<T>.mapParallel(
     concurrencyLevel: Int,
-    transform: suspend ConcurrencyInfo.(T) -> R
+    transform: suspend (T) -> R
 ): Flow<R> = MapParallelFlow(this, concurrencyLevel, transform)
 
 /**
@@ -169,7 +169,7 @@ fun <T, R> Flow<T>.mapParallel(
  */
 fun <T, R> Flow<T>.unorderedMapParallel(
     concurrencyLevel: Int,
-    f: suspend ConcurrencyInfo.(T) -> R
+    f: suspend (T) -> R
 ): Flow<R> = UnorderedMapParallelFlow(this, concurrencyLevel, f)
 
 /**
@@ -188,7 +188,7 @@ fun <T, R> Flow<T>.unorderedMapParallel(
  */
 fun <T, R> Flow<T>.flatMapParallel(
     concurrencyLevel: Int,
-    f: suspend ConcurrencyInfo.(T) -> Iterable<R>
+    f: suspend (T) -> Iterable<R>
 ): Flow<R> = mapParallel(concurrencyLevel, f).flatten()
 
 /**
@@ -206,7 +206,7 @@ fun <T, R> Flow<T>.flatMapParallel(
  */
 fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
     concurrencyLevel: Int,
-    f: suspend ConcurrencyInfo.(Iterable<T>) -> Iterable<R>
+    f: suspend (Iterable<T>) -> Iterable<R>
 ): Flow<R> = unorderedMapParallel(concurrencyLevel, f).flatten()
 
 /**
