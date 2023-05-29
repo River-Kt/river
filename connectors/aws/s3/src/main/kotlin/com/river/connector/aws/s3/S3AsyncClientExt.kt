@@ -98,7 +98,7 @@ fun S3AsyncClient.uploadBytes(
         upstream
             .chunked(MINIMUM_UPLOAD_SIZE)
             .withIndex()
-            .mapParallel(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
+            .mapAsync(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
             .onEach { emit(it) }
             .map { it.eTag() }
             .toList()
@@ -199,7 +199,7 @@ fun S3AsyncClient.uploadSplit(
         .split(splitEach / ONE_KB)
         .map { flow -> flow.map { it.toByteArray() } }
         .withIndex()
-        .mapParallel(parallelism) { (part, bytes) ->
+        .mapAsync(parallelism) { (part, bytes) ->
             if (splitEach <= FIVE_MB) {
                 flowOf { putObject(bucket, key(part + 1), bytes) }
             } else {
@@ -258,7 +258,7 @@ fun S3AsyncClient.multipartUploadCopy(
     val etags =
         files
             .withIndex()
-            .mapParallel(parallelism) { (index, tuple) ->
+            .mapAsync(parallelism) { (index, tuple) ->
                 val (sourceBucket, sourceKey) = tuple
 
                 uploadPartCopy {

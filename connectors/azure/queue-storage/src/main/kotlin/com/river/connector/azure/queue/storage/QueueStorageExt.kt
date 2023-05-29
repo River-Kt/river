@@ -5,7 +5,7 @@ import com.azure.storage.queue.models.QueueMessageItem
 import com.azure.storage.queue.models.SendMessageResult
 import com.river.connector.azure.queue.storage.model.SendMessageRequest
 import com.river.core.ParallelismStrategy
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import com.river.core.poll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
@@ -71,7 +71,7 @@ fun QueueAsyncClient.deleteMessagesFlow(
     parallelism: Int = 100,
 ): Flow<Unit> =
     upstream
-        .mapParallel(parallelism) {
+        .mapAsync(parallelism) {
             deleteMessage(it.messageId, it.popReceipt).awaitFirstOrNull()
             Unit
         }
@@ -98,7 +98,7 @@ fun QueueAsyncClient.sendMessagesFlow(
     parallelism: Int = 100,
 ): Flow<SendMessageResult> =
     upstream
-        .mapParallel(parallelism) {
+        .mapAsync(parallelism) {
             sendMessageWithResponse(it.text, it.visibilityTimeout?.toJavaDuration(), it.ttl?.toJavaDuration())
                 .awaitFirst()
                 .value

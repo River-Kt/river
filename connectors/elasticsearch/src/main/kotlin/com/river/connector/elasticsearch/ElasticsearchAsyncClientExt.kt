@@ -70,7 +70,7 @@ fun <T> ElasticsearchAsyncClient.indexFlow(
 ): Flow<BulkResponseItem> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { chunk ->
+        .mapAsync(parallelism) { chunk ->
             BulkRequest.Builder()
                 .also { builder ->
                     chunk.forEach { document ->

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Semaphore
 import org.slf4j.LoggerFactory
 
-internal class MapParallelFlow<T, R>(
+internal class MapAsyncFlow<T, R>(
     private val upstream: Flow<T>,
     private val concurrencyLevel: Int,
     private val f: suspend ConcurrencyInfo.(T) -> R

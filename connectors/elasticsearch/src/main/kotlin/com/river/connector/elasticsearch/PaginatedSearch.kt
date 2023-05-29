@@ -48,7 +48,7 @@ sealed interface PaginatedSearch {
                                 .build()
                         }
                     }
-                    .mapParallel(parallelism) { request ->
+                    .mapAsync(parallelism) { request ->
                         request?.let {
                             client.search(it, clazz)
                                 .await()

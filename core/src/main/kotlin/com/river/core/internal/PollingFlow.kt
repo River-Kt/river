@@ -4,7 +4,7 @@ package com.river.core.internal
 
 import com.river.core.ParallelismInfo
 import com.river.core.ParallelismStrategy
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -63,7 +63,7 @@ internal sealed interface PollingFlow<T> : Flow<T> {
                     )
 
                     (1..lastParallelismInfo.currentParallelism)
-                        .mapParallel { producer(lastParallelismInfo) }
+                        .mapAsync { producer(lastParallelismInfo) }
                         .onEach { if (!emptyResultOnResponse) emptyResultOnResponse = it.isEmpty() }
                         .flatten()
                         .also {

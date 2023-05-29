@@ -5,7 +5,7 @@ package com.river.connector.rdbms.r2dbc
 import com.river.connector.rdbms.r2dbc.model.Returning
 import com.river.core.GroupStrategy
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import io.r2dbc.spi.Connection
 import io.r2dbc.spi.Result
 import io.r2dbc.spi.Row
@@ -123,7 +123,7 @@ fun <T> Connection.singleUpdate(
     prepare: Statement.(T) -> Unit = {}
 ): Flow<Long> =
     upstream
-        .mapParallel(parallelism) { item ->
+        .mapAsync(parallelism) { item ->
             createStatement(sql)
                 .also { statement -> prepare(statement, item) }
                 .execute()
@@ -217,7 +217,7 @@ fun <T> Connection.batchUpdate(
 ): Flow<Result> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { items ->
+        .mapAsync(parallelism) { items ->
             createStatement(sql)
                 .let {
                     when (returning) {
@@ -279,7 +279,7 @@ fun <T> Connection.batchUpdate(
 ): Flow<Result> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { items ->
+        .mapAsync(parallelism) { items ->
             createBatch()
                 .also { batch -> items.forEach { batch.add(query(it)) } }
                 .execute()

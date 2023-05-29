@@ -98,7 +98,7 @@ fun SqsAsyncClient.sendMessageFlow(
         upstream
             .map { it.asMessageRequestEntry() }
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { entries ->
+            .mapAsync(parallelism) { entries ->
                 val response =
                     sendMessageBatch { it.queueUrl(url).entries(entries) }
                         .await()
@@ -170,7 +170,7 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
     flowOf(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { messages ->
+            .mapAsync(parallelism) { messages ->
                 changeMessageVisibilityBatch {
                     it.queueUrl(url)
 
@@ -229,7 +229,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
     flowOf(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { messages ->
+            .mapAsync(parallelism) { messages ->
                 deleteMessageBatch {
                     logger.info("Deleting ${messages.size} messages from queue $queueUrl")
 

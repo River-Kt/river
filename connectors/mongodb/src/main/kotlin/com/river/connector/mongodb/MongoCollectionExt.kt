@@ -9,7 +9,7 @@ import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
 import com.river.core.GroupStrategy
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactive.asFlow
@@ -38,7 +38,7 @@ fun <T> MongoCollection<T>.insert(
     flow: Flow<T>,
     parallelism: Int = 1,
 ): Flow<InsertOneResult> =
-    flow.mapParallel(parallelism) { insertOne(it).awaitFirst() }
+    flow.mapAsync(parallelism) { insertOne(it).awaitFirst() }
 
 /**
  * Inserts many documents into a MongoDB collection using a flow of documents, batching them by the provided chunkStrategy.
@@ -66,7 +66,7 @@ fun <T> MongoCollection<T>.insertMany(
 ): Flow<InsertManyResult> =
     flow
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { insertMany(it, options).asFlow() }
+        .mapAsync(parallelism) { insertMany(it, options).asFlow() }
         .flattenConcat()
 
 /**
@@ -91,7 +91,7 @@ fun MongoCollection<Document>.update(
     flow: Flow<Document>,
     filter: Bson,
     parallelism: Int = 1,
-) = flow.mapParallel(parallelism) { updateOne(filter, it).awaitFirst() }
+) = flow.mapAsync(parallelism) { updateOne(filter, it).awaitFirst() }
 
 /**
  * Updates many documents in a MongoDB collection using a flow of update documents, a filter, and batching by the provided chunkStrategy.
@@ -120,7 +120,7 @@ fun MongoCollection<Document>.updateMany(
 ): Flow<UpdateResult> =
     flow
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { updateMany(filter, it).asFlow() }
+        .mapAsync(parallelism) { updateMany(filter, it).asFlow() }
         .flattenConcat()
 
 /**
@@ -145,7 +145,7 @@ fun <T> MongoCollection<T>.replace(
     flow: Flow<T>,
     filter: Bson,
     parallelism: Int = 1,
-): Flow<UpdateResult> = flow.mapParallel(parallelism) { replaceOne(filter, it).awaitFirst() }
+): Flow<UpdateResult> = flow.mapAsync(parallelism) { replaceOne(filter, it).awaitFirst() }
 
 /**
  * Replaces documents in a MongoDB collection using a flow of pairs containing a filter and a document.
@@ -168,7 +168,7 @@ fun <T> MongoCollection<T>.replace(
     flow: Flow<Pair<Bson, T>>,
     parallelism: Int = 1,
 ): Flow<UpdateResult> =
-    flow.mapParallel(parallelism) { (filter, document) -> replaceOne(filter, document).awaitFirst() }
+    flow.mapAsync(parallelism) { (filter, document) -> replaceOne(filter, document).awaitFirst() }
 
 /**
  * Finds documents in a MongoDB collection that match the specified BSON query and returns them as a flow.

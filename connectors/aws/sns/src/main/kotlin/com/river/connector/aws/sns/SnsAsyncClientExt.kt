@@ -61,7 +61,7 @@ fun SnsAsyncClient.publishFlow(
         .flatMapConcat { arn ->
             upstream
                 .chunked(groupStrategy)
-                .mapParallel(parallelism) { chunk ->
+                .mapAsync(parallelism) { chunk ->
                     val entries = chunk.mapIndexed { index, publishMessageRequest ->
                         publishMessageRequest.asEntry("$index")
                     }

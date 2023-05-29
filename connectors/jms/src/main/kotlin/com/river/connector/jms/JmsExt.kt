@@ -4,9 +4,9 @@ package com.river.connector.jms
 
 import com.river.connector.jms.model.*
 import com.river.core.flatten
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import com.river.core.repeat
-import com.river.core.unorderedMapParallel
+import com.river.core.unorderedMapAsync
 import com.river.util.pool.ObjectPool
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +74,7 @@ fun ConnectionFactory.consume(
 
         emitAll(
             repeat(contextPool)
-                .unorderedMapParallel(parallelism) {
+                .unorderedMapAsync(parallelism) {
                     val instance = it.borrow()
                     val (_, consumer) = instance.instance
 
@@ -144,7 +144,7 @@ fun ConnectionFactory.sendToDestination(
                 }
 
         upstream
-            .mapParallel(parallelism) { send(it) }
+            .mapAsync(parallelism) { send(it) }
             .collect { emit(Unit) }
     }
 }

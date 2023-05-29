@@ -45,8 +45,8 @@ infix fun <T> List<CompletableDeferred<T>>.completeAllWith(result: Result<List<T
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapParallel(f: suspend (T) -> Iterable<R>): List<R> =
-    mapParallel { f(it) }.flatten()
+suspend fun <T, R> Iterable<T>.flatMapAsync(f: suspend (T) -> Iterable<R>): List<R> =
+    mapAsync { f(it) }.flatten()
 
 /**
  * Transforms the elements of the iterable in parallel using the provided [f] function with a specified
@@ -56,10 +56,10 @@ suspend fun <T, R> Iterable<T>.flatMapParallel(f: suspend (T) -> Iterable<R>): L
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapParallel(
+suspend fun <T, R> Iterable<T>.flatMapAsync(
     concurrency: Int,
     f: suspend (T) -> Iterable<R>
-): List<R> = mapParallel(concurrency) { f(it) }.flatten()
+): List<R> = mapAsync(concurrency) { f(it) }.flatten()
 
 /**
  * Transforms the elements of the iterable in parallel using the provided [f] function.
@@ -67,7 +67,7 @@ suspend fun <T, R> Iterable<T>.flatMapParallel(
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.mapParallel(f: suspend (T) -> R): List<R> =
+suspend fun <T, R> Iterable<T>.mapAsync(f: suspend (T) -> R): List<R> =
     coroutineScope { map { async { f(it) } }.awaitAll() }
 
 /**
@@ -78,7 +78,7 @@ suspend fun <T, R> Iterable<T>.mapParallel(f: suspend (T) -> R): List<R> =
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.mapParallel(
+suspend fun <T, R> Iterable<T>.mapAsync(
     concurrency: Int,
     f: suspend ConcurrencyInfo.(T) -> R
-): List<R> = asFlow().mapParallel(concurrency, f).toList()
+): List<R> = asFlow().mapAsync(concurrency, f).toList()

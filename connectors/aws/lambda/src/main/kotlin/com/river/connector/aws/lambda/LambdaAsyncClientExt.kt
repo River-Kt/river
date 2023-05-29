@@ -1,6 +1,6 @@
 package com.river.connector.aws.lambda
 
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.core.SdkBytes
@@ -47,7 +47,7 @@ fun LambdaAsyncClient.invokeFlow(
     parallelism: Int = 1
 ): Flow<InvokeResponse> =
     upstream
-        .mapParallel(parallelism) { content ->
+        .mapAsync(parallelism) { content ->
             invoke { builder ->
                 builder
                     .functionName(functionName)

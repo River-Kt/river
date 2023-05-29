@@ -5,7 +5,7 @@ package com.river.connector.rdbms.jdbc
 import com.river.core.GroupStrategy
 import com.river.core.GroupStrategy.*
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.invoke
@@ -78,7 +78,7 @@ fun <T> Jdbc.singleUpdate(
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
-        .mapParallel(parallelism) { item ->
+        .mapAsync(parallelism) { item ->
         connectionPool.use {
             IO {
                 it.prepareStatement(sql)
@@ -120,7 +120,7 @@ fun <T> Jdbc.batchUpdate(
 ): Flow<Int> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { chunk ->
+        .mapAsync(parallelism) { chunk ->
             connectionPool.use {
                 IO {
                     logger.debug("Running $sql with ${chunk.size} elements.")

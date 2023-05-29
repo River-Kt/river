@@ -1,7 +1,7 @@
 package com.river.core.internal
 
 import com.river.core.collectAsync
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -23,7 +23,7 @@ internal class Broadcast<T>(
         upstream
             .onCompletion { channels.forEach { it.close() } }
             .collectAsync(scope) { element ->
-                channels.mapParallel { it.send(element) }
+                channels.mapAsync { it.send(element) }
             }
     }
 
