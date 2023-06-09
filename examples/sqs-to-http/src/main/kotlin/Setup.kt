@@ -2,6 +2,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.river.connector.aws.sqs.model.SendMessageRequest
 import com.river.connector.aws.sqs.sendMessageFlow
 import com.river.core.collectAsync
+import com.river.core.launchCollect
 import com.river.core.pollWithState
 import com.river.core.throttle
 import kotlinx.coroutines.Job
@@ -32,7 +33,7 @@ fun keepOnPublishing(
 
     return sqsAsyncClient
         .sendMessageFlow(requestFlow) { queueUrl }
-        .collectAsync()
+        .launchCollect()
 }
 
 inline fun withWiremock(f: (WireMockServer, Int) -> Unit) {

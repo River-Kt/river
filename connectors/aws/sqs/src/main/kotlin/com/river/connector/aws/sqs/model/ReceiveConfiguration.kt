@@ -5,7 +5,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class ReceiveConfiguration {
     var stopOnEmptyList: Boolean = false
-    var parallelism = 1
+    var concurrency = 1
 
     internal var request: ReceiveMessageRequestBuilder.() -> Unit = {}
 
@@ -15,6 +15,6 @@ class ReceiveConfiguration {
 }
 
 class CommitConfiguration {
-    var parallelism = 1
+    var concurrency = 1
     var groupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds)
 }

@@ -74,7 +74,7 @@ fun Application.api() {
                 unboundedLongFlow(1)
                     // Use each number as a page number for the HTTP request
                     .map { riverGet("http://localhost:$port/orders") { query("page", "$it") } }
-                    // Send requests with parallelism of 2 for this example
+                    // Send requests with concurrency of 2 for this example
                     .sendAndHandle(ofJson<List<Order>>(), 2)
                     .map { it.body() }
                     // Stop when an empty list is returned

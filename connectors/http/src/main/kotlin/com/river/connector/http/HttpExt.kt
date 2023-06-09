@@ -1,6 +1,6 @@
 package com.river.connector.http
 
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
@@ -65,34 +65,34 @@ fun <T> HttpResponse<Publisher<T>>.bodyAsFlow(): Flow<T> =
  * Sends each HTTP request in the flow and returns a flow of the HTTP responses.
  *
  * @param bodyHandler The body handler to process the HTTP response body.
- * @param parallelism The maximum number of concurrent requests.
+ * @param concurrency The maximum number of concurrent requests.
  * @param httpClient The HTTP client used to send the requests.
  *
  * @return A flow of HTTP responses.
  */
 fun <T> Flow<HttpRequest>.sendAndHandle(
     bodyHandler: BodyHandler<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     httpClient: HttpClient = DefaultHttpClient,
 ): Flow<HttpResponse<T>> =
-    mapParallel(parallelism) { it.coSend(bodyHandler, httpClient) }
+    mapAsync(concurrency) { it.coSend(bodyHandler, httpClient) }
 
 /**
  * Sends each HTTP request in the flow and returns a flow of the HTTP responses.
  *
- * @param parallelism The maximum number of concurrent requests.
+ * @param concurrency The maximum number of concurrent requests.
  * @param httpClient The HTTP client used to send the requests.
  * @param handle A function that returns a body handler to process the HTTP response body.
  *
  * @return A flow of HTTP responses.
  */
 fun <T> Flow<HttpRequest>.sendAndHandle(
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     httpClient: HttpClient = DefaultHttpClient,
     handle: CoroutineScope.() -> BodyHandler<T>,
 ): Flow<HttpResponse<T>> =
     flow {
         emitAll(
-            coroutineScope { sendAndHandle(handle(), parallelism, httpClient) }
+            coroutineScope { sendAndHandle(handle(), concurrency, httpClient) }
         )
     }

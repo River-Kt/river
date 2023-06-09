@@ -5,7 +5,7 @@ package com.river.connector.rdbms.jdbc
 import com.river.core.GroupStrategy
 import com.river.core.GroupStrategy.*
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.invoke
@@ -49,12 +49,12 @@ fun Jdbc.singleUpdate(
 /**
  * Executes a single SQL update using a JDBC connection for each item in the [upstream] flow.
  *
- * This function takes an SQL statement [sql], an [upstream] flow, [parallelism], and an optional
+ * This function takes an SQL statement [sql], an [upstream] flow, [concurrency], and an optional
  * [prepare] function, which prepares the statement before execution.
  *
  * @param sql The SQL statement to execute.
  * @param upstream A [Flow] of items to process.
- * @param parallelism The level of parallelism for executing the updates.
+ * @param concurrency The level of concurrency for executing the updates.
  * @param prepare A suspend function that prepares the statement for each item before execution.
  * @return A [Flow] of the number of rows affected by the update for each item.
  *
@@ -74,11 +74,11 @@ fun Jdbc.singleUpdate(
 fun <T> Jdbc.singleUpdate(
     sql: String,
     upstream: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
-        .mapParallel(parallelism) { item ->
+        .mapAsync(concurrency) { item ->
         connectionPool.use {
             IO {
                 it.prepareStatement(sql)
@@ -90,12 +90,12 @@ fun <T> Jdbc.singleUpdate(
 
 /**
  * Executes a batch update for the given SQL statement using the provided [upstream] Flow as input.
- * The batch update is performed in chunks, as specified by the [groupStrategy] parameter, and can be executed in parallel
- * using the specified [parallelism] level.
+ * The batch update is performed in chunks, as specified by the [groupStrategy] parameter, and can be executed concurrently
+ * using the specified [concurrency] level.
  *
  * @param sql the SQL statement to be executed
  * @param upstream the Flow of input elements to be used in the batch update
- * @param parallelism the level of parallelism to be used in the batch update (default: 1)
+ * @param concurrency the level of concurrency to be used in the batch update (default: 1)
  * @param groupStrategy the chunking strategy to be used for processing the input elements (default: TimeWindow(100, 250.milliseconds))
  * @param prepare a function that prepares the PreparedStatement using the current input element (default: {})
  * @return A [Flow] of the number of rows affected by the update for each batch.
@@ -114,13 +114,13 @@ fun <T> Jdbc.singleUpdate(
 fun <T> Jdbc.batchUpdate(
     sql: String,
     upstream: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = TimeWindow(100, 250.milliseconds),
     prepare: suspend PreparedStatement.(T) -> Unit = {}
 ): Flow<Int> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { chunk ->
+        .mapAsync(concurrency) { chunk ->
             connectionPool.use {
                 IO {
                     logger.debug("Running $sql with ${chunk.size} elements.")

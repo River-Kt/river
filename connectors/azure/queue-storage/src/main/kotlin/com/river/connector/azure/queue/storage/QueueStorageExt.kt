@@ -4,8 +4,8 @@ import com.azure.storage.queue.QueueAsyncClient
 import com.azure.storage.queue.models.QueueMessageItem
 import com.azure.storage.queue.models.SendMessageResult
 import com.river.connector.azure.queue.storage.model.SendMessageRequest
-import com.river.core.ParallelismStrategy
-import com.river.core.mapParallel
+import com.river.core.ConcurrencyStrategy
+import com.river.core.mapAsync
 import com.river.core.poll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
@@ -20,12 +20,10 @@ import kotlin.time.toJavaDuration
  * Continuously receives messages from an Azure Storage Queue using the provided [QueueAsyncClient].
  * The received messages are returned as a [Flow] of [QueueMessageItem] objects.
  *
- * @param maxParallelism The maximum number of parallel receive operations. Defaults to 1.
+ * @param concurrency The [ConcurrencyStrategy] to control the number of concurrent polling operations allowed. Defaults to a static strategy with concurrency of 1.
  * @param pollSize The maximum number of messages to retrieve per poll request. Defaults to 32.
  * @param visibilityTimeout The visibility timeout for messages retrieved from the queue. Defaults to 30 seconds.
  * @param stopOnEmptyList If true, the flow will stop when an empty list of messages is received. Defaults to false.
- * @param minimumParallelism The minimum number of parallel receive operations. Defaults to 1.
- * @param increaseStrategy Determines how the parallelism increases when processing messages. Defaults to [ParallelismIncreaseStrategy.ByOne].
  *
  * @return A flow of QueueMessageItem objects.
  *
@@ -38,12 +36,12 @@ import kotlin.time.toJavaDuration
  * ```
  */
 fun QueueAsyncClient.receiveMessagesAsFlow(
-    parallelism: ParallelismStrategy = ParallelismStrategy.disabled,
+    concurrency: ConcurrencyStrategy = ConcurrencyStrategy.disabled,
     pollSize: Int = 32,
     visibilityTimeout: Duration = 30.seconds,
     stopOnEmptyList: Boolean = false,
 ): Flow<QueueMessageItem> =
-    poll(parallelism, stopOnEmptyList) {
+    poll(concurrency, stopOnEmptyList) {
         receiveMessages(pollSize, visibilityTimeout.toJavaDuration())
             .asFlow()
             .toList()
@@ -53,7 +51,7 @@ fun QueueAsyncClient.receiveMessagesAsFlow(
  * Deletes messages from an Azure Storage Queue using an upstream flow of QueueMessageItem objects.
  *
  * @param upstream The flow of QueueMessageItem objects to delete from the queue.
- * @param parallelism The parallelism for this operation. Defaults to 100.
+ * @param concurrency The concurrency for this operation. Defaults to 100.
  *
  * @return A flow of Unit objects.
  *
@@ -68,10 +66,10 @@ fun QueueAsyncClient.receiveMessagesAsFlow(
  */
 fun QueueAsyncClient.deleteMessagesFlow(
     upstream: Flow<QueueMessageItem>,
-    parallelism: Int = 100,
+    concurrency: Int = 100,
 ): Flow<Unit> =
     upstream
-        .mapParallel(parallelism) {
+        .mapAsync(concurrency) {
             deleteMessage(it.messageId, it.popReceipt).awaitFirstOrNull()
             Unit
         }
@@ -80,7 +78,7 @@ fun QueueAsyncClient.deleteMessagesFlow(
  * Sends messages to an Azure Storage Queue using an upstream flow of SendMessageRequest objects.
  *
  * @param upstream The flow of SendMessageRequest objects to send to the queue.
- * @param parallelism The parallelism for this operation. Defaults to 100.
+ * @param concurrency The concurrency for this operation. Defaults to 100.
  *
  * @return A flow of SendMessageResult objects.
  *
@@ -95,10 +93,10 @@ fun QueueAsyncClient.deleteMessagesFlow(
  */
 fun QueueAsyncClient.sendMessagesFlow(
     upstream: Flow<SendMessageRequest>,
-    parallelism: Int = 100,
+    concurrency: Int = 100,
 ): Flow<SendMessageResult> =
     upstream
-        .mapParallel(parallelism) {
+        .mapAsync(concurrency) {
             sendMessageWithResponse(it.text, it.visibilityTimeout?.toJavaDuration(), it.ttl?.toJavaDuration())
                 .awaitFirst()
                 .value

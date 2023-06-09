@@ -1,9 +1,9 @@
-@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.river.core
 
-import com.river.core.internal.MapParallelFlow
-import com.river.core.internal.UnorderedMapParallelFlow
+import com.river.core.internal.MapAsyncFlow
+import com.river.core.internal.UnorderedMapAsyncFlow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -81,54 +81,54 @@ fun <T, R> Flow<T>.flatIterable(f: (T) -> Iterable<R>): Flow<R> =
 
 /**
  * Performs the provided [f] action concurrently on each item emitted by the flow. The action
- * is applied with the specified [concurrencyLevel].
+ * is applied with the specified [concurrency].
  *
- * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param concurrency The maximum number of concurrent invocations of the action [f].
  * @param f The action to apply to each item emitted by the flow.
  * @return A [Flow] of items with the action applied concurrently.
  */
-inline fun <T> Flow<T>.onEachParallel(
-    concurrencyLevel: Int,
+inline fun <T> Flow<T>.onEachAsync(
+    concurrency: Int,
     crossinline f: suspend (T) -> Unit
-): Flow<T> = mapParallel(concurrencyLevel) { it.also { f(it) } }
+): Flow<T> = mapAsync(concurrency) { it.also { f(it) } }
 
 /**
  * Performs the provided [f] action concurrently on each item emitted by the flow. The action
- * is applied with the specified [concurrencyLevel]. The order of items might not be preserved.
+ * is applied with the specified [concurrency]. The order of items might not be preserved.
  *
- * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param concurrency The maximum number of concurrent invocations of the action [f].
  * @param f The action to apply to each item emitted by the flow.
  * @return A [Flow] of items with the action applied concurrently and possibly unordered.
  */
-inline fun <T> Flow<T>.unorderedOnEachParallel(
-    concurrencyLevel: Int,
+inline fun <T> Flow<T>.unorderedOnEachAsync(
+    concurrency: Int,
     crossinline f: suspend (T) -> Unit
-): Flow<T> = unorderedMapParallel(concurrencyLevel) { it.also { f(it) } }
+): Flow<T> = unorderedMapAsync(concurrency) { it.also { f(it) } }
 
 /**
  * Collects the flow and performs the provided [f] action concurrently on each item emitted by the
- * flow. The action is applied with the specified [concurrencyLevel].
+ * flow. The action is applied with the specified [concurrency].
  *
- * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param concurrency The maximum number of concurrent invocations of the action [f].
  * @param f The action to apply to each item emitted by the flow.
  */
-suspend inline fun <T> Flow<T>.collectParallel(
-    concurrencyLevel: Int,
+suspend inline fun <T> Flow<T>.collectAsync(
+    concurrency: Int,
     crossinline f: suspend (T) -> Unit
-): Unit = onEachParallel(concurrencyLevel, f).collect()
+): Unit = onEachAsync(concurrency, f).collect()
 
 /**
  * Collects the flow and performs the provided [f] action concurrently on each item emitted by the
- * flow. The action is applied with the specified [concurrencyLevel]. The order of items might
+ * flow. The action is applied with the specified [concurrency]. The order of items might
  * not be preserved.
  *
- * @param concurrencyLevel The maximum number of concurrent invocations of the action [f].
+ * @param concurrency The maximum number of concurrent invocations of the action [f].
  * @param f The action to apply to each item emitted by the flow.
  */
-suspend inline fun <T> Flow<T>.unorderedCollectParallel(
-    concurrencyLevel: Int,
+suspend inline fun <T> Flow<T>.unorderedCollectAsync(
+    concurrency: Int,
     crossinline f: suspend (T) -> Unit
-): Unit = unorderedOnEachParallel(concurrencyLevel, f).collect()
+): Unit = unorderedOnEachAsync(concurrency, f).collect()
 
 /**
  * Counts the number of items emitted by the flow within the specified [duration] window.
@@ -142,75 +142,75 @@ suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
 }
 
 /**
- * The [mapParallel] function is similar to the [map] function
+ * The [mapAsync] function is similar to the [map] function
  * since it transforms each element via the [transform] function.
  *
  * It works, however, in a parallel way, which means that multiple elements can be
  * processed at the same time, especially useful for more intensive tasks.
  *
- * Use [concurrencyLevel] to configure the parallelism number.
+ * Use [concurrency] to configure the concurrency number.
  *
  * One thing to note is that the order of the elements is preserved,
  * so the output flow will contain the same elements as the input flow,
  * but with the values transformed according to the provided function.
  */
-fun <T, R> Flow<T>.mapParallel(
-    concurrencyLevel: Int,
+fun <T, R> Flow<T>.mapAsync(
+    concurrency: Int,
     transform: suspend (T) -> R
-): Flow<R> = MapParallelFlow(this, concurrencyLevel, transform)
+): Flow<R> = MapAsyncFlow(this, concurrency, transform)
 
 /**
- * The [unorderedMapParallel] function is similar to the [mapParallel] function in that it transforms each element
- * in a parallel way using the provided [f] function. However, unlike [mapParallel], this function does not guarantee
+ * The [unorderedMapAsync] function is similar to the [mapAsync] function in that it transforms each element
+ * in a parallel way using the provided [f] function. However, unlike [mapAsync], this function does not guarantee
  * that the output elements will be in the same order as the input elements. This means that this function can be
- * significantly faster than [mapParallel] because it does not have to preserve order.
+ * significantly faster than [mapAsync] because it does not have to preserve order.
  *
- * Use [concurrencyLevel] to configure the parallelism number.
+ * Use [concurrency] to configure the concurrency number.
  */
-fun <T, R> Flow<T>.unorderedMapParallel(
-    concurrencyLevel: Int,
+fun <T, R> Flow<T>.unorderedMapAsync(
+    concurrency: Int,
     f: suspend (T) -> R
-): Flow<R> = UnorderedMapParallelFlow(this, concurrencyLevel, f)
+): Flow<R> = UnorderedMapAsyncFlow(this, concurrency, f)
 
 /**
- * The [flatMapParallel] function is similar to the [flatIterable] function but works in a parallel way
+ * The [flatMapAsync] function is similar to the [flatIterable] function but works in a parallel way
  * to transform each element of the [Flow] with the provided [f] function.
  *
  * This function transforms each element of the input Flow by applying the [f] function in a
  * parallel way. This means that multiple elements can be processed at the same time, especially useful
  * for more intensive tasks.
  *
- * Use [concurrencyLevel] to configure the parallelism number.
+ * Use [concurrency] to configure the concurrency number.
  *
  * The output of this function is a Flow of the transformed elements, where the order of the elements is preserved.
  * This means that the output Flow will contain the same elements as the input Flow, but with each element
  * transformed according to the provided function.
  */
-fun <T, R> Flow<T>.flatMapParallel(
-    concurrencyLevel: Int,
+fun <T, R> Flow<T>.flatMapAsync(
+    concurrency: Int,
     f: suspend (T) -> Iterable<R>
-): Flow<R> = mapParallel(concurrencyLevel, f).flatten()
+): Flow<R> = mapAsync(concurrency, f).flatten()
 
 /**
- * The [unorderedFlatMapParallel] function is similar to the [flatMapParallel] function but does not guarantee
+ * The [unorderedFlatMapAsync] function is similar to the [flatMapAsync] function but does not guarantee
  * the order of the output elements.
  *
  * This function transforms each element of the input Flow by applying the [f] function in a parallel way.
  * This means that multiple elements can be processed at the same time, especially useful for more intensive tasks.
  *
- * Use [concurrencyLevel] to configure the parallelism number.
+ * Use [concurrency] to configure the concurrency number.
  *
  * The output of this function is a Flow of the transformed elements, where the order of the elements is not preserved.
  * This means that the output Flow may not contain the elements in the same order as the input Flow.
- * However, this function can be significantly faster than [flatMapParallel] because it does not have to preserve order.
+ * However, this function can be significantly faster than [flatMapAsync] because it does not have to preserve order.
  */
-fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
-    concurrencyLevel: Int,
+fun <T, R> Flow<Iterable<T>>.unorderedFlatMapAsync(
+    concurrency: Int,
     f: suspend (Iterable<T>) -> Iterable<R>
-): Flow<R> = unorderedMapParallel(concurrencyLevel, f).flatten()
+): Flow<R> = unorderedMapAsync(concurrency, f).flatten()
 
 /**
- * The [collectAsync] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
+ * The [launchCollect] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
  *
  * This function returns a [Job] instance that represents the coroutine launched to collect the elements.
  *
@@ -218,13 +218,13 @@ fun <T, R> Flow<Iterable<T>>.unorderedFlatMapParallel(
  *
  * If the caller needs to cancel the coroutine before it completes, they can cancel the returned [Job].
  */
-fun <T> Flow<T>.collectAsync(
+fun <T> Flow<T>.launchCollect(
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     collector: FlowCollector<T> = FlowCollector { }
-): Job = with(scope) { collectAsync(collector) }
+): Job = with(scope) { launchCollect(collector) }
 
 /**
- * The [collectAsync] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
+ * The [launchCollect] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
  *
  * This function returns a [Job] instance that represents the coroutine launched to collect the elements.
  *
@@ -233,7 +233,7 @@ fun <T> Flow<T>.collectAsync(
  * If the caller needs to cancel the coroutine before it completes, they can cancel the returned [Job].
  */
 context(CoroutineScope)
-fun <T> Flow<T>.collectAsync(
+fun <T> Flow<T>.launchCollect(
     collector: FlowCollector<T> = FlowCollector { }
 ): Job = launch { collect(collector) }
 
@@ -306,7 +306,7 @@ fun unboundedLongFlow(startAt: Long = 0): Flow<Long> = flow {
 }
 
 /**
- * Allows the [Flow] to be collected and transformed into another [Flow] in parallel. The
+ * Allows the [Flow] to be collected and transformed into another [Flow] concurrently. The
  * transformed [Flow] is collected asynchronously in the provided [scope]. The original flow
  * and the transformed flow share the same buffer with the specified [bufferCapacity],
  * [onBufferOverflow] policy, and [onUndeliveredElement] handler.

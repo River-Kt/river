@@ -5,7 +5,7 @@ package com.river.connector.rdbms.r2dbc
 import com.river.connector.rdbms.r2dbc.model.Returning
 import com.river.core.GroupStrategy
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import io.r2dbc.spi.Connection
 import io.r2dbc.spi.Result
 import io.r2dbc.spi.Row
@@ -92,7 +92,7 @@ fun Connection.singleUpdate(
  * @param T The type of the items emitted by the upstream Flow.
  * @param sql The SQL update statement to be executed.
  * @param upstream A Flow of items to be processed, where each item will be used to prepare an SQL statement.
- * @param parallelism An optional parameter to define the level of parallelism when processing items. Defaults to 1.
+ * @param concurrency An optional parameter to define the level of concurrency when processing items. Defaults to 1.
  * @param prepare An optional lambda for preparing the statement with an item from the upstream Flow,
  * which allows you to configure the statement further before executing it (e.g., bind parameters).
  * Defaults to an empty lambda.
@@ -119,11 +119,11 @@ fun Connection.singleUpdate(
 fun <T> Connection.singleUpdate(
     sql: String,
     upstream: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     prepare: Statement.(T) -> Unit = {}
 ): Flow<Long> =
     upstream
-        .mapParallel(parallelism) { item ->
+        .mapAsync(concurrency) { item ->
             createStatement(sql)
                 .also { statement -> prepare(statement, item) }
                 .execute()
@@ -174,13 +174,13 @@ fun <T> Flow<Result>.mapRow(f: suspend (Row) -> T): Flow<T> =
 
 /**
  * Executes a batch update with the specified SQL statement and values from a flow of items.
- * This function chunks the items in the flow and executes the chunks in parallel.
+ * This function chunks the items in the flow and executes the chunks concurrently.
  * Optionally, it can return generated values (e.g. auto-generated keys) from the inserted records.
  *
  * @param sql The SQL statement to execute
  * @param upstream The flow of items to insert/update
  * @param returning The type of generated values to return (if any)
- * @param parallelism The number of parallel database connections to use
+ * @param concurrency The number of concurrent database connections to use
  * @param groupStrategy The chunking strategy to use when batching updates
  * @param prepare A function to prepare the SQL statement before executing it for a given item from the upstream flow
  *
@@ -211,13 +211,13 @@ fun <T> Connection.batchUpdate(
     sql: String,
     upstream: Flow<T>,
     returning: Returning = Returning.Default,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds),
     prepare: Statement.(T) -> Unit = {}
 ): Flow<Result> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { items ->
+        .mapAsync(concurrency) { items ->
             createStatement(sql)
                 .let {
                     when (returning) {
@@ -243,12 +243,12 @@ fun <T> Connection.batchUpdate(
         .flattenConcat()
 
 /**
- * Executes a batch update for a specified [upstream] flow of items using a given [groupStrategy] and [parallelism].
+ * Executes a batch update for a specified [upstream] flow of items using a given [groupStrategy] and [concurrency].
  * The [query] function transforms each item in the [upstream] flow into a respective SQL query string.
  * Returns a flow of long values representing the number of rows updated in the database for each chunk.
  *
  * @param upstream The flow of items to insert/update
- * @param parallelism The number of parallel database connections to use
+ * @param concurrency The number of concurrent database connections to use
  * @param groupStrategy The chunking strategy to use when batching updates
  * @param query the function that transforms each item into a SQL query
  *
@@ -273,13 +273,13 @@ fun <T> Connection.batchUpdate(
  */
 fun <T> Connection.batchUpdate(
     upstream: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds),
     query: (T) -> String
 ): Flow<Result> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { items ->
+        .mapAsync(concurrency) { items ->
             createBatch()
                 .also { batch -> items.forEach { batch.add(query(it)) } }
                 .execute()

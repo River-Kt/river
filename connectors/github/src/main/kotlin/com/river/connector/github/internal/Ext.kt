@@ -14,12 +14,12 @@ internal fun String.snakeCase(): String =
 
 internal fun <T, Q : PageableQuery> paginatedFlowApi(
     filter: Q.() -> Unit,
-    parallelism: Int,
+    concurrency: Int,
     f: suspend (Q.() -> Unit) -> List<T>
 ) = indefinitelyRepeat(filter)
     .withIndex()
     .map { (index, filter) -> (index + 1) to filter  }
-    .mapParallel(parallelism) { (page, filter) ->
+    .mapAsync(concurrency) { (page, filter) ->
         f {
             filter()
             this.page = page

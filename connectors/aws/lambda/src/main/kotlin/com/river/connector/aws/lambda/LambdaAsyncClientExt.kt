@@ -1,6 +1,6 @@
 package com.river.connector.aws.lambda
 
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.core.SdkBytes
@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.lambda.model.LogType
  * Creates a flow that invokes an AWS Lambda function with the specified [functionName].
  *
  * This function takes an [upstream] flow of input strings and invokes the specified Lambda
- * function with the given parameters in parallel based on the provided [parallelism].
+ * function with the given parameters concurrently based on the provided [concurrency].
  *
  * @param functionName The name of the Lambda function.
  * @param upstream A [Flow] of input payloads.
@@ -21,7 +21,7 @@ import software.amazon.awssdk.services.lambda.model.LogType
  * @param logType The log type (optional).
  * @param qualifier The function version or alias (optional).
  * @param clientContext The client context (optional).
- * @param parallelism The level of parallelism for invoking the Lambda function.
+ * @param concurrency The level of concurrency for invoking the Lambda function.
  * @return A [Flow] of [InvokeResponse] objects.
  *
  * Example usage:
@@ -44,10 +44,10 @@ fun LambdaAsyncClient.invokeFlow(
     logType: LogType? = null,
     qualifier: String? = null,
     clientContext: String? = null,
-    parallelism: Int = 1
+    concurrency: Int = 1
 ): Flow<InvokeResponse> =
     upstream
-        .mapParallel(parallelism) { content ->
+        .mapAsync(concurrency) { content ->
             invoke { builder ->
                 builder
                     .functionName(functionName)
