@@ -4,34 +4,34 @@ import com.river.core.internal.PollingFlow
 import kotlinx.coroutines.flow.*
 
 /**
- * Creates a flow that continuously polls elements in parallel by successively applying the [f] function.
+ * Creates a flow that continuously polls elements concurrently by successively applying the [f] function.
  * The flow stops based on the [stopOnEmptyList] parameter or when the coroutine context is no longer active.
- * Parallelism is controlled by the [parallelism] strategy.
+ * Concurrency is controlled by the [concurrency] strategy.
  *
- * @param parallelism The [ParallelismStrategy] to control the number of parallel polling operations allowed. Defaults to a static strategy with parallelism of 1.
+ * @param concurrency The [ConcurrencyStrategy] to control the number of concurrent polling operations allowed. Defaults to a static strategy with concurrency of 1.
  * @param stopOnEmptyList If true, the flow will stop when an empty list of elements is received. Defaults to false.
  *                        If false, the flow will continue polling elements indefinitely.
- * @param f A lambda with receiver of type [ParallelismInfo] that produces a list of elements of type [T].
+ * @param f A lambda with receiver of type [ConcurrencyInfo] that produces a list of elements of type [T].
  *
- * @return A [Flow] of elements of type [T], polled in parallel using the provided [f] function.
+ * @return A [Flow] of elements of type [T], polled concurrently using the provided [f] function.
  *
  * Example usage:
  *
  * ```
  *  suspend fun fetchData(): List<Data> = ... // fetch data from somewhere
  *
- *  poll(ParallelismStrategy.increaseByOne(4), stopOnEmptyList = true) { fetchData() }
+ *  poll(ConcurrencyStrategy.increaseByOne(4), stopOnEmptyList = true) { fetchData() }
  *      .collect { println(it) }
  * ```
  */
 fun <T> poll(
-    parallelism: ParallelismStrategy = ParallelismStrategy.disabled,
+    concurrency: ConcurrencyStrategy = ConcurrencyStrategy.disabled,
     stopOnEmptyList: Boolean = false,
-    f: suspend ParallelismInfo.() -> List<T>
+    f: suspend ConcurrencyInfo.() -> List<T>
 ): Flow<T> =
     PollingFlow(
         stopOnEmptyList = stopOnEmptyList,
-        parallelism = parallelism,
+        concurrency = concurrency,
         producer = f
     )
 

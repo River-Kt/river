@@ -7,7 +7,7 @@ import com.river.connector.aws.sqs.model.Acknowledgment.*
 import com.river.connector.aws.sqs.model.SendMessageRequest
 import com.river.connector.aws.sqs.model.SendMessageResponse
 import com.river.core.*
-import com.river.core.ParallelismStrategy.Companion.increaseByOne
+import com.river.core.ConcurrencyStrategy.Companion.increaseByOne
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -28,10 +28,8 @@ internal val SqsAsyncClient.logger: Logger
  * Continuously receives messages from an Amazon Simple Queue Service (SQS) queue using the provided [SqsAsyncClient].
  * The received messages are returned as a [Flow] of [Message] objects.
  *
- * @param maxParallelism The maximum number of parallel receive operations. Defaults to 1.
+ * @param concurrency The [ConcurrencyStrategy] to control the number of concurrent polling operations allowed. Defaults to a static strategy with concurrency of 1.
  * @param stopOnEmptyList If true, the flow will stop when an empty list of messages is received. Defaults to false.
- * @param minimumParallelism The minimum number of parallel receive operations. Defaults to 1.
- * @param increaseStrategy Determines how the parallelism increases when processing messages. Defaults to [ParallelismIncreaseStrategy.ByOne].
  * @param builder A lambda with receiver for configuring the [ReceiveMessageRequestBuilder] for the underlying receive operation.
  *
  * @return A [Flow] of [Message] objects representing the messages received from the SQS queue.
@@ -49,7 +47,7 @@ internal val SqsAsyncClient.logger: Logger
  * ```
  */
 fun SqsAsyncClient.receiveMessagesAsFlow(
-    parallelism: ParallelismStrategy = ParallelismStrategy.disabled,
+    concurrency: ConcurrencyStrategy = ConcurrencyStrategy.disabled,
     stopOnEmptyList: Boolean = false,
     builder: suspend ReceiveMessageRequestBuilder.() -> Unit
 ): Flow<Message> =
@@ -57,7 +55,7 @@ fun SqsAsyncClient.receiveMessagesAsFlow(
         val request = ReceiveMessageRequestBuilder().also { builder(it) }.build()
 
         val elements =
-            poll(parallelism, stopOnEmptyList) {
+            poll(concurrency, stopOnEmptyList) {
                 receiveMessage(request)
                     .await()
                     .messages()
@@ -71,7 +69,7 @@ fun SqsAsyncClient.receiveMessagesAsFlow(
  * Messages are consumed from an upstream [Flow] of [SendMessageRequest] objects.
  *
  * @param upstream A [Flow] of [SendMessageRequest] objects to be sent to the specified SQS queue.
- * @param parallelism The number of concurrent send operations. Defaults to 1.
+ * @param concurrency The number of concurrent send operations. Defaults to 1.
  * @param groupStrategy Determines how to group messages for sending in batches. Defaults to [GroupStrategy.TimeWindow].
  * @param queueUrl A lambda function returning the URL of the Amazon SQS queue to which messages will be sent.
 
@@ -93,7 +91,7 @@ fun SqsAsyncClient.receiveMessagesAsFlow(
  */
 fun SqsAsyncClient.sendMessageFlow(
     upstream: Flow<SendMessageRequest>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String,
 ): Flow<SendMessageResponse> =
@@ -101,7 +99,7 @@ fun SqsAsyncClient.sendMessageFlow(
         upstream
             .map { it.asMessageRequestEntry() }
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { entries ->
+            .mapAsync(concurrency) { entries ->
                 val response =
                     sendMessageBatch { it.queueUrl(url).entries(entries) }
                         .await()
@@ -137,10 +135,10 @@ fun SqsAsyncClient.sendMessageFlow(
  * Creates a flow that changes the visibility of messages in an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
- * in parallel using [parallelism] and the specified [groupStrategy].
+ * concurrently using [concurrency] and the specified [groupStrategy].
  *
  * @param upstream A [Flow] of [MessageAcknowledgment] objects.
- * @param parallelism The level of parallelism for processing messages.
+ * @param concurrency The level of concurrency for processing messages.
  * @param groupStrategy The strategy to use when chunking messages for processing.
  * @param queueUrl A lambda function returning the URL of the Amazon SQS queue.
  *
@@ -166,14 +164,14 @@ fun SqsAsyncClient.sendMessageFlow(
  */
 fun SqsAsyncClient.changeMessageVisibilityFlow(
     upstream: Flow<MessageAcknowledgment<ChangeMessageVisibility>>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<ChangeMessageVisibility>, ChangeMessageVisibilityBatchResponse>> =
     flowOf(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { messages ->
+            .mapAsync(concurrency) { messages ->
                 changeMessageVisibilityBatch {
                     it.queueUrl(url)
 
@@ -197,10 +195,10 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
  * Creates a flow that deletes messages from an Amazon Simple Queue Service (SQS) queue.
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects with a [Delete]
- * acknowledgment and processes them in parallel using [parallelism] and the specified [groupStrategy].
+ * acknowledgment and processes them concurrently using [concurrency] and the specified [groupStrategy].
  *
  * @param upstream A [Flow] of [MessageAcknowledgment] objects with a [Delete] acknowledgment.
- * @param parallelism The level of parallelism for processing messages.
+ * @param concurrency The level of concurrency for processing messages.
  * @param groupStrategy The strategy to use when chunking messages for processing.
  * @param queueUrl A lambda function returning the URL of the Amazon SQS queue.
  *
@@ -225,14 +223,14 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
  */
 fun SqsAsyncClient.deleteMessagesFlow(
     upstream: Flow<MessageAcknowledgment<Delete>>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<Delete>, DeleteMessageBatchResponse>> =
     flowOf(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { messages ->
+            .mapAsync(concurrency) { messages ->
                 deleteMessageBatch {
                     logger.info("Deleting ${messages.size} messages from queue $queueUrl")
 
@@ -260,10 +258,10 @@ fun SqsAsyncClient.deleteMessagesFlow(
  *
  * This function takes an [upstream] flow of [MessageAcknowledgment] objects and processes them
  * based on their acknowledgment type: [ChangeMessageVisibility], [Delete], or [Ignore].
- * The function processes acknowledgments in parallel using [parallelism] and the specified [groupStrategy].
+ * The function processes acknowledgments concurrently using [concurrency] and the specified [groupStrategy].
  *
  * @param upstream A [Flow] of [MessageAcknowledgment] objects.
- * @param parallelism The level of parallelism for processing messages.
+ * @param concurrency The level of concurrency for processing messages.
  * @param groupStrategy The strategy to use when chunking messages for processing.
  * @param queueUrl A lambda function returning the URL of the Amazon SQS queue.
  *
@@ -294,7 +292,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
  */
 fun SqsAsyncClient.acknowledgmentMessageFlow(
     upstream: Flow<MessageAcknowledgment<out Acknowledgment>>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<AcknowledgmentResult<SdkResponse>> = flowOf(queueUrl).flatMapConcat { url ->
@@ -305,14 +303,14 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
     val deleteFlow =
         deleteMessagesFlow(
             deleteMessageChannel.receiveAsFlow(),
-            parallelism,
+            concurrency,
             groupStrategy
         ) { url }
 
     val changeVisibilityFlow =
         changeMessageVisibilityFlow(
             changeMessageVisibilityChannel.receiveAsFlow(),
-            parallelism,
+            concurrency,
             groupStrategy
         ) { url }
 
@@ -327,7 +325,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
             ignoreChannel.close()
             changeMessageVisibilityChannel.close()
         }
-        .collectAsync { ack: MessageAcknowledgment<out Acknowledgment> ->
+        .launchCollect { ack: MessageAcknowledgment<out Acknowledgment> ->
             @Suppress("UNCHECKED_CAST")
             val channel = when (ack.acknowledgment) {
                 is ChangeMessageVisibility -> changeMessageVisibilityChannel
@@ -399,7 +397,7 @@ fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
  * The function is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
  *
  * @param queueName The name of the queue from which messages will be received.
- * @param parallelism The level of parallelism for processing messages. Defaults to 1.
+ * @param concurrency The level of concurrency for processing messages. Defaults to 1.
  * @param groupStrategy The strategy to use when chunking messages for processing. Defaults to [GroupStrategy.TimeWindow].
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
  * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
@@ -424,7 +422,7 @@ fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
 context(CoroutineScope)
 suspend fun SqsAsyncClient.onMessages(
     queueName: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
     commitConfiguration: CommitConfiguration.() -> Unit = {},
@@ -436,7 +434,7 @@ suspend fun SqsAsyncClient.onMessages(
     val commitConfig = CommitConfiguration().also(commitConfiguration)
 
     val messagesFlow =
-        receiveMessagesAsFlow(increaseByOne(receiveConfig.parallelism), receiveConfig.stopOnEmptyList) {
+        receiveMessagesAsFlow(increaseByOne(receiveConfig.concurrency), receiveConfig.stopOnEmptyList) {
             receiveConfig.request(this)
             queueUrl = url
         }
@@ -444,17 +442,17 @@ suspend fun SqsAsyncClient.onMessages(
     val processingFlow =
         messagesFlow
             .chunked(groupStrategy)
-            .mapParallel(parallelism) { f(it) }
+            .mapAsync(concurrency) { f(it) }
             .flatten()
 
     val acknowledgmentFlow =
         acknowledgmentMessageFlow(
             upstream = processingFlow,
-            parallelism = commitConfig.parallelism,
+            concurrency = commitConfig.concurrency,
             groupStrategy = commitConfig.groupStrategy
         ) { url }
 
-    return acknowledgmentFlow.collectAsync()
+    return acknowledgmentFlow.launchCollect()
 }
 
 /**
@@ -468,7 +466,7 @@ suspend fun SqsAsyncClient.onMessages(
  * It is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
  *
  * @param queueName The name of the queue from which messages will be received.
- * @param parallelism The level of parallelism for processing messages. Defaults to 1.
+ * @param concurrency The level of concurrency for processing messages. Defaults to 1.
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
  * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
  * @param f A function to process a received message. It receives a single message and returns a [MessageAcknowledgment].
@@ -492,13 +490,13 @@ suspend fun SqsAsyncClient.onMessages(
 context(CoroutineScope)
 suspend fun SqsAsyncClient.onMessage(
     queueName: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
     commitConfiguration: CommitConfiguration.() -> Unit = {},
     f: suspend (Message) -> MessageAcknowledgment<Acknowledgment>
 ): Job = onMessages(
     queueName = queueName,
-    parallelism = parallelism,
+    concurrency = concurrency,
     groupStrategy = GroupStrategy.Count(1),
     receiveConfiguration = receiveConfiguration,
     commitConfiguration = commitConfiguration

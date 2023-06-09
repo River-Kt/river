@@ -1,5 +1,3 @@
-@file:OptIn(FlowPreview::class)
-
 package com.river.connector.aws.sns
 
 import com.river.connector.aws.sns.model.PublishMessageRequest
@@ -7,7 +5,6 @@ import com.river.connector.aws.sns.model.PublishMessageResponse
 import com.river.connector.aws.sns.model.PublishMessageResponse.Failure
 import com.river.connector.aws.sns.model.PublishMessageResponse.Successful
 import com.river.core.*
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.future.await
@@ -16,11 +13,11 @@ import software.amazon.awssdk.services.sns.model.PublishBatchResponse
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * The [publishFlow] function is used to publish messages in parallel to an Amazon Simple Notification Service (SNS)
+ * The [publishFlow] function is used to publish messages concurrently to an Amazon Simple Notification Service (SNS)
  * topic using a [SnsAsyncClient].
  *
  * It takes an input [Flow] of [PublishMessageRequest] and publishes the messages
- * in parallel, respecting the specified [groupStrategy].
+ * concurrently, respecting the specified [groupStrategy].
  *
  * The [groupStrategy] parameter defines how the messages should be grouped. Using a time window, for instance, the messages
  * are going to be grouped either when the maximum number of items is reached, or when the time duration has elapsed, whichever
@@ -28,7 +25,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * to more efficient processing by potentially reducing the number of requests to AWS.
  *
  * @param upstream The input [Flow] of [PublishMessageRequest]s to be published.
- * @param parallelism The degree of parallelism to use for publishing messages (default is 1).
+ * @param concurrency The degree of concurrency to use for publishing messages (default is 1).
  * @param groupStrategy The [GroupStrategy] to use for grouping the messages (default is TimeWindow with 10 items and 250 milliseconds).
  * @param topicArn A lambda function that returns the Amazon Resource Name (ARN) of the SNS topic to publish the messages to.
 
@@ -53,7 +50,7 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 fun SnsAsyncClient.publishFlow(
     upstream: Flow<PublishMessageRequest>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     topicArn: suspend () -> String
 ): Flow<PublishMessageResponse> =
@@ -61,7 +58,7 @@ fun SnsAsyncClient.publishFlow(
         .flatMapConcat { arn ->
             upstream
                 .chunked(groupStrategy)
-                .mapParallel(parallelism) { chunk ->
+                .mapAsync(concurrency) { chunk ->
                     val entries = chunk.mapIndexed { index, publishMessageRequest ->
                         publishMessageRequest.asEntry("$index")
                     }

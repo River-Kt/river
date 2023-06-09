@@ -2,9 +2,9 @@
 
 package com.river.core.internal
 
-import com.river.core.ParallelismInfo
-import com.river.core.ParallelismStrategy
-import com.river.core.mapParallel
+import com.river.core.ConcurrencyInfo
+import com.river.core.ConcurrencyStrategy
+import com.river.core.mapAsync
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -33,9 +33,9 @@ internal sealed interface PollingFlow<T> : Flow<T> {
     }
 
     class Parallel<T>(
-        private val parallelism: ParallelismStrategy,
+        private val concurrency: ConcurrencyStrategy,
         private val stopOnEmptyList: Boolean = false,
-        private val producer: suspend ParallelismInfo.() -> List<T>
+        private val producer: suspend ConcurrencyInfo.() -> List<T>
     ) : PollingFlow<T> {
         private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -43,7 +43,7 @@ internal sealed interface PollingFlow<T> : Flow<T> {
             flow {
                 var gotEmptyResponse = false
                 var firstIteration = true
-                lateinit var lastParallelismInfo: ParallelismInfo
+                lateinit var lastConcurrencyInfo: ConcurrencyInfo
 
                 fun shouldContinue(): Boolean =
                     (firstIteration || !(stopOnEmptyList && gotEmptyResponse)) && isCoroutineContextActive()
@@ -51,19 +51,19 @@ internal sealed interface PollingFlow<T> : Flow<T> {
                 while (shouldContinue()) {
                     var emptyResultOnResponse = false
 
-                    lastParallelismInfo =
+                    lastConcurrencyInfo =
                         when {
-                            firstIteration || gotEmptyResponse -> parallelism.initial
-                            else -> parallelism.increaseStrategy(lastParallelismInfo)
+                            firstIteration || gotEmptyResponse -> concurrency.initial
+                            else -> concurrency.increaseStrategy(lastConcurrencyInfo)
                         }
 
                     logger.debug(
-                        "Polling using ${lastParallelismInfo.currentParallelism} " +
-                            "of ${lastParallelismInfo.maxAllowedParallelism} total parallelism"
+                        "Polling using ${lastConcurrencyInfo.current} " +
+                            "of ${lastConcurrencyInfo.maximum} total concurrency"
                     )
 
-                    (1..lastParallelismInfo.currentParallelism)
-                        .mapParallel { producer(lastParallelismInfo) }
+                    (1..lastConcurrencyInfo.current)
+                        .mapAsync { producer(lastConcurrencyInfo) }
                         .onEach { if (!emptyResultOnResponse) emptyResultOnResponse = it.isEmpty() }
                         .flatten()
                         .also {
@@ -89,15 +89,15 @@ internal sealed interface PollingFlow<T> : Flow<T> {
 
     companion object {
         operator fun <T> invoke(
-            parallelism: ParallelismStrategy,
+            concurrency: ConcurrencyStrategy,
             stopOnEmptyList: Boolean,
-            producer: suspend ParallelismInfo.() -> List<T>
+            producer: suspend ConcurrencyInfo.() -> List<T>
         ): PollingFlow<T> {
-            return when (parallelism.initial.maxAllowedParallelism) {
-                1 -> Default(stopOnEmptyList) { producer(parallelism.initial) }
+            return when (concurrency.initial.maximum) {
+                1 -> Default(stopOnEmptyList) { producer(concurrency.initial) }
 
                 else -> Parallel(
-                    parallelism = parallelism,
+                    concurrency = concurrency,
                     stopOnEmptyList = stopOnEmptyList,
                     producer = producer
                 )

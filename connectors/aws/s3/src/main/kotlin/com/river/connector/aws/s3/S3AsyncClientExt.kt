@@ -115,10 +115,10 @@ fun S3AsyncClient.selectObjectContent(
  * as a versatile, "one-size-fits-all" solution.
  *
  * This function takes a [initialRequest] for the initial multipart upload request.
- * The function processes bytes in parallel using [parallelism].
+ * The function processes bytes concurrently using [concurrency].
  *
  * @param upstream A [Flow] of bytes to upload.
- * @param parallelism The level of parallelism for uploading bytes.
+ * @param concurrency The level of concurrency for uploading bytes.
  * @param initialRequest A builder function for the initial multipart upload request.
  * @return A [Flow] of [S3Response] objects.
  *
@@ -137,7 +137,7 @@ fun S3AsyncClient.selectObjectContent(
  */
 fun S3AsyncClient.uploadBytes(
     upstream: Flow<Byte>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
 ): Flow<S3Response> = flow {
     val uploadResponse = createMultipartUpload { initialRequest(it) }.await()
@@ -151,7 +151,7 @@ fun S3AsyncClient.uploadBytes(
         upstream
             .chunked(MINIMUM_UPLOAD_SIZE)
             .withIndex()
-            .mapParallel(parallelism) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
+            .mapAsync(concurrency) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
             .onEach { emit(it) }
             .map { it.eTag() }
             .toList()
@@ -173,12 +173,12 @@ fun S3AsyncClient.uploadBytes(
  * as a versatile, "one-size-fits-all" solution.
  *
  * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
- * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
+ * to the specified S3 bucket. The function processes bytes concurrently using [concurrency].
  *
  * @param bucket The name of the S3 bucket.
  * @param key The key of the file to upload.
  * @param upstream A [Flow] of bytes to upload.
- * @param parallelism The level of parallelism for uploading bytes.
+ * @param concurrency The level of concurrency for uploading bytes.
  * @return A [Flow] of [S3Response] objects.
  *
  * Example usage:
@@ -198,9 +198,9 @@ fun S3AsyncClient.uploadBytes(
     bucket: String,
     key: String,
     upstream: Flow<Byte>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
 ): Flow<S3Response> =
-    uploadBytes(upstream, parallelism) {
+    uploadBytes(upstream, concurrency) {
         bucket(bucket)
         key(key)
     }
@@ -212,12 +212,12 @@ fun S3AsyncClient.uploadBytes(
  * as a versatile, "one-size-fits-all" solution.
  *
  * This function takes a [bucket], [key], and [upstream] flow of bytes and uploads them
- * to the specified S3 bucket. The function processes bytes in parallel using [parallelism].
+ * to the specified S3 bucket. The function processes bytes concurrently using [concurrency].
  *
  * @param bucket The name of the S3 bucket.
  * @param key The key of the file to upload.
  * @param upstream A [Flow] of byte arrays to upload.
- * @param parallelism The level of parallelism for uploading byte arrays.
+ * @param concurrency The level of concurrency for uploading byte arrays.
  * @return A [Flow] of [S3Response] objects.
  *
  * Example usage:
@@ -238,11 +238,11 @@ fun S3AsyncClient.upload(
     bucket: String,
     key: String,
     upstream: Flow<ByteArray>,
-    parallelism: Int = 1
+    concurrency: Int = 1
 ): Flow<S3Response> =
     upload(
         upstream = upstream,
-        parallelism = parallelism
+        concurrency = concurrency
     ) {
         bucket(bucket)
         key(key)
@@ -255,10 +255,10 @@ fun S3AsyncClient.upload(
  * as a versatile, "one-size-fits-all" solution.
  *
  * This function takes a [initialRequest] for the initial multipart upload request.
- * The function processes bytes in parallel using [parallelism].
+ * The function processes bytes concurrently using [concurrency].
  *
  * @param upstream A [Flow] of byte arrays to upload.
- * @param parallelism The level of parallelism for uploading byte arrays.
+ * @param concurrency The level of concurrency for uploading byte arrays.
  * @param initialRequest A builder function for the initial multipart upload request.
  *
  * @return A [Flow] of [S3Response] objects.
@@ -283,12 +283,12 @@ fun S3AsyncClient.upload(
  */
 fun S3AsyncClient.upload(
     upstream: Flow<ByteArray>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
 ): Flow<S3Response> =
     uploadBytes(
         upstream = upstream.flatMapConcat { it.toList().asFlow() },
-        parallelism = parallelism,
+        concurrency = concurrency,
         initialRequest = initialRequest
     )
 
@@ -305,7 +305,7 @@ fun S3AsyncClient.upload(
  * @param bucket The S3 bucket to upload the file to.
  * @param upstream A flow of bytes representing the file to be uploaded.
  * @param splitEach The size of each chunk to be uploaded, in bytes. Default is 1 MB.
- * @param parallelism The number of parallel uploads to use. Default is 1.
+ * @param concurrency The number of concurrent uploads to use. Default is 1.
  * @param key A function that takes an integer (part number) and returns the key of the object in the S3 bucket.
  * @return A flow of S3Response objects for each uploaded chunk.
  *
@@ -329,7 +329,7 @@ fun S3AsyncClient.uploadSplit(
     bucket: String,
     upstream: Flow<Byte>,
     splitEach: Int = ONE_MB,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     key: (Int) -> String
 ): Flow<S3Response> =
     upstream
@@ -353,7 +353,7 @@ fun S3AsyncClient.uploadSplit(
                     bucket = bucket,
                     key = key(part + 1),
                     upstream = chunk,
-                    parallelism = parallelism
+                    concurrency = concurrency
                 )
             }
         }
@@ -364,7 +364,7 @@ fun S3AsyncClient.uploadSplit(
  *
  * @param bucket The S3 bucket where the destination object will be stored.
  * @param key The key of the destination object in the S3 bucket.
- * @param parallelism The number of parallel copy operations to perform. Default is 1.
+ * @param concurrency The number of concurrent copy operations to perform. Default is 1.
  * @param files A flow of source file pairs, where the first element is the source bucket and the second element is the source key.
  *
  * @return A flow of S3Response objects for each part of the multipart copy operation.
@@ -384,7 +384,7 @@ fun S3AsyncClient.uploadSplit(
  *  s3Client.multipartUploadCopy(
  *      bucket = bucket,
  *      key = destinationKey,
- *      parallelism = 2,
+ *      concurrency = 2,
  *      files = sourceFiles
  *  ).collect { response ->
  *      println("Copied part: ${response.key}")
@@ -394,7 +394,7 @@ fun S3AsyncClient.uploadSplit(
 fun S3AsyncClient.mergeContents(
     bucket: String,
     key: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     files: List<Pair<String, String>>
 ): Flow<S3Response> = flow {
     val uploadResponse = createMultipartUpload { it.bucket(bucket).key(key) }.await()
@@ -404,7 +404,7 @@ fun S3AsyncClient.mergeContents(
     val etags =
         files
             .withIndex()
-            .mapParallel(parallelism) { (index, tuple) ->
+            .mapAsync(concurrency) { (index, tuple) ->
                 val (sourceBucket, sourceKey) = tuple
 
                 uploadPartCopy {

@@ -37,9 +37,9 @@ import java.nio.ByteBuffer
  */
 fun GithubApi.issuesAsFlow(
     repositoryName: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     filter: RepositoryIssueQuery.() -> Unit = {}
-): Flow<Issue> = paginatedFlowApi(filter, parallelism) { issues(repositoryName, it) }
+): Flow<Issue> = paginatedFlowApi(filter, concurrency) { issues(repositoryName, it) }
 
 /**
  * Retrieves a flow of all repositories for the specified GitHub user, filtered by the given criteria.
@@ -62,9 +62,9 @@ fun GithubApi.issuesAsFlow(
  */
 fun GithubApi.repositoriesAsFlow(
     username: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     filter: RepositoryQuery.() -> Unit = {}
-): Flow<Repository> = paginatedFlowApi(filter, parallelism) { repositories(username, it) }
+): Flow<Repository> = paginatedFlowApi(filter, concurrency) { repositories(username, it) }
 
 /**
  * Retrieves a flow of all pull requests for the specified GitHub repository, filtered by the given criteria.
@@ -87,9 +87,9 @@ fun GithubApi.repositoriesAsFlow(
  */
 fun GithubApi.pullRequestsAsFlow(
     repositoryName: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     filter: PullRequestQuery.() -> Unit = {}
-): Flow<PullRequest> = paginatedFlowApi(filter, parallelism) { pullRequests(repositoryName, it) }
+): Flow<PullRequest> = paginatedFlowApi(filter, concurrency) { pullRequests(repositoryName, it) }
 
 /**
  * Retrieves a flow of all commits for the specified GitHub repository, filtered by the given criteria.
@@ -111,9 +111,9 @@ fun GithubApi.pullRequestsAsFlow(
  */
 fun GithubApi.commitsAsFlow(
     repositoryName: String,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     filter: CommitQuery.() -> Unit = {}
-): Flow<Commit> = paginatedFlowApi(filter, parallelism) {
+): Flow<Commit> = paginatedFlowApi(filter, concurrency) {
     commits(repositoryName, it)
 }
 
@@ -124,7 +124,7 @@ fun GithubApi.commitsAsFlow(
  * @param fileExtensions A list of file extensions to filter the tree entries by.
  * @param skipFolders A list of folder names to skip while traversing the tree.
  * @param sha The SHA of the tree to start traversing from (optional).
- * @param parallelism The number of parallel requests allowed (default is 100).
+ * @param concurrency The number of concurrent requests allowed (default is 100).
  * @return A `Flow<TreeRef.TreeEntry>` object representing the tree entries matching the specified criteria.
  *
  * Example usage:
@@ -146,15 +146,15 @@ fun GithubApi.treeAsFlow(
     fileExtensions: List<String> = emptyList(),
     skipFolders: List<String> = emptyList(),
     sha: String? = null,
-    parallelism: Int = 100,
+    concurrency: Int = 100,
 ): Flow<TreeRef.TreeEntry> =
     flow {
         val channel = Channel<Pair<String, CompletableDeferred<TreeRef>>>().apply {
             receiveAsFlow()
-                .onEachParallel(parallelism) { (sha, callback) ->
+                .onEachAsync(concurrency) { (sha, callback) ->
                     callback.complete(tree(repositoryName, sha))
                 }
-                .collectAsync()
+                .launchCollect()
         }
 
         val stack = mutableListOf<TreeRef>()
@@ -176,7 +176,7 @@ fun GithubApi.treeAsFlow(
             val stacks =
                 next.tree.filterIsInstance<TreeRef.TreeEntry.Tree>()
                     .filterNot { it.path in skipFolders }
-                    .mapParallel {
+                    .mapAsync {
                         val callback = CompletableDeferred<TreeRef>()
                         channel.send(it.sha to callback)
                         callback

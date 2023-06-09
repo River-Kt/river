@@ -102,11 +102,11 @@ class FlowExtKtTest : FeatureSpec({
         }
     }
 
-    feature("Flow<T>.mapParallel") {
+    feature("Flow<T>.mapAsync") {
         scenario("Should allow a concurrency for item processing within the flow") {
             val (_, duration) = measureTimedValue {
                 flowOf(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
-                    .mapParallel(5) { delay(500.milliseconds) }
+                    .mapAsync(5) { delay(500.milliseconds) }
                     .collect()
             }
 

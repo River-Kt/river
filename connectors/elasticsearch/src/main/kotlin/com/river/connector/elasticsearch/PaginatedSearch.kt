@@ -19,7 +19,7 @@ sealed interface PaginatedSearch {
     class Default(
         val index: String,
         val pageSize: Int = 100,
-        val parallelism: Int = 1,
+        val concurrency: Int = 1,
         val f: (Query.Builder) -> ObjectBuilder<Query> = { it.matchAll { it } }
     ) : PaginatedSearch {
 
@@ -48,7 +48,7 @@ sealed interface PaginatedSearch {
                                 .build()
                         }
                     }
-                    .mapParallel(parallelism) { request ->
+                    .mapAsync(concurrency) { request ->
                         request?.let {
                             client.search(it, clazz)
                                 .await()
@@ -66,7 +66,7 @@ sealed interface PaginatedSearch {
     class BySearchAfter(
         val index: String,
         val pageSize: Int = 100,
-        val parallelism: Int = 1,
+        val concurrency: Int = 1,
         val fields: List<Field>,
         val f: (Query.Builder) -> ObjectBuilder<Query> = { it.matchAll { it } }
     ) : PaginatedSearch {

@@ -1,6 +1,6 @@
 package com.river.connector.aws.sqs
 
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.future.await
@@ -15,9 +15,9 @@ fun <T> Flow<T>.asSendEmailRequest(
 
 fun SesV2AsyncClient.sendEmailFlow(
     upstream: Flow<SendEmailRequest>,
-    parallelism: Int = 1
+    concurrency: Int = 1
 ): Flow<SendEmailResponse> =
     upstream
-        .mapParallel(parallelism) {
+        .mapAsync(concurrency) {
             sendEmail(it).await()
         }

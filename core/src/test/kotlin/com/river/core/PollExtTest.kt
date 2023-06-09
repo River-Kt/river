@@ -1,7 +1,7 @@
 package com.river.core
 
-import com.river.core.ParallelismStrategy.Companion.increaseByOne
-import com.river.core.ParallelismStrategy.Companion.maximumAllowedAfterFirstIteration
+import com.river.core.ConcurrencyStrategy.Companion.increaseByOne
+import com.river.core.ConcurrencyStrategy.Companion.maximumAllowedAfterFirstIteration
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
@@ -54,19 +54,19 @@ class PollExtTest : FeatureSpec({
 
         scenario("asserting the increase strategy is working properly") {
             val counter = AtomicInteger()
-            val maxParallelism = 10
+            val maxConcurrency = 10
 
             val gap = ((100..120) + (250..270) + (850..980))
-            val changedParallelism = AtomicReference(1 to 0)
+            val changedConcurrency = AtomicReference(1 to 0)
 
             val flow =
-                poll(maximumAllowedAfterFirstIteration(maxParallelism)) {
+                poll(maximumAllowedAfterFirstIteration(maxConcurrency)) {
                     val c = counter.incrementAndGet()
 
-                    val (last, count) = changedParallelism.get()
+                    val (last, count) = changedConcurrency.get()
 
-                    if (last != currentParallelism) {
-                        changedParallelism.set(currentParallelism to count + 1)
+                    if (last != current) {
+                        changedConcurrency.set(current to count + 1)
                     }
 
                     if (c in gap) emptyList()
@@ -77,7 +77,7 @@ class PollExtTest : FeatureSpec({
 
             val expected = ((1..1000) - gap).toList()
             list shouldBe expected
-            changedParallelism.get() shouldBe (10 to 7)
+            changedConcurrency.get() shouldBe (10 to 7)
         }
     }
 

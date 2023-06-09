@@ -38,10 +38,10 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
 
 /**
  * This function is used to index documents asynchronously into Elasticsearch using bulk requests.
- * It takes a flow of Document<T> objects as input, along with optional parameters for parallelism and chunking.
+ * It takes a flow of Document<T> objects as input, along with optional parameters for concurrency and chunking.
  *
  * @param upstream A Flow of Document<T> objects to be indexed asynchronously into Elasticsearch
- * @param parallelism Optional parameter that specifies the number of concurrent bulk requests that can be executed at a time. Default value is 1.
+ * @param concurrency Optional parameter that specifies the number of concurrent bulk requests that can be executed at a time. Default value is 1.
  * @param groupStrategy Optional parameter that specifies the ChunkStrategy to be used for splitting the input stream into chunks. Default value is TimeWindow(100, 250.milliseconds).
  *
  * @return A Flow of BulkResponseItem objects that represent the results of indexing each individual document
@@ -55,7 +55,7 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
  *      Document("index2", "id3", mapOf("field1" to "value3"))
  *  ).asFlow()
  *
- *  ElasticsearchAsyncClient.indexFlow(documents, parallelism = 3).collect {
+ *  ElasticsearchAsyncClient.indexFlow(documents, concurrency = 3).collect {
  *      when (it) {
  *          is BulkResponseItem.Failure -> println("Indexing failed for item with id ${it.id}: ${it.error}")
  *          is BulkResponseItem.Success -> println("Indexing succeeded for item with id ${it.id}")
@@ -65,12 +65,12 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
  */
 fun <T> ElasticsearchAsyncClient.indexFlow(
     upstream: Flow<Document<T>>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(100, 250.milliseconds)
 ): Flow<BulkResponseItem> =
     upstream
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { chunk ->
+        .mapAsync(concurrency) { chunk ->
             BulkRequest.Builder()
                 .also { builder ->
                     chunk.forEach { document ->

@@ -14,7 +14,7 @@ Kotlin's Flow API is a powerful and flexible tool for processing data streams, b
 
 At the heart of every **connector**, the **core module** offers a range of extension functions that can optimize the processing of data streams. By leveraging these high-level functions, developers can easily build connectors for different protocols. This allows for seamless integration with a variety of services and protocols.
 
-The `mapParallel` and `flatMapParallel` functions are just some examples of how the core module can simplify and speed up data processing by concurrently applying transformations to flow elements. Other functions such as `split` and `chunked` can also be used to break down large flows into smaller, more manageable chunks or groups, based on a count or time window strategy. Other useful functions are also provided, such as collecting data into lists, applying timeouts and delays, and continuously polling for data. All of these functions leverage Kotlin's Flow API, which ensures that data processing is done in an asynchronous, non-blocking, and backpressure-safe way.
+The `mapAsync` and `flatmapAsync` functions are just some examples of how the core module can simplify and speed up data processing by concurrently applying transformations to flow elements. Other functions such as `split` and `chunked` can also be used to break down large flows into smaller, more manageable chunks or groups, based on a count or time window strategy. Other useful functions are also provided, such as collecting data into lists, applying timeouts and delays, and continuously polling for data. All of these functions leverage Kotlin's Flow API, which ensures that data processing is done in an asynchronous, non-blocking, and backpressure-safe way.
 
 Check the following example:
 
@@ -38,8 +38,8 @@ val users: Flow<User> = pollWithState(initial = 1, shouldStop = { it == -1 }) { 
 suspend fun fetchAddresses(userId: Long): List<Address> = ...
 
 users
-    // Runs the map function in parallel with a maximum of 10 concurrent executions.
-    .mapParallel(10) { user -> UserWithAddresses(user, fetchAddresses(user.id)) }
+    // Runs the map function concurrently with a maximum of 10 concurrent executions.
+    .mapAsync(10) { user -> UserWithAddresses(user, fetchAddresses(user.id)) }
     // Chunks the UserWithAddresses into lists of 100, or whatever fits into the chunk after the defined timeout of 1 second.
     .chunked(100, 1.seconds) 
     .collect { chunk: List<UserWithAddresses> ->
@@ -69,13 +69,13 @@ Each connector leverages Kotlin's Flow API, coroutines and the core module to pr
 | Connector Name                   | Description                                                                                                        | Module           |
 |----------------------------------|--------------------------------------------------------------------------------------------------------------------|------------------|
 | Amazon Simple Storage Service (Amazon S3)  | Allows developers to interact with Amazon S3 buckets via Kotlin's Flow API. It provides high-level functions to download and upload S3 objects.     | connector-aws-s3 |
-| Amazon Simple Queue Service (Amazon SQS)   | Provides functionality to interact with Amazon SQS using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from Amazon SQS using configurable chunk strategies and parallelism. | connector-aws-sqs |
-| Amazon Simple Notification Service (Amazon SNS) | Allows users to send messages through Amazon SNS using Kotlin's Flow API using configurable chunk strategies and parallelism. | connector-aws-sns |
-| AWS Lambda                        | Provides functionality to interact with AWS Lambda using Kotlin's Flow API. Users can invoke AWS Lambda functions and receive the results through a Flow stream using configurable parallelism.                    | connector-aws-lambda |
-| Java Database Connectivity (JDBC)  | Provides an implementation of the RDBMS connector using JDBC driver. It allows users to interact with JDBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and parallelism.                                 | connector-rdbms-jdbc |
-| Reactive Relational Database Connectivity (R2DBC) | Provides an implementation of the RDBMS connector using R2DBC driver. It allows users to interact with R2DBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and parallelism.                           | connector-rdbms-r2dbc |
+| Amazon Simple Queue Service (Amazon SQS)   | Provides functionality to interact with Amazon SQS using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from Amazon SQS using configurable chunk strategies and concurrency. | connector-aws-sqs |
+| Amazon Simple Notification Service (Amazon SNS) | Allows users to send messages through Amazon SNS using Kotlin's Flow API using configurable chunk strategies and concurrency. | connector-aws-sns |
+| AWS Lambda                        | Provides functionality to interact with AWS Lambda using Kotlin's Flow API. Users can invoke AWS Lambda functions and receive the results through a Flow stream using configurable concurrency.                    | connector-aws-lambda |
+| Java Database Connectivity (JDBC)  | Provides an implementation of the RDBMS connector using JDBC driver. It allows users to interact with JDBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                                 | connector-rdbms-jdbc |
+| Reactive Relational Database Connectivity (R2DBC) | Provides an implementation of the RDBMS connector using R2DBC driver. It allows users to interact with R2DBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                           | connector-rdbms-r2dbc |
 | Debezium                          | Allows users to capture database events and stream them via Kotlin's Flow API. It supports multiple databases, including MySQL, PostgreSQL, and MongoDB. The emitted records can be sent to any other connector available in a seamless manner, enabling easy integration with a variety of services and protocols.                             | connector-redhat-debezium |
-| Azure Queue Storage               | Provides functionality to interact with Azure Queue Storage using Kotlin's Flow API. Developers can continuously receive, create, update, and delete messages using configurable chunk strategies and parallelism. | connector-azure-queue-storage |
+| Azure Queue Storage               | Provides functionality to interact with Azure Queue Storage using Kotlin's Flow API. Developers can continuously receive, create, update, and delete messages using configurable chunk strategies and concurrency. | connector-azure-queue-storage |
 | JSON                              | Provides functionality to read and write JSON data using Kotlin's Flow API. It leverages Jackson, supports JSON serialization and deserialization with configurable options.                                | connector-format-json |
 | CSV                               | Provides functionality to read and write CSV data using Kotlin's Flow API.                                             | connector-format-csv |
 | File                              | Allows users to read and write files using Kotlin's Flow API. It provides functionality to read or write data to files and input streams.                  | connector-file    |
@@ -121,7 +121,7 @@ val jdbc = Jdbc(
     connectionPoolSize = 10
 )
 
-val messages = queue.receiveMessagesAsFlow(maxParallelism = 10)
+val messages = queue.receiveMessagesAsFlow(concurrency = increaseByOne(10))
 
 jdbc
     .batchUpdate(
@@ -135,7 +135,7 @@ In a nutshell:
 
 - A queue client is created using the `QueueClientBuilder`, which specifies the name of the queue as `numbers`.
 - A `Jdbc` object is instantiated to establish connections with a `PostgreSQL` database using the provided credentials and a connection pool size of 10.
-- Messages are received from the queue as a `Flow` using `queue.receiveMessagesAsFlow()` with a maximum parallelism of 10.
+- Messages are received from the queue as a `Flow` using `queue.receiveMessagesAsFlow()` with a maximum concurrency of 10.
 - The received messages are then `chunked` into groups of 100 messages or within 250 milliseconds, whichever comes first, using the `TimeWindow` strategy.
 - After each chunk is emitted, the messages are batch-inserted into the `PostgreSQL` database using the `jdbc.batchUpdate()` function. The messages are inserted into the `numbers` table, with each message's text being converted to an integer and set as the value in the `number` column.
 

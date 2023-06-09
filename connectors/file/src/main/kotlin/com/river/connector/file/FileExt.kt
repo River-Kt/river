@@ -1,7 +1,7 @@
 package com.river.connector.file
 
 import com.river.core.asByteArray
-import com.river.core.collectAsync
+import com.river.core.launchCollect
 import com.river.core.poll
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -59,7 +59,7 @@ fun Flow<ByteArray>.zipFile(
         zipChannel
             .consumeAsFlow()
             .flowOn(dispatcher)
-            .collectAsync { zipOS.write(it) }
+            .launchCollect { zipOS.write(it) }
 
         flowOn(dispatcher)
             .onCompletion {
@@ -67,7 +67,7 @@ fun Flow<ByteArray>.zipFile(
                 zipOS.closeEntry()
                 zipOS.close()
             }
-            .collectAsync { zipChannel.send(it) }
+            .launchCollect { zipChannel.send(it) }
 
         emitAll(pis.asFlow())
     }
@@ -81,7 +81,7 @@ suspend fun Flow<ByteArray>.asInputStream(
     val inputStream = PipedInputStream(bufferSize).also { it.connect(os) }
 
     onCompletion { os.close() }
-        .collectAsync(this) { os.write(it) }
+        .launchCollect(this) { os.write(it) }
 
     inputStream
 }
@@ -121,7 +121,7 @@ fun Flow<ByteArray>.unzipFile(
             zipChannel
                 .consumeAsFlow()
                 .flowOn(dispatcher)
-                .collectAsync(this) { os.write(it) }
+                .launchCollect(this) { os.write(it) }
 
         flowOn(dispatcher).collect { zipChannel.send(it) }
 

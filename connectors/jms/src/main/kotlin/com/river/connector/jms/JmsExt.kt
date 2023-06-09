@@ -4,9 +4,9 @@ package com.river.connector.jms
 
 import com.river.connector.jms.model.*
 import com.river.core.flatten
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import com.river.core.indefinitelyRepeat
-import com.river.core.unorderedMapParallel
+import com.river.core.unorderedMapAsync
 import com.river.util.pool.ObjectPool
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ import kotlin.time.ExperimentalTime
  * @param credentials Optional credentials to use for establishing the connection. Defaults to null.
  * @param sessionMode The session mode for the JMS context. Defaults to SessionMode.CLIENT_ACKNOWLEDGE.
  * @param pollingMaxWait The maximum duration to wait for a message during polling. Defaults to 10 seconds.
- * @param parallelism The number of parallel consumers for message consumption. Defaults to 1.
+ * @param concurrency The number of concurrent consumers for message consumption. Defaults to 1.
  *
  * @return A flow of [CommittableMessage] objects, which can be acknowledged after processing.
  *
@@ -55,9 +55,9 @@ fun ConnectionFactory.consume(
     credentials: Credentials? = null,
     sessionMode: SessionMode = SessionMode.CLIENT_ACKNOWLEDGE,
     pollingMaxWait: Duration = 10.seconds,
-    parallelism: Int = 1
+    concurrency: Int = 1
 ): Flow<CommittableMessage> {
-    val IO: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(parallelism)
+    val IO: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(concurrency)
 
     suspend fun newContext(): JMSContext =
         IO { newBlockingContext(sessionMode, credentials) }
@@ -67,14 +67,14 @@ fun ConnectionFactory.consume(
 
         val contextPool =
             ObjectPool.sized(
-                maxSize = parallelism,
+                maxSize = concurrency,
                 onClose = { (context, consumer) -> IO { consumer.close(); context.close() } },
                 factory = { IO { newContext().let { it to it.createConsumer(queue) } } }
             )
 
         emitAll(
             indefinitelyRepeat(contextPool)
-                .unorderedMapParallel(parallelism) {
+                .unorderedMapAsync(concurrency) {
                     val instance = it.borrow()
                     val (_, consumer) = instance.instance
 
@@ -98,7 +98,7 @@ fun ConnectionFactory.consume(
  *
  * @param destination The JmsDestination to send messages to.
  * @param upstream A flow of JmsMessage objects to be sent to the destination.
- * @param parallelism The number of parallel producers for sending messages. Defaults to 1.
+ * @param concurrency The number of concurrent producers for sending messages. Defaults to 1.
  * @param credentials Optional credentials to use for establishing the connection. Defaults to null.
  *
  * @return A flow of Unit objects, indicating that a message has been sent.
@@ -119,10 +119,10 @@ fun ConnectionFactory.consume(
 fun ConnectionFactory.sendToDestination(
     destination: JmsDestination,
     upstream: Flow<JmsMessage>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     credentials: Credentials? = null,
 ): Flow<Unit> {
-    val IO = Dispatchers.IO.limitedParallelism(parallelism)
+    val IO = Dispatchers.IO.limitedParallelism(concurrency)
 
     suspend fun newContext(): JMSContext =
         IO { newBlockingContext(credentials = credentials) }
@@ -130,7 +130,7 @@ fun ConnectionFactory.sendToDestination(
     return flow {
         val contextPool =
             ObjectPool.sized(
-                maxSize = parallelism,
+                maxSize = concurrency,
                 onClose = { (context, _) -> IO { context.close() } },
                 factory = { IO { newContext().let { it to it.createProducer() } } }
             )
@@ -144,7 +144,7 @@ fun ConnectionFactory.sendToDestination(
                 }
 
         upstream
-            .mapParallel(parallelism) { send(it) }
+            .mapAsync(concurrency) { send(it) }
             .collect { emit(Unit) }
     }
 }

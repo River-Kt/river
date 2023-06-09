@@ -39,46 +39,46 @@ infix fun <T> List<CompletableDeferred<T>>.completeAllWith(result: Result<List<T
         .getOrElse { e -> map { it.completeExceptionally(e) }.all { it } }
 
 /**
- * Transforms the elements of the iterable in parallel using the provided [f] function, and then
+ * Transforms the elements of the iterable concurrently using the provided [f] function, and then
  * flattens the result.
  *
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapParallel(f: suspend (T) -> Iterable<R>): List<R> =
-    mapParallel { f(it) }.flatten()
+suspend fun <T, R> Iterable<T>.flatMapAsync(f: suspend (T) -> Iterable<R>): List<R> =
+    mapAsync { f(it) }.flatten()
 
 /**
- * Transforms the elements of the iterable in parallel using the provided [f] function with a specified
+ * Transforms the elements of the iterable concurrently using the provided [f] function with a specified
  * concurrency limit, and then flattens the result.
  *
  * @param concurrency The maximum number of concurrent transformations.
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapParallel(
+suspend fun <T, R> Iterable<T>.flatMapAsync(
     concurrency: Int,
     f: suspend (T) -> Iterable<R>
-): List<R> = mapParallel(concurrency) { f(it) }.flatten()
+): List<R> = mapAsync(concurrency) { f(it) }.flatten()
 
 /**
- * Transforms the elements of the iterable in parallel using the provided [f] function.
+ * Transforms the elements of the iterable concurrently using the provided [f] function.
  *
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.mapParallel(f: suspend (T) -> R): List<R> =
+suspend fun <T, R> Iterable<T>.mapAsync(f: suspend (T) -> R): List<R> =
     coroutineScope { map { async { f(it) } }.awaitAll() }
 
 /**
- * Transforms the elements of the iterable in parallel using the provided [f] function with a specified
+ * Transforms the elements of the iterable concurrently using the provided [f] function with a specified
  * concurrency limit.
  *
  * @param concurrency The maximum number of concurrent transformations.
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.mapParallel(
+suspend fun <T, R> Iterable<T>.mapAsync(
     concurrency: Int,
     f: suspend (T) -> R
-): List<R> = asFlow().mapParallel(concurrency, f).toList()
+): List<R> = asFlow().mapAsync(concurrency, f).toList()

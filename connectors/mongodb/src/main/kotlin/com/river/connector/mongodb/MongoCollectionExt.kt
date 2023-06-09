@@ -9,7 +9,7 @@ import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
 import com.river.core.GroupStrategy
 import com.river.core.chunked
-import com.river.core.mapParallel
+import com.river.core.mapAsync
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.reactive.asFlow
@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Inserts documents into a MongoDB collection using a flow of documents.
  *
  * @param flow The flow of documents to insert.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  *
  * @return A flow of InsertOneResult objects.
  *
@@ -36,15 +36,15 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 fun <T> MongoCollection<T>.insert(
     flow: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
 ): Flow<InsertOneResult> =
-    flow.mapParallel(parallelism) { insertOne(it).awaitFirst() }
+    flow.mapAsync(concurrency) { insertOne(it).awaitFirst() }
 
 /**
  * Inserts many documents into a MongoDB collection using a flow of documents, batching them by the provided chunkStrategy.
  *
  * @param flow The flow of documents to insert.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  * @param options The InsertManyOptions to use when inserting the documents. Defaults to InsertManyOptions().
  * @param groupStrategy The strategy for chunking the documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
  *
@@ -60,13 +60,13 @@ fun <T> MongoCollection<T>.insert(
  */
 fun <T> MongoCollection<T>.insertMany(
     flow: Flow<T>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     options: InsertManyOptions = InsertManyOptions(),
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 500.milliseconds)
 ): Flow<InsertManyResult> =
     flow
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { insertMany(it, options).asFlow() }
+        .mapAsync(concurrency) { insertMany(it, options).asFlow() }
         .flattenConcat()
 
 /**
@@ -74,7 +74,7 @@ fun <T> MongoCollection<T>.insertMany(
  *
  * @param flow The flow of update documents.
  * @param filter The BSON filter to apply when updating documents.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  *
  * @return A flow of UpdateResult objects.
  *
@@ -90,15 +90,15 @@ fun <T> MongoCollection<T>.insertMany(
 fun MongoCollection<Document>.update(
     flow: Flow<Document>,
     filter: Bson,
-    parallelism: Int = 1,
-) = flow.mapParallel(parallelism) { updateOne(filter, it).awaitFirst() }
+    concurrency: Int = 1,
+) = flow.mapAsync(concurrency) { updateOne(filter, it).awaitFirst() }
 
 /**
  * Updates many documents in a MongoDB collection using a flow of update documents, a filter, and batching by the provided chunkStrategy.
  *
  * @param flow The flow of update documents.
  * @param filter The BSON filter to apply when updating documents.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  * @param groupStrategy The strategy for chunking the update documents. Defaults to ChunkStrategy.TimeWindow(10, 500.milliseconds).
  *
  * @return A flow of UpdateResult objects.
@@ -115,12 +115,12 @@ fun MongoCollection<Document>.update(
 fun MongoCollection<Document>.updateMany(
     flow: Flow<Document>,
     filter: Bson,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 500.milliseconds)
 ): Flow<UpdateResult> =
     flow
         .chunked(groupStrategy)
-        .mapParallel(parallelism) { updateMany(filter, it).asFlow() }
+        .mapAsync(concurrency) { updateMany(filter, it).asFlow() }
         .flattenConcat()
 
 /**
@@ -128,7 +128,7 @@ fun MongoCollection<Document>.updateMany(
  *
  * @param flow The flow of documents to replace.
  * @param filter The BSON filter to apply when replacing documents.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  *
  * @return A flow of UpdateResult objects.
  *
@@ -144,14 +144,14 @@ fun MongoCollection<Document>.updateMany(
 fun <T> MongoCollection<T>.replace(
     flow: Flow<T>,
     filter: Bson,
-    parallelism: Int = 1,
-): Flow<UpdateResult> = flow.mapParallel(parallelism) { replaceOne(filter, it).awaitFirst() }
+    concurrency: Int = 1,
+): Flow<UpdateResult> = flow.mapAsync(concurrency) { replaceOne(filter, it).awaitFirst() }
 
 /**
  * Replaces documents in a MongoDB collection using a flow of pairs containing a filter and a document.
  *
  * @param flow The flow of pairs containing a filter and a document.
- * @param parallelism The parallelism for this operation. Defaults to 1.
+ * @param concurrency The concurrency for this operation. Defaults to 1.
  *
  * @return A flow of UpdateResult objects.
  *
@@ -166,9 +166,9 @@ fun <T> MongoCollection<T>.replace(
  */
 fun <T> MongoCollection<T>.replace(
     flow: Flow<Pair<Bson, T>>,
-    parallelism: Int = 1,
+    concurrency: Int = 1,
 ): Flow<UpdateResult> =
-    flow.mapParallel(parallelism) { (filter, document) -> replaceOne(filter, document).awaitFirst() }
+    flow.mapAsync(concurrency) { (filter, document) -> replaceOne(filter, document).awaitFirst() }
 
 /**
  * Finds documents in a MongoDB collection that match the specified BSON query and returns them as a flow.

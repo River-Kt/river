@@ -54,12 +54,12 @@ suspend fun main() {
         .parseCsvWithHeaders { Num(checkNotNull(it["n"]).toInt(), checkNotNull(it["nTimes2"]).toInt()) }
         .let { flow ->
             // Here, we use the JDBC connector to batch insert the elements into the numbers table
-            // It's using time window strategy for grouping our updates, alongside with the parallelism level to 10
+            // It's using time window strategy for grouping our updates, alongside with the concurrency level to 10
             jdbc.batchUpdate(
                 sql = "insert into numbers (n, ntimes2) values (?, ?)",
                 upstream = flow,
                 groupStrategy = GroupStrategy.TimeWindow(50, 100.milliseconds),
-                parallelism = 10
+                concurrency = 10
             ) {
                 setInt(1, it.n)
                 setInt(2, it.nTimes2)
