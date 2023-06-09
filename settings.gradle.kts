@@ -29,6 +29,7 @@ include(
     "connectors:file",
     "connectors:format:csv",
     "connectors:format:json",
+    "connectors:format:positional-flat-line",
     "connectors:ftp",
     "connectors:github",
     "connectors:google:drive",
