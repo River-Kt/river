@@ -1,8 +1,6 @@
 # river
 
-Introducing River, a powerful and flexible reactive stream library for Kotlin that simplifies the process of using and building connectors for multiple enterprise protocols and tools. Heavily inspired by Apache Camel and Alpakka, River makes use of Kotlin's Flow and coroutines to provide a scalable, efficient, and user-friendly way to handle asynchronous and event-based data streams.
-
-With River, you can make use of connectors for a variety of enterprise protocols and tools, including message brokers, databases, cloud services, and more. This library is designed to be flexible and customizable, allowing you to handle complex data streams and integrate with different technologies seamlessly.
+Introducing River, a powerful and flexible reactive stream library for Kotlin that simplifies the process of using and building connectors for multiple enterprise protocols and tools. Heavily inspired by Apache Camel and Alpakka, River makes use of Kotlin's Flow and coroutines to provide a scalable, efficient, and user-friendly way to handle asynchronous and event-based data streams. This library is designed to be flexible and customizable, allowing you to handle complex data streams and integrate with different technologies seamlessly.
 
 Whether you're building a new application or integrating with existing systems, River makes it easy to build reactive and scalable data pipelines that can handle even the most demanding workloads. With its powerful capabilities and easy-to-use API, River allows you to focus on your business logic while it'll take care of the complex task of handling data streams and integrating with multiple technologies.
 
@@ -14,7 +12,7 @@ Kotlin's Flow API is a powerful and flexible tool for processing data streams, b
 
 At the heart of every **connector**, the **core module** offers a range of extension functions that can optimize the processing of data streams. By leveraging these high-level functions, developers can easily build connectors for different protocols. This allows for seamless integration with a variety of services and protocols.
 
-The `mapAsync` and `flatmapAsync` functions are just some examples of how the core module can simplify and speed up data processing by concurrently applying transformations to flow elements. Other functions such as `split` and `chunked` can also be used to break down large flows into smaller, more manageable chunks or groups, based on a count or time window strategy. Other useful functions are also provided, such as collecting data into lists, applying timeouts and delays, and continuously polling for data. All of these functions leverage Kotlin's Flow API, which ensures that data processing is done in an asynchronous, non-blocking, and backpressure-safe way.
+The `mapAsync` is just an example of how the core module can simplify and speed up data processing by concurrently applying transformations to flow elements. Other functions such as `split` and `chunked` can also be used to break down large flows into smaller, more manageable chunks or groups, based on a count or time window strategy. Other useful functions are also provided, such as collecting data into lists, applying timeouts and delays, and continuously polling for data. All of these functions leverage Kotlin's Flow API, which ensures that data processing is done in an asynchronous, non-blocking, and backpressure-safe way.
 
 Check the following example:
 

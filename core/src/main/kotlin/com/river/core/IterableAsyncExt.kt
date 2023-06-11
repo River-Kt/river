@@ -45,7 +45,7 @@ infix fun <T> List<CompletableDeferred<T>>.completeAllWith(result: Result<List<T
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapAsync(f: suspend (T) -> Iterable<R>): List<R> =
+suspend fun <T, R> Iterable<T>.flatMapIterableAsync(f: suspend (T) -> Iterable<R>): List<R> =
     mapAsync { f(it) }.flatten()
 
 /**
@@ -56,7 +56,7 @@ suspend fun <T, R> Iterable<T>.flatMapAsync(f: suspend (T) -> Iterable<R>): List
  * @param f A suspend function to apply to each element of the iterable.
  * @return A [List] containing the flattened results of applying [f] to each element of the iterable.
  */
-suspend fun <T, R> Iterable<T>.flatMapAsync(
+suspend fun <T, R> Iterable<T>.flatMapIterableAsync(
     concurrency: Int,
     f: suspend (T) -> Iterable<R>
 ): List<R> = mapAsync(concurrency) { f(it) }.flatten()

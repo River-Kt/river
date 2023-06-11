@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
  * The [mapAsync] function is similar to the [map] function
  * since it transforms each element via the [transform] function.
  *
- * It works, however, in a parallel way, which means that multiple elements can be
+ * It works, however, in a concurrent way, which means that multiple elements can be
  * processed at the same time, especially useful for more intensive tasks.
  *
  * Use [concurrency] to configure the concurrency number.
@@ -26,7 +26,7 @@ fun <T, R> Flow<T>.mapAsync(
 
 /**
  * The [unorderedMapAsync] function is similar to the [mapAsync] function in that it transforms each element
- * in a parallel way using the provided [f] function. However, unlike [mapAsync], this function does not guarantee
+ * in a concurrent way using the provided [f] function. However, unlike [mapAsync], this function does not guarantee
  * that the output elements will be in the same order as the input elements. This means that this function can be
  * significantly faster than [mapAsync] because it does not have to preserve order.
  *
@@ -38,11 +38,11 @@ fun <T, R> Flow<T>.unorderedMapAsync(
 ): Flow<R> = UnorderedMapAsyncFlow(this, concurrency, f)
 
 /**
- * The [flatMapAsync] function is similar to the [flatMapIterable] function but works in a parallel way
+ * The [flatMapIterableAsync] function is similar to the [flatMapIterable] function but works in a concurrent way
  * to transform each element of the [Flow] with the provided [f] function.
  *
  * This function transforms each element of the input Flow by applying the [f] function in a
- * parallel way. This means that multiple elements can be processed at the same time, especially useful
+ * concurrent way. This means that multiple elements can be processed at the same time, especially useful
  * for more intensive tasks.
  *
  * Use [concurrency] to configure the concurrency number.
@@ -51,27 +51,27 @@ fun <T, R> Flow<T>.unorderedMapAsync(
  * This means that the output Flow will contain the same elements as the input Flow, but with each element
  * transformed according to the provided function.
  */
-fun <T, R> Flow<T>.flatMapAsync(
+fun <T, R> Flow<T>.flatMapIterableAsync(
     concurrency: Int,
     f: suspend (T) -> Iterable<R>
 ): Flow<R> = mapAsync(concurrency, f).flattenIterable()
 
 /**
- * The [unorderedFlatMapAsync] function is similar to the [flatMapAsync] function but does not guarantee
+ * The [unorderedFlatMapIterableAsync] function is similar to the [flatMapIterableAsync] function but does not guarantee
  * the order of the output elements.
  *
- * This function transforms each element of the input Flow by applying the [f] function in a parallel way.
+ * This function transforms each element of the input Flow by applying the [f] function in a concurrent way.
  * This means that multiple elements can be processed at the same time, especially useful for more intensive tasks.
  *
  * Use [concurrency] to configure the concurrency number.
  *
  * The output of this function is a Flow of the transformed elements, where the order of the elements is not preserved.
  * This means that the output Flow may not contain the elements in the same order as the input Flow.
- * However, this function can be significantly faster than [flatMapAsync] because it does not have to preserve order.
+ * However, this function can be significantly faster than [flatMapIterableAsync] because it does not have to preserve order.
  */
-fun <T, R> Flow<Iterable<T>>.unorderedFlatMapAsync(
+fun <T, R> Flow<T>.unorderedFlatMapIterableAsync(
     concurrency: Int,
-    f: suspend (Iterable<T>) -> Iterable<R>
+    f: suspend (T) -> Iterable<R>
 ): Flow<R> = unorderedMapAsync(concurrency, f).flattenIterable()
 
 /**
