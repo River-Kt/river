@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.river.core.asString
-import com.river.core.flatten
+import com.river.core.flattenIterable
 import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
@@ -196,7 +196,7 @@ inline fun <reified T : Any> Flow<ByteArray>.parseJsonArray(
             var depth = 0
 
             map { it.toList() }
-                .flatten()
+                .flattenIterable()
                 .map { arrayOf(it).toByteArray() }
                 .collect { bytes ->
                     feeder.feedInput(bytes, 0, bytes.size)

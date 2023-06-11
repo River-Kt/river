@@ -2,7 +2,7 @@ package com.river.connector.http
 
 import com.river.core.asByteArray
 import com.river.core.asString
-import com.river.core.flatten
+import com.river.core.flattenIterable
 import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.jdk9.asFlow
@@ -10,7 +10,6 @@ import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodySubscribers.mapping
-import java.net.http.HttpResponse.ResponseInfo
 import java.nio.ByteBuffer
 
 /**
@@ -32,7 +31,7 @@ val discarding: BodyHandler<Void> = BodyHandlers.discarding()
  * This is a `BodyHandler` that handles HTTP response bodies as a Flow of ByteBuffer.
  */
 val ofFlow: BodyHandler<Flow<ByteBuffer>> =
-    BodyHandlers.ofPublisher().map { it.asFlow().flatten() }
+    BodyHandlers.ofPublisher().map { it.asFlow().flattenIterable() }
 
 /**
  * This is a `BodyHandler` that handles HTTP response bodies as a Flow of ByteArray.

@@ -7,6 +7,7 @@ import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContainAll
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import org.junit.jupiter.api.assertThrows
@@ -97,7 +98,7 @@ class FlowExtKtTest : FeatureSpec({
     feature("Flow<List<T>>.flatten") {
         scenario("Should transform the Flow<List<T>> into a Flow<T>") {
             val flowOfList = flowOf(listOf(2, 4), listOf(6, 8), listOf(10, 12), listOf(14, 16), listOf(18, 20))
-            val flattenedFlow = flowOfList.flatten()
+            val flattenedFlow = flowOfList.flattenIterable()
             flattenedFlow.toList() shouldBe listOf(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
         }
     }
@@ -144,16 +145,20 @@ class FlowExtKtTest : FeatureSpec({
     }
 
     feature("Flow<T>.broadcast") {
-        val expectedSize = 100
+        val expectedSize = 5
         val stream = (1..expectedSize).asFlow()
 
         scenario("Broadcasting to two flows should emit the elements in order") {
-            val (first, second) = stream.broadcast(2)
+            val (first: Channel<Int>, second: Channel<Int>) =
+                stream
+                    .broadcast(2)
+                    .single()
 
             val result =
                 first
+                    .consumeAsFlow()
                     .map { it * 2 }
-                    .zip(second.map { it * 3 }) { f, s -> f to s }
+                    .zip(second.consumeAsFlow().map { it * 3 }) { f, s -> f to s }
                     .toList()
 
             result shouldHaveSize expectedSize

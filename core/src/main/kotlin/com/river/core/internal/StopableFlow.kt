@@ -1,7 +1,8 @@
-@file:OptIn(FlowPreview::class)
+@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 
 package com.river.core.internal
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.AbstractFlow
 import kotlinx.coroutines.flow.FlowCollector

@@ -95,7 +95,7 @@ fun SqsAsyncClient.sendMessageFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String,
 ): Flow<SendMessageResponse> =
-    flowOf(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapConcat { url ->
         upstream
             .map { it.asMessageRequestEntry() }
             .chunked(groupStrategy)
@@ -128,7 +128,7 @@ fun SqsAsyncClient.sendMessageFlow(
 
                 (successful + failed).sortedBy { it.id }
             }
-            .flatten()
+            .flattenIterable()
     }
 
 /**
@@ -168,7 +168,7 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<ChangeMessageVisibility>, ChangeMessageVisibilityBatchResponse>> =
-    flowOf(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
             .mapAsync(concurrency) { messages ->
@@ -188,7 +188,7 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
                     )
                 }.await().let { response -> messages.map { it to response } }
             }
-            .flatten()
+            .flattenIterable()
     }
 
 /**
@@ -227,7 +227,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<Delete>, DeleteMessageBatchResponse>> =
-    flowOf(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapConcat { url ->
         upstream
             .chunked(groupStrategy)
             .mapAsync(concurrency) { messages ->
@@ -250,7 +250,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
                     .await()
                     .let { response -> messages.map { it to response } }
             }
-            .flatten()
+            .flattenIterable()
     }
 
 /**
@@ -295,7 +295,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
     concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
-): Flow<AcknowledgmentResult<SdkResponse>> = flowOf(queueUrl).flatMapConcat { url ->
+): Flow<AcknowledgmentResult<SdkResponse>> = flowOfSuspend(queueUrl).flatMapConcat { url ->
     val deleteMessageChannel: Channel<MessageAcknowledgment<Delete>> = Channel()
     val changeMessageVisibilityChannel: Channel<MessageAcknowledgment<ChangeMessageVisibility>> = Channel()
     val ignoreChannel: Channel<MessageAcknowledgment<Ignore>> = Channel()
@@ -443,7 +443,7 @@ suspend fun SqsAsyncClient.onMessages(
         messagesFlow
             .chunked(groupStrategy)
             .mapAsync(concurrency) { f(it) }
-            .flatten()
+            .flattenIterable()
 
     val acknowledgmentFlow =
         acknowledgmentMessageFlow(

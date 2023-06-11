@@ -57,7 +57,7 @@ sealed interface PaginatedSearch {
                         } ?: emptyList()
                     }
                     .earlyCompleteIf { it.isEmpty() }
-                    .flatten()
+                    .flattenIterable()
 
             emitAll(flow)
         }

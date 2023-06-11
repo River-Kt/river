@@ -85,4 +85,4 @@ fun <T> ElasticsearchAsyncClient.indexFlow(
                 }
                 .let { bulk(it.build()).await().items() }
         }
-        .flatten()
+        .flattenIterable()

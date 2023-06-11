@@ -104,7 +104,6 @@ fun GoogleDriveApi.download(
             },
             bodyHandler = ofFlow
         )
-        .also { println(it.statusCode()) }
         .body()
         .asByteArray()
         .also {

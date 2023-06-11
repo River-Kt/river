@@ -3,7 +3,7 @@ package com.river.connector.format.json
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.IntNode
 import com.river.core.asByteArray
-import com.river.core.flatten
+import com.river.core.flattenIterable
 import com.river.core.intersperse
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
@@ -51,7 +51,7 @@ class JsonExtKtTest : FeatureSpec({
         scenario("Streamed byte array to json object") {
             val jsonFlow = flowOf("1", "2", "3", "4", "5").intersperse(
                 start = "[", between = ",", end = "]"
-            ).map { it.toByteArray().toList() }.flatten().map { listOf(it).toByteArray() }
+            ).map { it.toByteArray().toList() }.flattenIterable().map { listOf(it).toByteArray() }
                 .parseJsonArray<JsonNode>()
 
             jsonFlow shouldContainInOrder (1..5).map { IntNode(it) }.asFlow()

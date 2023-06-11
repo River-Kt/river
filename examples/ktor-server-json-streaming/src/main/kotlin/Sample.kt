@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.river.connector.format.json.defaultObjectMapper
 import com.river.connector.format.json.parseJsonArray
 import com.river.connector.http.*
-import com.river.core.flatten
+import com.river.core.flattenIterable
 import com.river.core.unboundedLongFlow
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
@@ -80,7 +80,7 @@ fun Application.api() {
                     // Stop when an empty list is returned
                     .takeWhile { it.isNotEmpty() }
                     // Flatten the results into a single stream
-                    .flatten()
+                    .flattenIterable()
 
             call.respond(orderFlow)
         }

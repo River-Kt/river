@@ -26,4 +26,4 @@ internal fun <T, Q : PageableQuery> paginatedFlowApi(
         }
     }
     .takeWhile { it.isNotEmpty() }
-    .flatten()
+    .flattenIterable()

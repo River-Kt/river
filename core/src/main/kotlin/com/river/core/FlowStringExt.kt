@@ -90,7 +90,7 @@ fun Flow<String>.asBytes(
     charset: Charset = Charset.defaultCharset()
 ) = asByteArray(charset)
     .map { it.toList() }
-    .flatten()
+    .flattenIterable()
 
 /**
  * Converts the [Flow] of [String] to a [Flow] of [ByteArray] using the specified [charset].

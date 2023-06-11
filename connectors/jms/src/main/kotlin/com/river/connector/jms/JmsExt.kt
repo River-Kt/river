@@ -3,7 +3,7 @@
 package com.river.connector.jms
 
 import com.river.connector.jms.model.*
-import com.river.core.flatten
+import com.river.core.flattenIterable
 import com.river.core.mapAsync
 import com.river.core.indefinitelyRepeat
 import com.river.core.unorderedMapAsync
@@ -87,7 +87,7 @@ fun ConnectionFactory.consume(
                         }?.let { listOf(it) } ?: emptyList()
                     }
                 }
-                .flatten()
+                .flattenIterable()
                 .onCompletion { contextPool.close() }
         )
     }

@@ -48,7 +48,7 @@ fun S3AsyncClient.download(
     bucket: String,
     key: String
 ): Flow<Pair<GetObjectResponse, Flow<ByteArray>>> =
-    flowOf {
+    flowOfSuspend {
         getObject({ it.bucket(bucket).key(key) }, AsyncResponseTransformer.toPublisher())
             .await()
             .let { it.response() to it.asFlow().asByteArray() }

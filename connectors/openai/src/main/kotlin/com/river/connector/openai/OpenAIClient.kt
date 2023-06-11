@@ -9,7 +9,7 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.river.connector.format.json.asParsedJson
 import com.river.connector.http.*
-import com.river.core.flatIterable
+import com.river.core.flatMapIterable
 import com.river.core.joinToString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -70,7 +70,7 @@ class OpenAIClient(
         val serverSentEvents: Flow<ServerSentEvent> = response.body().parseAsServerSentEvents()
 
         serverSentEvents
-            .flatIterable { it.data }
+            .flatMapIterable { it.data }
             .takeWhile { it != "[DONE]" }
             .asParsedJson<T>(objectMapper)
             .also { emitAll(it) }

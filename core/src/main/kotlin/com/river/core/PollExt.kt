@@ -84,6 +84,6 @@ fun <T, S> pollWithState(
             emit(items)
             !shouldStop(state)
         }
-        .flatten()
+        .flattenIterable()
         .also { emitAll(it) }
 }

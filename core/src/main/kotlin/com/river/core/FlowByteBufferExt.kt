@@ -18,4 +18,4 @@ fun Flow<ByteBuffer>.asByteArray(): Flow<ByteArray> =
  * @return A new [Flow] of [ByteArray] converted and flattened from the original [Flow] of [List] of [ByteBuffer].
  */
 fun Flow<List<ByteBuffer>>.flattenAsByteArray(): Flow<ByteArray> =
-    flatten().asByteArray()
+    flattenIterable().asByteArray()

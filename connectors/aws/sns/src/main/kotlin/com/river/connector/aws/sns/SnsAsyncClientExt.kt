@@ -54,7 +54,7 @@ fun SnsAsyncClient.publishFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     topicArn: suspend () -> String
 ): Flow<PublishMessageResponse> =
-    flowOf(topicArn)
+    flowOfSuspend(topicArn)
         .flatMapConcat { arn ->
             upstream
                 .chunked(groupStrategy)
@@ -77,5 +77,5 @@ fun SnsAsyncClient.publishFlow(
 
                     (successful + failed).sortedBy { it.id }
                 }
-                .flatten()
+                .flattenIterable()
         }
