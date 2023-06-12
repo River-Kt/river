@@ -65,7 +65,7 @@ object Dependencies {
         val Sqs = "software.amazon.awssdk:sqs:${Version.AwsSdk}"
         val Sns = "software.amazon.awssdk:sns:${Version.AwsSdk}"
         val S3 = "software.amazon.awssdk:s3:${Version.AwsSdk}"
-        val SesV2 = "software.amazon.awssdk:sesv2:${Version.AwsSdk}"
+        val Ses = "software.amazon.awssdk:ses:${Version.AwsSdk}"
         val Lambda = "software.amazon.awssdk:lambda:${Version.AwsSdk}"
     }
 

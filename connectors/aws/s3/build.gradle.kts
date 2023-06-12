@@ -1,6 +1,5 @@
 import Dependencies.AwsHttp11Spi
 import Dependencies.ConnectorCommon
-import Dependencies.RiverCore
 
 plugins {
     kotlin("jvm")
