@@ -64,32 +64,41 @@ implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion
 
 Each connector leverages Kotlin's Flow API, coroutines and the core module to provide a simple and efficient way to interact with various protocols and services. You can check it out all the modules implemented currently.
 
-| Connector Name                   | Description                                                                                                        | Module           |
-|----------------------------------|--------------------------------------------------------------------------------------------------------------------|------------------|
-| Amazon Simple Storage Service (Amazon S3)  | Allows developers to interact with Amazon S3 buckets via Kotlin's Flow API. It provides high-level functions to download and upload S3 objects.     | connector-aws-s3 |
-| Amazon Simple Queue Service (Amazon SQS)   | Provides functionality to interact with Amazon SQS using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from Amazon SQS using configurable chunk strategies and concurrency. | connector-aws-sqs |
-| Amazon Simple Notification Service (Amazon SNS) | Allows users to send messages through Amazon SNS using Kotlin's Flow API using configurable chunk strategies and concurrency. | connector-aws-sns |
-| AWS Lambda                        | Provides functionality to interact with AWS Lambda using Kotlin's Flow API. Users can invoke AWS Lambda functions and receive the results through a Flow stream using configurable concurrency.                    | connector-aws-lambda |
-| Java Database Connectivity (JDBC)  | Provides an implementation of the RDBMS connector using JDBC driver. It allows users to interact with JDBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                                 | connector-rdbms-jdbc |
-| Reactive Relational Database Connectivity (R2DBC) | Provides an implementation of the RDBMS connector using R2DBC driver. It allows users to interact with R2DBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                           | connector-rdbms-r2dbc |
-| Debezium                          | Allows users to capture database events and stream them via Kotlin's Flow API. It supports multiple databases, including MySQL, PostgreSQL, and MongoDB. The emitted records can be sent to any other connector available in a seamless manner, enabling easy integration with a variety of services and protocols.                             | connector-redhat-debezium |
-| Azure Queue Storage               | Provides functionality to interact with Azure Queue Storage using Kotlin's Flow API. Developers can continuously receive, create, update, and delete messages using configurable chunk strategies and concurrency. | connector-azure-queue-storage |
-| JSON                              | Provides functionality to read and write JSON data using Kotlin's Flow API. It leverages Jackson, supports JSON serialization and deserialization with configurable options.                                | connector-format-json |
-| CSV                               | Provides functionality to read and write CSV data using Kotlin's Flow API.                                             | connector-format-csv |
-| File                              | Allows users to read and write files using Kotlin's Flow API. It provides functionality to read or write data to files and input streams.                  | connector-file    |
+| Connector Name                   | Description                                                                                                                                                                                                                                                                                                         | Module           |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Advanced Message Queuing Protocol (AMQP) | Provides functionality to interact with AMQP brokers using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from AMQP queues using configurable chunk strategies and concurrency.                                                                                                  | connector-amqp |
+| Amazon Simple Storage Service (Amazon S3)  | Allows developers to interact with Amazon S3 buckets via Kotlin's Flow API. It provides high-level functions to download and upload S3 objects.                                                                                                                                                                     | connector-aws-s3 |
+| Amazon Simple Queue Service (Amazon SQS)   | Provides functionality to interact with Amazon SQS using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from Amazon SQS using configurable chunk strategies and concurrency.                                                                                                     | connector-aws-sqs |
+| Amazon Simple Notification Service (Amazon SNS) | Allows developers to send messages through Amazon SNS using Kotlin's Flow API using configurable chunk strategies and concurrency.                                                                                                                                                                                  | connector-aws-sns |
+| Amazon Simple Email Service (SES) | Allows users to send emails through AWS SES using Kotlin's Flow API.                                                                                                                                                                                                                                                | connector-aws-ses |
+| AWS Lambda                        | Provides functionality to interact with AWS Lambda using Kotlin's Flow API. Users can invoke AWS Lambda functions and receive the results through a Flow stream using configurable concurrency.                                                                                                                     | connector-aws-lambda |
+| Console | Provides functionality to interact with the console using Kotlin's Flow API. | connector-console |
+| Java Database Connectivity (JDBC)  | Provides an implementation of the RDBMS connector using JDBC driver. It allows users to interact with JDBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                                                                                                      | connector-rdbms-jdbc |
+| Reactive Relational Database Connectivity (R2DBC) | Provides an implementation of the RDBMS connector using R2DBC driver. It allows users to interact with R2DBC-compatible databases through Kotlin's Flow API using configurable chunk strategies and concurrency.                                                                                                    | connector-rdbms-r2dbc |
+| Debezium                          | Allows users to capture database events and stream them via Kotlin's Flow API. It supports multiple databases, including MySQL, PostgreSQL, and MongoDB. The emitted records can be sent to any other connector available in a seamless manner, enabling easy integration with a variety of services and protocols. | connector-redhat-debezium |
+| Azure Queue Storage               | Provides functionality to interact with Azure Queue Storage using Kotlin's Flow API. Developers can continuously receive, create, update, and delete messages using configurable chunk strategies and concurrency.                                                                                                  | connector-azure-queue-storage |
+| JSON                              | Provides functionality to read and write JSON data using Kotlin's Flow API. It leverages Jackson, supports JSON serialization and deserialization with configurable options.                                                                                                                                        | connector-format-json |
+| Positional Flat Line | Provides functionality to read and write Positional Flat Line data using Kotlin's Flow API.                                                                                                                                                                                                                         | connector-format-positional-flat-line |
+| CSV                               | Provides functionality to read and write CSV data using Kotlin's Flow API.                                                                                                                                                                                                                                          | connector-format-csv |
+| File                              | Allows users to read and write files using Kotlin's Flow API. It provides functionality to read or write data to files and input streams.                                                                                                                                                                           | connector-file    |
+| FTP | Provides functionality to interact with FTP servers using Kotlin's Flow API. It's important to know that this module encausplates blocking I/O calls                                                                                                                                                                | connector-ftp |
+| HTTP | Works on top of the `java.net.HttpClient` and provides functionality to interact with HTTP servers using Kotlin's Flow API.                                                                                                                                                                                         | connector-http |
+| Java Message Service (JMS) | Provides functionality to interact with JMS brokers using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from JMS queues using configurable chunk strategies and concurrency.                                                                                                    | connector-jms |
+| MongoDB | Provides functionality to interact with MongoDB using Kotlin's Flow API.                                                                                                                                                                                                                                            | connector-mongodb |
 
 To install a module, you can add the dependency as follows:
 
 
 ```kotlin
 /**
-* Can be any of: 
-*  [
-*   connector-aws-s3, connector-aws-sqs, connector-aws-sns, connector-aws-lambda, 
-*   connector-rdbms-jdbc, connector-rdbms-r2dbc, connector-redhat-debezium, 
-*   connector-azure-queue-storage, connector-format-json, connector-format-csv, 
-*   connector-file
-*  ]
+ * Can be any of:
+ *  [
+ *   connector-aws-s3, connector-aws-sqs, connector-aws-sns, connector-aws-ses, 
+ *   connector-aws-lambda, connector-rdbms-jdbc, connector-rdbms-r2dbc, connector-redhat-debezium,
+ *   connector-azure-queue-storage, connector-format-json, connector-format-csv,
+ *   connector-file, connector-amqp, connector-aws-java-11-http-spi, connector-console, 
+ *   connector-format-positional-flat-line, connector-ftp, connector-http, connector-jms, connector-mongodb
+ *  ]
 */
 val module = "connector-aws-sqs"
 
