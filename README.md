@@ -53,8 +53,8 @@ To get to know the core module a bit further, you can refer to the [site's kdoc]
 To start using it, simply add the following dependencies:
 
 ```kotlin
-val riverVersion = "0.0.1-alpha02"
-val coroutinesVersion = "1.6.4"
+val riverVersion = "0.0.2-alpha01"
+val coroutinesVersion = "1.7.1"
 
 implementation("com.river-kt:core:$riverVersion")
 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -77,7 +77,6 @@ Each connector leverages Kotlin's Flow API, coroutines and the core module to pr
 | JSON                              | Provides functionality to read and write JSON data using Kotlin's Flow API. It leverages Jackson, supports JSON serialization and deserialization with configurable options.                                | connector-format-json |
 | CSV                               | Provides functionality to read and write CSV data using Kotlin's Flow API.                                             | connector-format-csv |
 | File                              | Allows users to read and write files using Kotlin's Flow API. It provides functionality to read or write data to files and input streams.                  | connector-file    |
-
 
 To install a module, you can add the dependency as follows:
 
