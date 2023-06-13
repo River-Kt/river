@@ -21,6 +21,7 @@ tasks.dokkaHtmlMultiModule.configure {
 }
 
 subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "java-library")
@@ -86,6 +87,8 @@ subprojects {
                     classifier = "javadoc"
                 }
 
+                from(components["versionCatalog"])
+
                 pom {
                     name.set(project.name)
                     description.set("Extensions & Enterprise Integrations for Kotlin flows.")
@@ -149,6 +152,12 @@ subprojects {
         if (JavaVersion.current().isJava9Compatible) {
             (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
         }
+    }
+
+    dependencies {
+        implementation(rootProject.libs.coroutines)
+        implementation(rootProject.libs.slf4j)
+        testImplementation(rootProject.libs.kotest.junit5)
     }
 }
 

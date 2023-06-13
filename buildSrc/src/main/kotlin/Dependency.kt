@@ -1,11 +1,12 @@
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.project
 
 object Dependencies {
     val DependencyHandlerScope.RiverCore
         get() = project(mapOf("path" to ":core"))
-
-    val DependencyHandlerScope.AwsHttp11Spi
-        get() = project(mapOf("path" to connector("aws-java-11-http-spi")))
 
     val DependencyHandlerScope.Http
         get() = project(mapOf("path" to ":connector:connector-http"))
@@ -132,3 +133,55 @@ object Dependencies {
         val Jackson = "io.ktor:ktor-serialization-jackson:${Version.Ktor}"
     }
 }
+
+object Modules {
+    val core =
+        Module(":core")
+
+    val awsHttp11Spi =
+        Module(":connector:connector-aws:connector-aws-java-11-http-spi")
+
+    val http =
+        Module(":connector:connector-http")
+
+    val json =
+        Module(":connector:connector-format:connector-format-json")
+
+    val pool =
+        Module(":utils:pool")
+
+    val jdbc =
+        Module(":connector:connector-rdbms:connector-rdbms-jdbc")
+
+    val file =
+        Module(":connector:connector-file")
+
+    val DependencyHandlerScope.File
+        get() = project(mapOf("path" to ":connector:connector-file"))
+
+    val DependencyHandlerScope.SqsConnector
+        get() = project(mapOf("path" to ":connector:connector-aws:connector-aws-sqs"))
+
+    val DependencyHandlerScope.S3Connector
+        get() = project(mapOf("path" to ":connector:connector-aws:connector-aws-s3"))
+
+    val DependencyHandlerScope.CsvConnector
+        get() = project(mapOf("path" to ":connector:connector-format:connector-format-csv"))
+}
+
+class Module(val name: String)
+
+val Project.modules
+    get() = Modules
+
+fun DependencyHandler.api(module: Module): Dependency? =
+    add("api", this.project(module.name))
+
+fun DependencyHandler.implementation(module: Module): Dependency? =
+    add("implementation", this.project(module.name))
+
+fun DependencyHandler.compileOnly(module: Module): Dependency? =
+    add("compileOnly", this.project(module.name))
+
+fun DependencyHandler.testImplementation(module: Module): Dependency? =
+    add("testImplementation", this.project(module.name))

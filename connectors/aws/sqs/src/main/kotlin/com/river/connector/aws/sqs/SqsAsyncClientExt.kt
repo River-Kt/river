@@ -1,5 +1,3 @@
-@file:OptIn(FlowPreview::class)
-
 package com.river.connector.aws.sqs
 
 import com.river.connector.aws.sqs.model.*
@@ -9,7 +7,6 @@ import com.river.connector.aws.sqs.model.SendMessageResponse
 import com.river.core.*
 import com.river.core.ConcurrencyStrategy.Companion.increaseByOne
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*

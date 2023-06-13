@@ -8,15 +8,12 @@ plugins {
 }
 
 dependencies {
-    implementation(RiverCore)
-    implementation(Http)
-    implementation(Json)
-    implementation(File)
-    implementation(Dependencies.Jackson)
+    implementation(project.modules.http)
+    implementation(project.modules.json)
+    implementation(project.modules.file)
 
-    Dependencies.Common.forEach { implementation(it) }
-    Dependencies.CommonTest.forEach { testImplementation(it) }
+    implementation(libs.jackson)
 
-    testImplementation(Dependencies.KotlinWiremock)
-    testImplementation(Dependencies.KotestWiremock)
+    testImplementation(libs.kotest.wiremock)
+    testImplementation(libs.kotlin.wiremock)
 }

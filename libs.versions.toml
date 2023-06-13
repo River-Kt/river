@@ -1,0 +1,90 @@
+[versions]
+kotlin = "1.8.20"
+aws-sdk = "2.20.69"
+coroutines = "1.7.1"
+slf4j = "1.7.36"
+commons-net = "3.8.0"
+twilio = "9.1.2"
+jackson = "2.14.0"
+elasticsearch = "8.5.1"
+rabbitmq = "5.16.0"
+jms = "2.0.1"
+activemq-artemis = "2.27.0"
+r2dbc = "1.0.0.RELEASE"
+azure = "12.6.0"
+postgresql-jdbc = "42.5.1"
+mysql-jdbc = "8.0.31"
+debezium = "2.0.0.Final"
+mongodb = "4.8.0"
+apache-ftpserver = "1.2.0"
+mock-ftpserver = "2.7.1"
+kotest = "5.5.3"
+wiremock = "2.27.2"
+kotlin-wiremock = "2.0.2"
+kotest-wiremock = "2.0.0"
+ktor = "2.3.0"
+java-jwt = "4.4.0"
+
+[libraries]
+# kotlin
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
+coroutines-jdk9 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk9", version.ref = "coroutines" }
+
+kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+# aws
+aws-http-client-spi = { module = "software.amazon.awssdk:http-client-spi", version.ref = "aws-sdk" }
+aws-sqs = { module = "software.amazon.awssdk:sqs", version.ref = "aws-sdk" }
+aws-sns = { module = "software.amazon.awssdk:sns", version.ref = "aws-sdk" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }
+aws-ses = { module = "software.amazon.awssdk:ses", version.ref = "aws-sdk" }
+aws-lambda = { module = "software.amazon.awssdk:lambda", version.ref = "aws-sdk" }
+
+# testing
+kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+wiremock = { module = "com.github.tomakehurst:wiremock", version.ref = "wiremock" }
+kotlin-wiremock = { module = "com.marcinziolo:kotlin-wiremock", version.ref = "kotlin-wiremock" }
+kotest-wiremock = { module = "io.kotest.extensions:kotest-extensions-wiremock", version.ref = "kotest-wiremock" }
+
+# ktor
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-content-renegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-jackson = { module = "io.ktor:ktor-serialization-jackson", version.ref = "ktor" }
+
+azure-queue-storage = { module = "com.azure:azure-storage-queue", version.ref = "azure" }
+
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
+
+twilio = { module = "com.twilio.sdk:twilio", version.ref = "twilio" }
+
+jackson = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+
+elasticsearch = { module = "co.elastic.clients:elasticsearch-java", version.ref = "elasticsearch" }
+
+amqp = { module = "com.rabbitmq:amqp-client", version.ref = "rabbitmq" }
+
+jms-api = { module = "javax.jms:javax.jms-api", version.ref = "jms" }
+
+artemis-client = { module = "org.apache.activemq:artemis-jms-client", version.ref = "activemq-artemis" }
+artemis-server = { module = "org.apache.activemq:artemis-server", version.ref = "activemq-artemis" }
+
+r2dbc-spi = { module = "io.r2dbc:r2dbc-spi", version.ref = "r2dbc" }
+r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc" }
+
+postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgresql-jdbc" }
+mysql-jdbc = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-jdbc" }
+
+debezium-api = { module = "io.debezium:debezium-api", version.ref = "debezium" }
+debezium-embedded = { module = "io.debezium:debezium-embedded", version.ref = "debezium" }
+debezium-mysql = { module = "io.debezium:debezium-connector-mysql", version.ref = "debezium" }
+
+mongodb = { module = "org.mongodb:mongodb-driver-reactivestreams", version.ref = "mongodb" }
+
+apache-ftpserver = { module = "org.apache.ftpserver:ftpserver-core", version.ref = "apache-ftpserver" }
+mock-ftpserver = { module = "org.mockftpserver:MockFtpServer", version.ref = "mock-ftpserver" }
+
+java-jwt = { module = "com.auth0:java-jwt", version.ref = "java-jwt" }

@@ -1,34 +1,9 @@
-import Dependencies.Common
-import Dependencies.CommonTest
-import Dependencies.Debezium.Api
-import Dependencies.Debezium.Embedded
-import Dependencies.Debezium.MySQL
-import Dependencies.Jdbc
-import Dependencies.RiverCore
-
-plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    mavenCentral()
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
 dependencies {
-    implementation(RiverCore)
-    (Common + Api + Embedded).forEach { implementation(it) }
+    implementation(libs.debezium.api)
+    implementation(libs.debezium.embedded)
 
-    testImplementation(Jdbc)
-    (CommonTest + MySQL).forEach { testImplementation(it) }
-}
+    testImplementation(libs.debezium.mysql)
+    testImplementation(libs.mysql.jdbc)
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
-        jvmTarget = "17"
-    }
+    testImplementation(project.modules.jdbc)
 }

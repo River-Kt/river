@@ -1,18 +1,18 @@
-plugins {
-    kotlin("jvm")
-}
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            exclude("software.amazon.awssdk", "netty-nio-client")
+        }
+    }
 
-repositories {
-    mavenCentral()
-}
+    dependencies {
+        implementation(project(":connector:connector-http"))
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
+        implementation(rootProject.libs.aws.http.client.spi)
+        implementation(rootProject.libs.coroutines.reactive)
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
-        jvmTarget = "17"
+        if (project.name != "connector-aws-java-11-http-spi") {
+            implementation(rootProject.modules.awsHttp11Spi)
+        }
     }
 }

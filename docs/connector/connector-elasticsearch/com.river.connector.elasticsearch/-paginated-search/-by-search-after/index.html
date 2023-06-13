@@ -56,7 +56,7 @@
     <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-elasticsearch:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">BySearchAfter</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>index<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>pageSize<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">100</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>concurrency<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-field/index.html">PaginatedSearch.BySearchAfter.Field</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>f<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span><span data-unresolved-link="co.elastic.clients.elasticsearch._types.query_dsl/Query.Builder///PointingToDeclaration/">Query.Builder</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><span data-unresolved-link="co.elastic.clients.util/ObjectBuilder///PointingToDeclaration/">ObjectBuilder</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="co.elastic.clients.elasticsearch._types.query_dsl/Query///PointingToDeclaration/">Query</span><span class="token operator">&gt;</span><span class="token operator"> = </span>{ it.matchAll { it } }</span></span><span class="token punctuation">)</span> : <a href="../index.html">PaginatedSearch</a></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
@@ -90,25 +90,6 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-elasticsearch:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-field/index.html">Field</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>order<span class="token operator">: </span><span data-unresolved-link="co.elastic.clients.elasticsearch._types/SortOrder///PointingToDeclaration/">SortOrder</span></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="844129776%2FFunctions%2F928128074" anchor-label="paginatedSearchFlow" id="844129776%2FFunctions%2F928128074" data-filterable-set=":connector:connector-elasticsearch:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-elasticsearch:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-elasticsearch:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="paginated-search-flow.html"><span>paginated</span><wbr><span>Search</span><wbr><span><span>Flow</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="844129776%2FFunctions%2F928128074"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-elasticsearch:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt; </span><a href="paginated-search-flow.html"><span class="token function">paginatedSearchFlow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">client<span class="token operator">: </span><span data-unresolved-link="co.elastic.clients.elasticsearch/ElasticsearchAsyncClient///PointingToDeclaration/">ElasticsearchAsyncClient</span><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="co.elastic.clients.elasticsearch.core.search/Hit///PointingToDeclaration/">Hit</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -188,6 +169,25 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-elasticsearch:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="page-size.html">pageSize</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">100</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="844129776%2FFunctions%2F928128074" anchor-label="paginatedSearchFlow" id="844129776%2FFunctions%2F928128074" data-filterable-set=":connector:connector-elasticsearch:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-elasticsearch:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-elasticsearch:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="paginated-search-flow.html"><span>paginated</span><wbr><span>Search</span><wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="844129776%2FFunctions%2F928128074"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-elasticsearch:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt; </span><a href="paginated-search-flow.html"><span class="token function">paginatedSearchFlow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">client<span class="token operator">: </span><span data-unresolved-link="co.elastic.clients.elasticsearch/ElasticsearchAsyncClient///PointingToDeclaration/">ElasticsearchAsyncClient</span><span class="token punctuation">, </span></span><span class="parameter ">clazz<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="co.elastic.clients.elasticsearch.core.search/Hit///PointingToDeclaration/">Hit</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="paginated-search-flow.html">T</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>

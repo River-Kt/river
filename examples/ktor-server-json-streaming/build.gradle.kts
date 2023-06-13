@@ -11,8 +11,8 @@ plugins {
 dependencies {
     Coroutines.forEach { implementation(it) }
     implementation(RiverCore)
-    implementation(Http)
-    implementation(Json)
+    implementation(project.modules.http)
+    implementation(project.modules.json)
 
     implementation(Ktor.Server.Core)
     implementation(Ktor.Server.Netty)

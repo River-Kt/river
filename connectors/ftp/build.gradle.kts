@@ -1,18 +1,6 @@
-import Dependencies.Common
-import Dependencies.CommonTest
-import Dependencies.RiverCore
-import Dependencies.File
-
-plugins {
-    kotlin("jvm")
-}
-
 dependencies {
-    implementation(RiverCore)
-    implementation(File)
-    Common.forEach { implementation(it) }
-    implementation(Dependencies.CommonsNet)
+    implementation(project.modules.file)
+    implementation(libs.commons.net)
 
-    testImplementation(Dependencies.MockFtpServer)
-    CommonTest.forEach { testImplementation(it) }
+    testImplementation(libs.mock.ftpserver)
 }

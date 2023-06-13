@@ -14,7 +14,7 @@ dependencies {
     Coroutines.forEach { implementation(it) }
     implementation(RiverCore)
     implementation(SqsConnector)
-    implementation(Http)
+    implementation(project.modules.http)
     implementation(KotlinWiremock)
     implementation(Wiremock)
     implementation(Aws.Sqs) {
