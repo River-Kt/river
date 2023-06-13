@@ -1,5 +1,5 @@
 subprojects {
     dependencies {
-        implementation(rootProject.modules.core)
+        api(rootProject.modules.core)
     }
 }

@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.coroutines.jdk9)
+    api(libs.coroutines.jdk9)
 }

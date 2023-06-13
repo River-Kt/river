@@ -6,13 +6,13 @@ subprojects {
     }
 
     dependencies {
-        implementation(project(":connector:connector-http"))
+        api(rootProject.modules.http)
 
-        implementation(rootProject.libs.aws.http.client.spi)
-        implementation(rootProject.libs.coroutines.reactive)
+        api(rootProject.libs.aws.http.client.spi)
+        api(rootProject.libs.coroutines.reactive)
 
         if (project.name != "connector-aws-java-11-http-spi") {
-            implementation(rootProject.modules.awsHttp11Spi)
+            api(rootProject.modules.awsHttp11Spi)
         }
     }
 }

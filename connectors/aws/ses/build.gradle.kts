@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.aws.ses)
+    api(libs.aws.ses)
 }

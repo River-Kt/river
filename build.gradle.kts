@@ -153,8 +153,8 @@ subprojects {
     }
 
     dependencies {
-        implementation(rootProject.libs.coroutines)
-        implementation(rootProject.libs.slf4j)
+        api(rootProject.libs.coroutines)
+        api(rootProject.libs.slf4j)
         testImplementation(rootProject.libs.kotest.junit5)
     }
 }

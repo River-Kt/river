@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.amqp)
+    api(libs.amqp)
 }

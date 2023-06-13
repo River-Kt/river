@@ -1,3 +1,3 @@
 dependencies {
-    implementation(project(":connector:connector-file"))
+    api(project.modules.file)
 }

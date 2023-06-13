@@ -1,5 +1,5 @@
 subprojects {
     dependencies {
-        implementation(rootProject.libs.coroutines.reactive)
+        api(rootProject.libs.coroutines.reactive)
     }
 }

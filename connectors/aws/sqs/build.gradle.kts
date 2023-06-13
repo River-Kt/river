@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.aws.sqs)
+    api(libs.aws.sqs)
 }

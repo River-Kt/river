@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.aws.s3)
+    api(libs.aws.s3)
 }

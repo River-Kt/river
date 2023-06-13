@@ -1,6 +1,6 @@
 dependencies {
-    implementation(project.modules.file)
-    implementation(libs.commons.net)
+    api(project.modules.file)
+    api(libs.commons.net)
 
     testImplementation(libs.mock.ftpserver)
 }

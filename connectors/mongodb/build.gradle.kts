@@ -1,5 +1,5 @@
 dependencies {
-    implementation(libs.coroutines.reactive)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.mongodb)
+    api(libs.coroutines.reactive)
+    api(libs.kotlin.reflect)
+    api(libs.mongodb)
 }

@@ -54,10 +54,8 @@ To start using it, simply add the following dependencies:
 
 ```kotlin
 val riverVersion = "0.0.2-alpha01"
-val coroutinesVersion = "1.7.1"
 
 implementation("com.river-kt:core:$riverVersion")
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 ```
 
 ## The connectors
@@ -100,7 +98,7 @@ To install a module, you can add the dependency as follows:
  *   connector-format-positional-flat-line, connector-ftp, connector-http, connector-jms, connector-mongodb
  *  ]
 */
-val module = "connector-aws-sqs"
+val connectorName = "connector-aws-sqs"
 
 implementation("com.river-kt:$connectorName:$riverVersion")
 

@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.azure.queue.storage)
+    api(libs.azure.queue.storage)
 }

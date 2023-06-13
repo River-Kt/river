@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.jackson)
+    api(libs.jackson)
 }

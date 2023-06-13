@@ -1,5 +1,5 @@
 dependencies {
-    implementation(libs.coroutines.reactive)
-    implementation(libs.r2dbc.spi)
+    api(libs.coroutines.reactive)
+    api(libs.r2dbc.spi)
     testImplementation(libs.r2dbc.h2)
 }

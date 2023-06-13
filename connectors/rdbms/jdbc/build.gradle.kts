@@ -1,6 +1,6 @@
 dependencies {
-    implementation(project.modules.pool)
+    api(project.modules.pool)
 
-    implementation(libs.kotlin.reflect)
-    implementation(libs.postgresql.jdbc)
+    api(libs.kotlin.reflect)
+    api(libs.postgresql.jdbc)
 }

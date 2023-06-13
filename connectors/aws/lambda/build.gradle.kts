@@ -1,3 +1,3 @@
 dependencies {
-    implementation(libs.aws.lambda)
+    api(libs.aws.lambda)
 }

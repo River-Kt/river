@@ -1,4 +1,4 @@
 dependencies {
-    implementation(libs.elasticsearch)
-    implementation(libs.jackson)
+    api(libs.elasticsearch)
+    api(libs.jackson)
 }

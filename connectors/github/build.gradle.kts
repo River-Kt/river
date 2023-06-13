@@ -8,11 +8,11 @@ plugins {
 }
 
 dependencies {
-    implementation(project.modules.http)
-    implementation(project.modules.json)
-    implementation(project.modules.file)
+    api(project.modules.http)
+    api(project.modules.json)
+    api(project.modules.file)
 
-    implementation(libs.jackson)
+    api(libs.jackson)
 
     testImplementation(libs.kotest.wiremock)
     testImplementation(libs.kotlin.wiremock)

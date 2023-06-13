@@ -1,7 +1,7 @@
 dependencies {
-    implementation(project.modules.pool)
+    api(project.modules.pool)
 
-    implementation(libs.jms.api)
+    api(libs.jms.api)
 
     testImplementation(libs.artemis.client)
     testImplementation(libs.artemis.server)

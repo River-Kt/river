@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project.modules.http)
-    implementation(project.modules.json)
-    implementation(libs.jackson)
+    api(project.modules.http)
+    api(project.modules.json)
+    api(libs.jackson)
 }
