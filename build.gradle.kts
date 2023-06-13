@@ -27,7 +27,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "0.0.2-alpha01"
+    version = "1.0.0-alpha1"
 
     java {
         withJavadocJar()
