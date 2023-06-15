@@ -6,30 +6,21 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
-import org.slf4j.LoggerFactory
 
 internal class UnorderedMapAsyncFlow<T, R>(
     private val upstream: Flow<T>,
     private val concurrencyLevel: Int,
     private val f: suspend (T) -> R
 ) : Flow<R> {
-    private val logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
     override suspend fun collect(collector: FlowCollector<R>): Unit =
         Semaphore(permits = concurrencyLevel)
             .let { semaphore ->
                 val channel: Flow<R> =
                     channelFlow {
-                        fun available() = semaphore.availablePermits
-
                         upstream
                             .collect {
                                 semaphore.acquire()
-
-                                logger.debug(
-                                    "Running mapAsync. ${available()} " +
-                                            "slots available of $concurrencyLevel"
-                                )
 
                                 launch {
                                     send(f(it))

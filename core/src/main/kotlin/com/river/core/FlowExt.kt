@@ -183,7 +183,6 @@ fun unboundedLongFlow(startAt: Long = 0): Flow<Long> = flow {
  * @param bufferCapacity The capacity of the shared buffer.
  * @param onBufferOverflow The policy to apply when the buffer overflows.
  * @param onUndeliveredElement The function to be invoked when an element cannot be delivered.
- * @param scope The [CoroutineScope] to collect the transformed flow asynchronously.
  * @param flow The transformation function that maps the original flow to a new flow.
  * @return A [Flow] of the original items.
  */

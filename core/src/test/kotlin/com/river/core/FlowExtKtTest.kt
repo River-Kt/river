@@ -4,10 +4,8 @@ package com.river.core
 
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainInOrder
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContainAll
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import org.junit.jupiter.api.assertThrows
@@ -141,35 +139,6 @@ class FlowExtKtTest : FeatureSpec({
 
             duration.inWholeSeconds shouldBe 2
             result shouldNotContainAll (0..20).toList()
-        }
-    }
-
-    feature("Flow<T>.broadcast") {
-        val expectedSize = 5
-        val stream = (1..expectedSize).asFlow()
-
-        scenario("Broadcasting to two flows should emit the elements in order") {
-            val (first: Channel<Int>, second: Channel<Int>) =
-                stream
-                    .broadcast(2)
-                    .single()
-
-            val result =
-                first
-                    .consumeAsFlow()
-                    .map { it * 2 }
-                    .zip(second.consumeAsFlow().map { it * 3 }) { f, s -> f to s }
-                    .toList()
-
-            result shouldHaveSize expectedSize
-
-            result
-                .forEachIndexed { index, tuple ->
-                    val (multipleOfTwo, multipleOfThree) = tuple
-
-                    multipleOfTwo shouldBe (index + 1) * 2
-                    multipleOfThree shouldBe (index + 1) * 3
-                }
         }
     }
 })

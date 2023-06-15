@@ -3,29 +3,10 @@ package com.river.core
 import kotlinx.coroutines.flow.*
 
 /**
- * Intersperses the elements of the [Flow] with the specified [between] element.
- *
- * @param between An element of type [T] to insert between the flow elements.
- *
- * @return A new [Flow] with the [between] element inserted between the original flow elements.
- *
- * Example usage:
- *
- * ```
- *  flowOf(1, 2, 3)
- *      .intersperse(between = 0)
- *      .collect(::println) //1, 0, 2, 0, 3
- * ```
- */
-fun <T> Flow<T>.intersperse(
-    between: T
-): Flow<T> = intersperse(start = null, between = between, end = null)
-
-/**
  * Intersperses the elements of the [Flow] with the specified [start], [between], and [end] elements.
  *
- * @param start An optional element of type [T] to insert at the beginning of the flow. Defaults to null.
  * @param between An element of type [T] to insert between the flow elements.
+ * @param start An optional element of type [T] to insert at the beginning of the flow. Defaults to null.
  * @param end An optional element of type [T] to insert at the end of the flow. Defaults to null.
  *
  * @return A new [Flow] with the [start], [between], and [end] elements inserted between and around the original flow elements.
@@ -38,8 +19,8 @@ fun <T> Flow<T>.intersperse(
  *      .collect(::println) //0, 1, -1, 2, -1, 3, 4
  */
 fun <T> Flow<T>.intersperse(
-    start: T? = null,
     between: T,
+    start: T? = null,
     end: T? = null
 ): Flow<T> =
     flow {
@@ -124,11 +105,11 @@ suspend fun <T> Flow<T>.joinToString(
  * ```
  */
 suspend fun <T> Flow<T>.joinToString(
-    start: String,
     between: String,
+    start: String,
     end: String,
     f: suspend (T) -> String
 ): String =
     map(f)
-        .intersperse(start, between, end)
+        .intersperse(start = start, between = between, end = end)
         .fold("") { acc, element -> acc + element }

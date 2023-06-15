@@ -210,14 +210,8 @@ fun <T> Flow<T>.chunked(strategy: GroupStrategy): Flow<List<T>> =
  * val chunkSize = 3
  *
  * flow.chunked(chunkSize, 100.milliseconds)
- *     .collectIndexed { index, smallerFlow ->
- *         print("Flow #${index + 1}: ")
- *
- *         smallerFlow
- *             .intersperse(", ")
- *             .collect(::print)
- *
- *         println()
+ *     .collectIndexed { index, chunk ->
+ *         println("Sum of chunk #${index + 1}: ${chunk.sum()}")
  *     }
  * ```
  *

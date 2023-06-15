@@ -29,5 +29,3 @@ fun <T> Flow<T>.throttle(
     interval: Duration,
     strategy: ThrottleStrategy = ThrottleStrategy.Suspend
 ): Flow<T> = ThrottleFlow(elementsPerInterval, interval, strategy, this)
-
-enum class ThrottleStrategy { Suspend, Drop  }

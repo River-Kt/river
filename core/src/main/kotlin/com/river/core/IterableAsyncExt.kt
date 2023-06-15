@@ -1,9 +1,6 @@
 package com.river.core
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 
@@ -16,6 +13,7 @@ import kotlinx.coroutines.flow.toList
  *
  * @throws AssertionError if the sizes of the lists don't match.
  */
+@FlowPreview
 infix fun <T> List<CompletableDeferred<T>>.completeAll(values: List<T>): Boolean =
     assert(size == values.size) { "Promises & values sizes must match" }
         .let {
@@ -33,6 +31,7 @@ infix fun <T> List<CompletableDeferred<T>>.completeAll(values: List<T>): Boolean
  *
  * @throws AssertionError if the sizes of the lists don't match.
  */
+@FlowPreview
 infix fun <T> List<CompletableDeferred<T>>.completeAllWith(result: Result<List<T>>): Boolean =
     result
         .mapCatching { this completeAll it }

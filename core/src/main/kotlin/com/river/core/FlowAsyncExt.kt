@@ -111,16 +111,3 @@ suspend fun <T> Flow<T>.collectAsync(
     concurrency: Int,
     f: suspend (T) -> Unit
 ): Unit = onEachAsync(concurrency, f).collect()
-
-/**
- * Collects the flow and performs the provided [f] action concurrently on each item emitted by the
- * flow. The action is applied with the specified [concurrency]. The order of items might
- * not be preserved.
- *
- * @param concurrency The maximum number of concurrent invocations of the action [f].
- * @param f The action to apply to each item emitted by the flow.
- */
-suspend fun <T> Flow<T>.unorderedCollectAsync(
-    concurrency: Int,
-    f: suspend (T) -> Unit
-): Unit = unorderedOnEachAsync(concurrency, f).collect()

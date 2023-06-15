@@ -54,4 +54,3 @@ fun <T> Flow<T>.earlyCompleteIf(
             else emit(it)
         }
     }
-

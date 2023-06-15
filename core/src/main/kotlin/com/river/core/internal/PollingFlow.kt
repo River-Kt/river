@@ -11,7 +11,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import org.slf4j.LoggerFactory
 
 internal sealed interface PollingFlow<T> : Flow<T> {
     class Default<T>(
@@ -37,8 +36,6 @@ internal sealed interface PollingFlow<T> : Flow<T> {
         private val stopOnEmptyList: Boolean = false,
         private val producer: suspend ConcurrencyInfo.() -> List<T>
     ) : PollingFlow<T> {
-        private val logger = LoggerFactory.getLogger(this::class.java)
-
         override suspend fun collect(collector: FlowCollector<T>) =
             flow {
                 var gotEmptyResponse = false
@@ -57,31 +54,15 @@ internal sealed interface PollingFlow<T> : Flow<T> {
                             else -> concurrency.increaseStrategy(lastConcurrencyInfo)
                         }
 
-                    logger.debug(
-                        "Polling using ${lastConcurrencyInfo.current} " +
-                            "of ${lastConcurrencyInfo.maximum} total concurrency"
-                    )
-
                     (1..lastConcurrencyInfo.current)
                         .mapAsync { producer(lastConcurrencyInfo) }
                         .onEach { if (!emptyResultOnResponse) emptyResultOnResponse = it.isEmpty() }
                         .flatten()
-                        .also {
-                            logger.debug("Done polling.")
-
-                            if (it.isNotEmpty()) {
-                                logger.debug("Emitting ${it.size} items downstream")
-                            } else logger.debug("No items returned.")
-                        }
-                        .forEach {
-                            emit(it)
-                        }
+                        .forEach { emit(it) }
 
                     firstIteration = false
                     gotEmptyResponse = emptyResultOnResponse
                 }
-
-                logger.debug("Stopping poll...")
             }.collect(collector)
     }
 
