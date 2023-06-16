@@ -27,7 +27,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha1"
+    version = "1.0.0-alpha2"
 
     java {
         withJavadocJar()
@@ -112,6 +112,18 @@ subprojects {
                             name.set("Gabriel Francisco")
                             email.set("gabfssilva@gmail.com")
                         }
+                    }
+
+                    dependencies {
+                        configurations
+                            .compileClasspath
+                            .get()
+                            .dependencies
+                            .filter { it.group != null && it.version != null }
+                            .filter { configurations["apiDependencies"].any { dep -> dep.name == it.name } }
+                            .forEach { dependency ->
+                                api(dependency)
+                            }
                     }
                 }
             }
