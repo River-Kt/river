@@ -114,16 +114,16 @@ subprojects {
                         }
                     }
 
-                    dependencies {
-                        configurations
-                            .compileClasspath
-                            .get()
-                            .dependencies
-                            .filter { it.group != null && it.version != null }
-                            .filter { configurations["apiDependencies"].any { dep -> dep.name == it.name } }
-                            .forEach { dependency ->
-                                api(dependency)
+                    withXml {
+                        asNode().appendNode("dependencies").let {
+                            for (dependency in configurations["api"].dependencies) {
+                                it.appendNode("dependency").apply {
+                                    appendNode("groupId", dependency.group)
+                                    appendNode("artifactId", dependency.name)
+                                    appendNode("version", dependency.version)
+                                }
                             }
+                        }
                     }
                 }
             }
