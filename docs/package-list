@@ -31,8 +31,6 @@ com.river.connector.openai.model
 module:connector-twilio
 com.river.connector.twilio
 com.river.connector.twilio.model
-module:pool
-com.river.util.pool
 module:connector-aws-java-11-http-spi
 com.river.connector.aws
 module:connector-aws-lambda

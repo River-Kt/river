@@ -7,7 +7,7 @@ import com.river.core.flattenIterable
 import com.river.core.mapAsync
 import com.river.core.indefinitelyRepeat
 import com.river.core.unorderedMapAsync
-import com.river.util.pool.ObjectPool
+import com.river.core.ObjectPool
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

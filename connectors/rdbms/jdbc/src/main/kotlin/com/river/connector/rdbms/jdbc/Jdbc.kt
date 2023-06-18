@@ -2,7 +2,7 @@
 
 package com.river.connector.rdbms.jdbc
 
-import com.river.util.pool.ObjectPool
+import com.river.core.ObjectPool
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.sql.Connection

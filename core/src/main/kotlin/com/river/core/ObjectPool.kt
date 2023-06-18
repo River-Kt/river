@@ -1,5 +1,6 @@
-package com.river.util.pool
+package com.river.core
 
+import com.river.core.internal.DefaultObjectPool
 import java.time.ZonedDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes

@@ -1,7 +1,7 @@
 package com.river.connector.red.hat.debezium
 
+import com.river.connector.red.hat.debezium.model.*
 import io.debezium.engine.DebeziumEngine
-import com.river.connector.red.hat.debezium.model.CommittableRecord
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import org.slf4j.LoggerFactory
@@ -14,16 +14,14 @@ private val logger = LoggerFactory.getLogger("com.river.connector.red.hat.debezi
  * The debeziumFlow function creates a Kotlin Flow that consumes records from a Debezium engine
  * and emits them as CommittableRecords.
  *
- * Each CommittableRecord carries the original record and a CommittableOffset that allows the caller
+ * Each [CommittableRecord] carries the original record and a [CommittableOffset] that allows the caller
  * to commit the record's offset to the Debezium engine once it has been successfully processed downstream.
  *
- * The capacity of the internal buffer that stores the unconsumed records is defined by [bufferCapacity].
+ * Once the [CommittableRecord] is processed, the `markProcessed` function must be called.
+ *
+ * The capacity of the internal buffer that stores the unconsumed records is defined by [maxRecordsInFlight].
  *
  * If the buffer fills up, the flow will start to suspend producers until more capacity becomes available again.
- *
- * In the other hand, [maxRecordsInFlight] represents the maximum number of records that can be outstanding at the same
- * time, waiting for their corresponding offsets to be committed. If this limit is reached, the flow will start to
- * suspend producers until more offsets are committed.
  *
  * Example usage:
  *
@@ -39,18 +37,17 @@ private val logger = LoggerFactory.getLogger("com.river.connector.red.hat.debezi
  * ```
  */
 fun <R> debeziumFlow(
-    bufferCapacity: Int = Channel.BUFFERED,
-    maxRecordsInFlight: Int = 2048,
+    maxRecordsInFlight: Int = 250,
     executor: ExecutorService = Executors.newSingleThreadExecutor(),
     engineBuilder: () -> DebeziumEngine.Builder<R>
 ): Flow<CommittableRecord<R>> {
     logger.info("Initializing Debezium")
 
-    val recordChannel = Channel<CommittableRecord<R>>(bufferCapacity)
+    val recordChannel = Channel<CommittableRecord<R>>(maxRecordsInFlight)
 
     val engine: DebeziumEngine<R> =
         engineBuilder()
-            .notifying(DebeziumChannelNotifier(maxRecordsInFlight, recordChannel))
+            .notifying(DebeziumChannelNotifier(recordChannel))
             .using { success, message, error ->
                 if (success) {
                     logger.info(message)

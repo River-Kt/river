@@ -19,9 +19,6 @@ object Modules {
     val csv =
         Module(":connector:connector-format:connector-format-csv")
 
-    val pool =
-        Module(":utils:pool")
-
     val s3 =
         Module(":connector:connector-aws:connector-aws-s3")
 

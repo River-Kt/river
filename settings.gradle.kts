@@ -51,8 +51,6 @@ include(
     "connectors:twilio",
     "connectors:openai",
 
-    "utils:pool",
-
     "examples:sqs-to-http",
     "examples:s3-csv-jdbc",
     "examples:ktor-server-json-streaming"

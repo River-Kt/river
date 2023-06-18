@@ -1,10 +1,4 @@
 subprojects {
-    configurations.all {
-        resolutionStrategy {
-            exclude("software.amazon.awssdk", "netty-nio-client")
-        }
-    }
-
     dependencies {
         api(rootProject.modules.http)
 

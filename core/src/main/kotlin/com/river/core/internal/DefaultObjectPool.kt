@@ -1,5 +1,6 @@
-package com.river.util.pool
+package com.river.core.internal
 
+import com.river.core.ObjectPool
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.sync.Mutex
@@ -7,7 +8,7 @@ import kotlinx.coroutines.sync.withLock
 import java.time.ZonedDateTime.now
 import kotlin.time.Duration
 
-class DefaultObjectPool<T>(
+internal class DefaultObjectPool<T>(
     private val size: Int,
     private val maxDuration: Duration,
     initial: List<T>,

@@ -1,20 +1,17 @@
 package com.river.connector.red.hat.debezium
 
-import io.debezium.engine.DebeziumEngine
 import com.river.connector.red.hat.debezium.model.CommittableOffset
 import com.river.connector.red.hat.debezium.model.CommittableRecord
+import io.debezium.engine.DebeziumEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 
 internal class DebeziumChannelNotifier<R>(
-    maxRecordsInFlight: Int,
     private val recordChannel: SendChannel<CommittableRecord<R>>
 ) : DebeziumEngine.ChangeConsumer<R> {
-    private val semaphore = Semaphore(maxRecordsInFlight)
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun handleBatch(records: List<R>, committer: DebeziumEngine.RecordCommitter<R>) {
@@ -29,7 +26,6 @@ internal class DebeziumChannelNotifier<R>(
                     withContext(Dispatchers.IO) {
                         logger.debug("Marking item as processed.")
                         committer.markProcessed(it)
-                        semaphore.release()
                     }
                 },
                 markBatchFinished = {
@@ -42,10 +38,7 @@ internal class DebeziumChannelNotifier<R>(
 
             records
                 .map { CommittableRecord(it, committableOffset) }
-                .forEach {
-                    semaphore.acquire()
-                    recordChannel.send(it)
-                }
+                .forEach { recordChannel.send(it) }
 
             logger.debug("$batchSize items sent downstream.")
         }

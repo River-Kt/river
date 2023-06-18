@@ -27,7 +27,9 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha2"
+    version = "1.0.0-alpha3"
+
+    group = "com.river-kt"
 
     java {
         withJavadocJar()
@@ -115,12 +117,27 @@ subprojects {
                     }
 
                     withXml {
-                        asNode().appendNode("dependencies").let {
+                        asNode().appendNode("dependencies").apply {
                             for (dependency in configurations["api"].dependencies) {
-                                it.appendNode("dependency").apply {
+                                appendNode("dependency").apply {
                                     appendNode("groupId", dependency.group)
                                     appendNode("artifactId", dependency.name)
                                     appendNode("version", dependency.version)
+
+                                    val excludeRules =
+                                        if (dependency is ModuleDependency) dependency.excludeRules
+                                        else emptySet()
+
+                                    if (excludeRules.isNotEmpty()) {
+                                        appendNode("exclusions").apply {
+                                            appendNode("exclusion").apply {
+                                                excludeRules.forEach { excludeRule ->
+                                                    appendNode("groupId", excludeRule.group)
+                                                    appendNode("artifactId", excludeRule.module)
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -166,7 +183,6 @@ subprojects {
 
     dependencies {
         api(rootProject.libs.coroutines)
-        api(rootProject.libs.slf4j)
         testImplementation(rootProject.libs.kotest.junit5)
     }
 }
