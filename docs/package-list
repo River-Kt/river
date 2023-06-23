@@ -39,6 +39,7 @@ module:connector-aws-s3
 com.river.connector.aws.s3
 module:connector-aws-ses
 com.river.connector.aws.ses
+com.river.connector.aws.ses.model
 module:connector-aws-sns
 com.river.connector.aws.sns
 com.river.connector.aws.sns.model

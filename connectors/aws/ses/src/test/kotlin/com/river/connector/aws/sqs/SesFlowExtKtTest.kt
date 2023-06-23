@@ -1,6 +1,7 @@
 package com.river.connector.aws.sqs
 
-import com.river.connector.aws.ses.*
+import com.river.connector.aws.ses.model.*
+import com.river.connector.aws.ses.sendEmailFlow
 import com.river.core.chunked
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
@@ -12,10 +13,8 @@ import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesAsyncClient
-import software.amazon.awssdk.services.ses.model.BulkEmailDestination
 import java.net.URI
 import java.util.UUID.randomUUID
-import java.util.function.Consumer
 
 class SesFlowExtKtTest : FeatureSpec({
     val numberOfMessages = 100
@@ -29,26 +28,20 @@ class SesFlowExtKtTest : FeatureSpec({
         scenario("Send e-mail") {
             val currentSentEmails = currentQuota()
 
-            val messages: Flow<String> =
+            val emails =
                 (1..numberOfMessages)
                     .asFlow()
                     .map { "This is the e-mail #$it" }
-
-            val emails =
-                messages.sendEmailRequest { emailContent ->
-                    destination { it.toAddresses("to@gmail.com") }
-                    source("from@gmail.com")
-
-                    message { message ->
-                        message.subject {
-                            it.data("Test e-mail")
-                        }
-
-                        message.body { body ->
-                            body.text { it.data(emailContent) }
-                        }
+                    .map { body ->
+                        SendEmailRequest.Single(
+                            source = Source.Plain("from@gmail.com"),
+                            destination = Destination("to@gmail.com"),
+                            message = Message.Text(
+                                body = Content(body),
+                                subject = Content("Test e-mail")
+                            )
+                        )
                     }
-                }
 
             sesAsyncClient
                 .sendEmailFlow(emails)
@@ -80,15 +73,20 @@ class SesFlowExtKtTest : FeatureSpec({
             val currentSentEmails = currentQuota()
 
             val emails =
-                users.sendTemplatedEmailRequest { user ->
-                    destination { it.toAddresses(user.email) }
-                    source("from@gmail.com")
-                    template(templateName)
-                    templateData("""{ "senderName": "$sender", "name": "${user.name}" }""")
-                }
+                users
+                    .map { user ->
+                        SendEmailRequest.Single(
+                            source = Source.Plain("from@gmail.com"),
+                            destination = Destination("to@gmail.com"),
+                            message = Message.Template(
+                                data = """{ "senderName": "$sender", "name": "${user.name}" }""",
+                                ref = Message.Template.TemplateRef.Name(templateName)
+                            )
+                        )
+                    }
 
             sesAsyncClient
-                .sendTemplatedEmailFlow(emails)
+                .sendEmailFlow(emails)
                 .collect()
 
             currentQuota() shouldBe currentSentEmails + numberOfMessages
@@ -106,13 +104,22 @@ class SesFlowExtKtTest : FeatureSpec({
 
             val currentSentEmails = currentQuota()
 
+            val emails =
+                users
+                    .chunked(10)
+                    .map { users ->
+                        SendEmailRequest.Single(
+                            source = Source.Plain("from@gmail.com"),
+                            destination = Destination(users.map { it.email }),
+                            message = Message.Template(
+                                data = """{ "senderName": "$sender" }""",
+                                ref = Message.Template.TemplateRef.Name(templateName)
+                            )
+                        )
+                    }
+
             sesAsyncClient
-                .sendTemplatedEmailFlow(users.chunked(10)) { users ->
-                    destination { it.toAddresses(users.map { it.email }) }
-                    source("from@gmail.com")
-                    template(templateName)
-                    templateData("""{ "senderName": "$sender" }""")
-                }
+                .sendEmailFlow(emails)
                 .collect()
 
             currentQuota() shouldBe currentSentEmails + numberOfMessages
@@ -130,21 +137,27 @@ class SesFlowExtKtTest : FeatureSpec({
 
             val currentSentEmails = currentQuota()
 
-            sesAsyncClient
-                .sendBulkTemplatedEmailFlow(users.chunked(10)) { users ->
-                    val destinations = users.map { user ->
-                        Consumer<BulkEmailDestination.Builder> { builder ->
-                            builder
-                                .destination { it.toAddresses(user.email) }
-                                .replacementTemplateData("""{ "name": "${user.name}" }""")
-                        }
+            val emails =
+                users
+                    .chunked(10)
+                    .map { users ->
+                        SendEmailRequest.BulkTemplated(
+                            source = Source.Plain("from@gmail.com"),
+                            destinations = users.map {
+                                TemplatedDestination(
+                                    destination = Destination(it.email),
+                                    replacementData = """{ "name": "${it.name}" }"""
+                                )
+                            },
+                            message = Message.Template(
+                                data = """{ "senderName": "$sender" }""",
+                                ref = Message.Template.TemplateRef.Name(templateName)
+                            )
+                        )
                     }
 
-                    destinations(*destinations.toTypedArray())
-                    source("from@gmail.com")
-                    template(templateName)
-                    defaultTemplateData("""{ "senderName": "$sender" }""")
-                }
+            sesAsyncClient
+                .sendEmailFlow(emails)
                 .collect()
 
             currentQuota() shouldBe currentSentEmails + numberOfMessages
