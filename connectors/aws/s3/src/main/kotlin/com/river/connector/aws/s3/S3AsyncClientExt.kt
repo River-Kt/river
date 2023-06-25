@@ -298,13 +298,13 @@ fun S3AsyncClient.upload(
  * Particularly useful for handling streams of unknown size, since it automatically splits the flow into separate files,
  * allowing for seamless processing and storage.
  *
- * When [splitEach] exceeds 5MB, the function automatically utilizes S3's multipart file upload to prevent retaining
+ * When the split size exceeds 5MB, the function automatically utilizes S3's multipart file upload to prevent retaining
  * large chunks of data in-memory. If it is smaller, the function uses the put object operation for a quicker and more
  * efficient processing.
  *
  * @param bucket The S3 bucket to upload the file to.
  * @param upstream A flow of bytes representing the file to be uploaded.
- * @param splitEach The size of each chunk to be uploaded, in bytes. Default is 1 MB.
+ * @param splitStrategy The strategy to describe the split to be uploaded, in bytes. Default is 1 MB.
  * @param concurrency The number of concurrent uploads to use. Default is 1.
  * @param key A function that takes an integer (part number) and returns the key of the object in the S3 bucket.
  * @return A flow of S3Response objects for each uploaded chunk.
@@ -328,34 +328,71 @@ fun S3AsyncClient.upload(
 fun S3AsyncClient.uploadSplit(
     bucket: String,
     upstream: Flow<Byte>,
-    splitEach: Int = ONE_MB,
+    splitStrategy: GroupStrategy = GroupStrategy.Count(ONE_MB),
     concurrency: Int = 1,
     key: (Int) -> String
 ): Flow<S3Response> =
     upstream
-        .split(splitEach)
+        .split(splitStrategy)
         .withIndex()
         .flatMapConcat { (part, chunk) ->
-            if (splitEach <= FIVE_MB) {
-                val eagerChunk = chunk.toList()
+            internalUploadSplit(splitStrategy, chunk, bucket, key, part, concurrency)
+        }
 
-                val request =
-                    PutObjectRequest
-                        .builder()
-                        .bucket(bucket)
-                        .key(key(part + 1))
-                        .contentLength(eagerChunk.size.toLong())
-                        .build()
-
-                suspend { putObject(request, fromBytes(eagerChunk.toByteArray())).await() }.asFlow()
-            } else {
-                uploadBytes(
-                    bucket = bucket,
-                    key = key(part + 1),
-                    upstream = chunk,
-                    concurrency = concurrency
-                )
-            }
+/**
+ * This function uploads a file in chunks to an Amazon S3 bucket using the [S3AsyncClient].
+ *
+ * Particularly useful for handling streams of unknown size, since it automatically splits the flow into separate files,
+ * allowing for seamless processing and storage.
+ *
+ * When the split size exceeds 5MB, the function automatically utilizes S3's multipart file upload to prevent retaining
+ * large chunks of data in-memory. If it is smaller, the function uses the put object operation for a quicker and more
+ * efficient processing.
+ *
+ * @param bucket The S3 bucket to upload the file to.
+ * @param upstream A flow of bytes representing the file to be uploaded.
+ * @param splitStrategy The strategy to describe the split to be uploaded. Default is 1000 items.
+ * @param concurrency The number of concurrent uploads to use. Default is 1.
+ * @param key A function that takes an integer (part number) and returns the key of the object in the S3 bucket.
+ * @param f A function that takes an object and converts it to an array of bytes.
+ *
+ * @return A flow of S3Response objects for each uploaded chunk.
+ *
+ * Example usage:
+ *
+ * ```
+ *  val s3Client: S3AsyncClient = ...
+ *  val bucket = "my-bucket"
+ *  val usersFlow = flowOf<User> { ... }
+ *
+ *  s3Client
+ *      .uploadSplitItems(
+ *          bucket = bucket,
+ *          upstream = usersFlow,
+ *          splitEach = TimeWindow(1000, 1.seconds),
+ *          key = { part -> "folder/file-part-$part" }
+ *      ) { user ->
+ *          // convert the user into an array of bytes
+ *      }
+ *      .collect { response ->
+ *          println("Uploaded part: ${response.key}")
+ *      }
+ * ```
+ */
+fun <T> S3AsyncClient.uploadSplitItems(
+    bucket: String,
+    upstream: Flow<T>,
+    splitStrategy: GroupStrategy = GroupStrategy.Count(1000),
+    concurrency: Int = 1,
+    key: (Int) -> String,
+    f: suspend (T) -> ByteArray
+): Flow<S3Response> =
+    upstream
+        .split(splitStrategy)
+        .map { it.map(f).flatMapIterable { it.toList() } }
+        .withIndex()
+        .flatMapConcat { (part, chunk) ->
+            internalUploadSplit(splitStrategy, chunk, bucket, key, part, concurrency)
         }
 
 /**
@@ -454,3 +491,38 @@ private suspend fun S3AsyncClient.completeMultipartUpload(
                 .let { complete.parts(it) }
         }
 }.await()
+
+private suspend fun S3AsyncClient.internalUploadSplit(
+    splitStrategy: GroupStrategy,
+    chunk: Flow<Byte>,
+    bucket: String,
+    key: (Int) -> String,
+    part: Int,
+    concurrency: Int
+): Flow<S3Response> {
+    val size = when (splitStrategy) {
+        is GroupStrategy.Count -> splitStrategy.size
+        is GroupStrategy.TimeWindow -> splitStrategy.size
+    }
+
+    return if (size <= FIVE_MB) {
+        val eagerChunk = chunk.toList()
+
+        val request =
+            PutObjectRequest
+                .builder()
+                .bucket(bucket)
+                .key(key(part + 1))
+                .contentLength(eagerChunk.size.toLong())
+                .build()
+
+        suspend { putObject(request, fromBytes(eagerChunk.toByteArray())).await() }.asFlow()
+    } else {
+        uploadBytes(
+            bucket = bucket,
+            key = key(part + 1),
+            upstream = chunk,
+            concurrency = concurrency
+        )
+    }
+}

@@ -1,6 +1,7 @@
 package com.river.connector.aws.s3
 
 import com.river.core.*
+import com.river.core.GroupStrategy.Count
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -63,7 +64,7 @@ class S3AsyncClientExtTest : FeatureSpec({
         scenario("Successful many files upload") {
             val responses =
                 s3Client
-                    .uploadSplit(bucket = bucketName, flow, splitEach = 1024 * 1024 * 5) {
+                    .uploadSplit(bucket = bucketName, upstream = flow, splitStrategy = Count(1024 * 1024 * 5)) {
                         "file-$it.txt"
                     }
                     .toList()
@@ -81,7 +82,7 @@ class S3AsyncClientExtTest : FeatureSpec({
 
         scenario("Successful many files upload and merge them into one") {
             s3Client
-                .uploadSplit(bucket = bucketName, upstream = flow, splitEach = 1024 * 1024 * 5) {
+                .uploadSplit(bucket = bucketName, upstream = flow, splitStrategy = Count(1024 * 1024 * 5)) {
                     "file-$it.txt"
                 }.collect()
 
