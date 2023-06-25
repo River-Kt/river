@@ -24,6 +24,8 @@ kotlin-wiremock = "2.0.2"
 kotest-wiremock = "2.0.0"
 ktor = "2.3.0"
 java-jwt = "4.4.0"
+redisson = "3.22.1"
+lettuce = "6.2.4.RELEASE"
 
 [libraries]
 # kotlin
@@ -81,6 +83,7 @@ mysql-jdbc = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-jdbc
 debezium-api = { module = "io.debezium:debezium-api", version.ref = "debezium" }
 debezium-embedded = { module = "io.debezium:debezium-embedded", version.ref = "debezium" }
 debezium-mysql = { module = "io.debezium:debezium-connector-mysql", version.ref = "debezium" }
+debezium-postgres = { module = "io.debezium:debezium-connector-postgres", version.ref = "debezium" }
 
 mongodb = { module = "org.mongodb:mongodb-driver-reactivestreams", version.ref = "mongodb" }
 
@@ -88,3 +91,5 @@ apache-ftpserver = { module = "org.apache.ftpserver:ftpserver-core", version.ref
 mock-ftpserver = { module = "org.mockftpserver:MockFtpServer", version.ref = "mock-ftpserver" }
 
 java-jwt = { module = "com.auth0:java-jwt", version.ref = "java-jwt" }
+
+redisson = { module = "org.redisson:redisson", version.ref = "redisson" }

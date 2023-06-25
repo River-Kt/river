@@ -13,6 +13,9 @@ object Modules {
     val http =
         Module(":connector:connector-http")
 
+    val debezium =
+        Module(":connector:connector-red-hat:connector-red-hat-debezium")
+
     val json =
         Module(":connector:connector-format:connector-format-json")
 

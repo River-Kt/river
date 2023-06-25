@@ -50,9 +50,11 @@ include(
     "connectors:red-hat:debezium",
     "connectors:twilio",
     "connectors:openai",
+    "connectors:redis",
 
     "examples:sqs-to-http",
     "examples:s3-csv-jdbc",
+    "examples:debezium-csv-s3",
     "examples:ktor-server-json-streaming"
 )
 
