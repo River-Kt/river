@@ -1,34 +1,40 @@
 package com.river.core.internal
 
+import com.river.core.AsyncSemaphore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.sync.Semaphore
 
 internal class MapAsyncFlow<T, R>(
     private val upstream: Flow<T>,
-    private val concurrency: Int,
-    private val f: suspend (T) -> R
+    private val semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+    private val transform: suspend (T) -> R
 ) : Flow<R> {
-    override suspend fun collect(collector: FlowCollector<R>): Unit =
-        Semaphore(permits = concurrency)
-            .let { semaphore ->
-                val channel: Flow<Deferred<R>> =
-                    flow {
-                        coroutineScope {
-                            upstream
-                                .collect {
-                                    semaphore.acquire()
-                                    emit(async { f(it) })
-                                }
-                        }
-                    }
+    override suspend fun collect(collector: FlowCollector<R>) {
+        coroutineScope {
+            val semaphore = semaphore()
 
-                channel
-                    .buffer(concurrency)
-                    .map { it.await() }
-                    .onEach { semaphore.release() }
-            }
-            .collect(collector)
+            val channel: Flow<Deferred<Pair<String, R>>> =
+                flow {
+                    upstream
+                        .collect {
+                            val id = semaphore.acquire()
+                            emit(async { id to transform(it) })
+                        }
+                }
+
+            channel
+                .buffer(semaphore.totalPermits)
+                .map {
+                    val (permit, result) = it.await()
+                    semaphore.release(permit)
+                    result
+                }
+                .collect(collector)
+
+            semaphore.releaseAll()
+        }
+    }
 }

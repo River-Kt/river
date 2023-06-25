@@ -115,15 +115,14 @@ class FlowExtKtTest : FeatureSpec({
 
     feature("Flow<T>.throttle") {
         val flow =
-            (0..20)
+            (1..20)
                 .asFlow()
-                .delay(100.milliseconds)
 
         scenario("Should suspend after the defined number of elements per time window is reached") {
             val (result, duration) = measureTimedValue { flow.throttle(10, 2.seconds).toList() }
 
             duration.inWholeSeconds shouldBe 4
-            result shouldContainInOrder (0..20).toList()
+            result shouldContainInOrder (1..20).toList()
         }
 
         scenario("Should drop if specified after the defined number of elements per time window is reached") {
