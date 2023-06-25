@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  localstack:
+    image: localstack/localstack:2.1.0
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - './stub/localstack/:/etc/localstack/init/ready.d/'
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  postgresql:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgresql
+      - POSTGRES_PASSWORD=postgresql
+      - POSTGRES_DB=orders
+    ports:
+      - '5432:5432'
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    volumes:
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
