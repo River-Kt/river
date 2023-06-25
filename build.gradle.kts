@@ -27,7 +27,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha4"
+    version = "1.0.0-alpha5"
 
     group = "com.river-kt"
 
