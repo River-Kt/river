@@ -3,11 +3,13 @@
 package com.river.connector.rdbms.jdbc
 
 import com.river.core.GroupStrategy
-import com.river.core.GroupStrategy.*
+import com.river.core.GroupStrategy.TimeWindow
 import com.river.core.chunked
 import com.river.core.mapAsync
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.invoke
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -42,7 +44,7 @@ fun Jdbc.singleUpdate(
     prepare: suspend PreparedStatement.() -> Unit = {}
 ): Flow<Int> = flow {
     connectionPool
-        .use { IO { it.prepareStatement(sql).also { prepare(it) }.executeUpdate() } }
+        .borrow { IO { it.prepareStatement(sql).also { prepare(it) }.executeUpdate() } }
         .let { emit(it) }
 }
 
@@ -79,7 +81,7 @@ fun <T> Jdbc.singleUpdate(
 ): Flow<Int> =
     upstream
         .mapAsync(concurrency) { item ->
-        connectionPool.use {
+        connectionPool.borrow {
             IO {
                 it.prepareStatement(sql)
                     .also { ps -> prepare(ps, item) }
@@ -121,7 +123,7 @@ fun <T> Jdbc.batchUpdate(
     upstream
         .chunked(groupStrategy)
         .mapAsync(concurrency) { chunk ->
-            connectionPool.use {
+            connectionPool.borrow {
                 IO {
                     logger.debug("Running $sql with ${chunk.size} elements.")
 
@@ -215,7 +217,7 @@ fun Jdbc.query(
     fetchSize: Int = 100,
     prepare: suspend PreparedStatement.() -> Unit = {}
 ): Flow<Row> = flow {
-    connectionPool.use { connection ->
+    connectionPool.borrow { connection ->
         val resultSet: ResultSet = IO {
             val statement = connection.prepareStatement(sql).also { prepare(it) }
             statement.fetchSize = fetchSize

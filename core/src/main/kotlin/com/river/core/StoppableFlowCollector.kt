@@ -1,11 +1,11 @@
 package com.river.core
 
-import com.river.core.internal.StopException
-
 import kotlinx.coroutines.flow.FlowCollector
+import kotlin.coroutines.cancellation.CancellationException
 
 interface StoppableFlowCollector<T> : FlowCollector<T> {
-    suspend fun halt(msg: String = "cancelling flow"): Nothing = throw StopException(msg)
+    suspend fun halt(msg: String = "cancelling flow"): Nothing =
+        throw CancellationException(msg)
 
     companion object {
         operator fun <T> invoke(outer: FlowCollector<T>) =

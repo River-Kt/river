@@ -2,7 +2,6 @@ package com.river.core.internal
 
 import com.river.core.ObjectPool
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.ZonedDateTime.now
@@ -18,7 +17,7 @@ internal class DefaultObjectPool<T>(
     private val lock = Mutex()
     private var created = 0
     private val borrowed: MutableSet<ObjectPool.ObjectHolder<T>> = mutableSetOf()
-    private val channel = Channel<ObjectPool.ObjectHolder<T>>(UNLIMITED)
+    private val channel = Channel<ObjectPool.ObjectHolder<T>>(size)
 
     init {
         initial.forEach { channel.trySend(ObjectPool.ObjectHolder(it, maxDuration, now())) }

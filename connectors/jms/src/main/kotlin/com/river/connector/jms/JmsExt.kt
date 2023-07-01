@@ -3,11 +3,7 @@
 package com.river.connector.jms
 
 import com.river.connector.jms.model.*
-import com.river.core.flattenIterable
-import com.river.core.mapAsync
-import com.river.core.indefinitelyRepeat
-import com.river.core.unorderedMapAsync
-import com.river.core.ObjectPool
+import com.river.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,7 +62,7 @@ fun ConnectionFactory.consume(
         val queue = newContext().use { it.createQueue(queueName) }
 
         val contextPool =
-            ObjectPool.sized(
+            objectPool(
                 maxSize = concurrency,
                 onClose = { (context, consumer) -> IO { consumer.close(); context.close() } },
                 factory = { IO { newContext().let { it to it.createConsumer(queue) } } }
@@ -129,7 +125,7 @@ fun ConnectionFactory.sendToDestination(
 
     return flow {
         val contextPool =
-            ObjectPool.sized(
+            objectPool(
                 maxSize = concurrency,
                 onClose = { (context, _) -> IO { context.close() } },
                 factory = { IO { newContext().let { it to it.createProducer() } } }
@@ -139,7 +135,7 @@ fun ConnectionFactory.sendToDestination(
 
         suspend fun send(message: JmsMessage) =
             contextPool
-                .use { (context, producer) ->
+                .borrow { (context, producer) ->
                     IO { producer.send(dest, message.build(context)) }
                 }
 

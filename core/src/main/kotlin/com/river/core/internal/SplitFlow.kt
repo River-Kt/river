@@ -75,9 +75,10 @@ internal class SplitFlow<T>(
                 channelFlow {
                     val windowedChunk =
                         MutexBasedWindowedChunk(
-                            channel,
-                            strategy.duration,
-                            strategy.size
+                            scope = this,
+                            sendChannel = channel,
+                            window = strategy.duration,
+                            size = strategy.size
                         )
 
                     upstream

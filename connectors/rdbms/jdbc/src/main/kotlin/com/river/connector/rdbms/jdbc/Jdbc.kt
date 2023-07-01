@@ -2,7 +2,7 @@
 
 package com.river.connector.rdbms.jdbc
 
-import com.river.core.ObjectPool
+import com.river.core.objectPool
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.sql.Connection
@@ -16,7 +16,7 @@ class Jdbc(
 
     internal val IO: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(connectionPoolSize)
 
-    internal val connectionPool = ObjectPool.sized(
+    internal val connectionPool = objectPool(
         maxSize = connectionPoolSize,
         onClose = { IO { it.close() } },
         factory = { IO { connectionFactory() } }

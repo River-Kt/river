@@ -1,18 +1,19 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package com.river.core.internal
 
 import com.river.core.internal.MutexBasedWindowedChunk.InternalChunk.State.Completed
 import com.river.core.internal.MutexBasedWindowedChunk.InternalChunk.State.New
-import kotlinx.coroutines.channels.SendChannel
+
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.sync.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
 
 internal class MutexBasedWindowedChunk<T>(
+    private val scope: CoroutineScope,
     private val sendChannel: SendChannel<Flow<T>>,
     private val window: Duration,
     private val size: Int
@@ -35,9 +36,10 @@ internal class MutexBasedWindowedChunk<T>(
         }
 
     private fun newChunk() =
-        InternalChunk<T>(window, size, lock)
+        InternalChunk<T>(scope, window, size, lock)
 
     class InternalChunk<T>(
+        private val scope: CoroutineScope,
         private val window: Duration,
         private val size: Int,
         private val lock: Mutex = Mutex(),
@@ -71,7 +73,7 @@ internal class MutexBasedWindowedChunk<T>(
 
             if (state == New) {
                 state = State.OnGoing
-                timeout = GlobalScope.launch { delay(window); lock.withLock { complete(true) } }
+                timeout = scope.launch { delay(window); lock.withLock { complete(true) } }
             }
 
             if (emittedItems == size) complete()

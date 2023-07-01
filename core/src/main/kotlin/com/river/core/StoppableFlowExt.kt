@@ -1,9 +1,7 @@
 package com.river.core
 
-import com.river.core.internal.StopException
 import com.river.core.internal.StoppableFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 
 /**
  * Creates a [Flow] with the ability to stop its collection early based on a custom condition.
