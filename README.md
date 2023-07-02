@@ -53,7 +53,7 @@ To get to know the core module a bit further, you can refer to the [site's kdoc]
 To start using it, simply add the following dependencies:
 
 ```kotlin
-val riverVersion = "0.0.2-alpha01"
+val riverVersion = "0.0.1-alpha06"
 
 implementation("com.river-kt:core:$riverVersion")
 ```
@@ -86,7 +86,6 @@ Each connector leverages Kotlin's Flow API, coroutines and the core module to pr
 
 To install a module, you can add the dependency as follows:
 
-
 ```kotlin
 /**
  * Can be any of:
@@ -101,51 +100,11 @@ To install a module, you can add the dependency as follows:
 val connectorName = "connector-aws-sqs"
 
 implementation("com.river-kt:$connectorName:$riverVersion")
-
 ```
 
 ## Talking is cheap, show me the code!
 
-<details>
-    <summary>Azure queue storage to PostgreSQL via JDBC</summary>
-
-<br/>
-The following example demonstrates how to transfer data from Azure Queue Storage to a PostgreSQL database using JDBC with River, using non-blocking execution, quick queue fetching, batched database inserts, and balanced resource utilization, achieving optimal speed with minimal overhead:
-
-
-```kotlin
-val queue = 
-    QueueClientBuilder()
-        .queueName("numbers")
-        .buildAsyncClient()
-
-val jdbc = Jdbc(
-    url = "jdbc:postgresql://...",
-    credentials = "xxx" to "xxx",
-    connectionPoolSize = 10
-)
-
-val messages = queue.receiveMessagesAsFlow(concurrency = increaseByOne(10))
-
-jdbc
-    .batchUpdate(
-        sql = "insert into numbers (number) values (?)",
-        chunkStrategy = TimeWindow(100, 250.milliseconds),
-        upstream = messages
-    ) { message -> setString(1, message.messageText.toInt()) }
-```
-
-In a nutshell:
-
-- A queue client is created using the `QueueClientBuilder`, which specifies the name of the queue as `numbers`.
-- A `Jdbc` object is instantiated to establish connections with a `PostgreSQL` database using the provided credentials and a connection pool size of 10.
-- Messages are received from the queue as a `Flow` using `queue.receiveMessagesAsFlow()` with a maximum concurrency of 10.
-- The received messages are then `chunked` into groups of 100 messages or within 250 milliseconds, whichever comes first, using the `TimeWindow` strategy.
-- After each chunk is emitted, the messages are batch-inserted into the `PostgreSQL` database using the `jdbc.batchUpdate()` function. The messages are inserted into the `numbers` table, with each message's text being converted to an integer and set as the value in the `number` column.
-
-</details>
-
-We will be adding more examples here soon.
+Explore the [Examples module](examples) and take a look at several of use cases for River. More examples are continually being added.
 
 ## Contributing
 
