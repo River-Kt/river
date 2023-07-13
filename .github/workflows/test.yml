@@ -11,52 +11,61 @@ jobs:
   core:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :core
+      module: River Core
+      path: :core
 
   amqp:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-amqp
+      module: AMQP
+      path: :connector:connector-amqp
       containers: rabbitmq
 
   apache-kafka:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-apache:connector-apache-kafka
+      module: Apache Kafka
+      path: :connector:connector-apache:connector-apache-kafka
       containers: zookeeper kafka
 
   aws-lambda:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-aws:connector-aws-lambda
+      module: AWS Lambda
+      path: :connector:connector-aws:connector-aws-lambda
       containers: localstack
 
   aws-s3:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-aws:connector-aws-s3
+      module: AWS S3
+      path: :connector:connector-aws:connector-aws-s3
       containers: localstack
 
   aws-ses:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-aws:connector-aws-ses
+      module: AWS SES
+      path: :connector:connector-aws:connector-aws-ses
       containers: localstack
 
   aws-sns:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-aws:connector-aws-sns
+      module: AWS SNS
+      path: :connector:connector-aws:connector-aws-sns
       containers: localstack
 
   aws-sqs:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-aws:connector-aws-sqs
+      module: AWS SQS
+      path: :connector:connector-aws:connector-aws-sqs
       containers: localstack
 
   azure-queue-storage:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: :connector:connector-azure:connector-azure-queue-storage
+      module: Azure Queue Storage
+      path: :connector:connector-azure:connector-azure-queue-storage
       containers: azurite

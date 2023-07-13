@@ -6,6 +6,9 @@ on:
       module:
         required: true
         type: string
+      path:
+        required: true
+        type: string
       containers:
         required: false
         type: string
@@ -16,7 +19,7 @@ on:
 
 jobs:
   run:
-    name: ${{ inputs.module }}
+    name: Test ${{ inputs.module }} module
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -33,4 +36,4 @@ jobs:
     - name: Run tests
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: ${{ inputs.module }}:test
+        arguments: ${{ inputs.path }}:test
