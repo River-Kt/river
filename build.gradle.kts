@@ -1,12 +1,13 @@
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 
 plugins {
-    kotlin("jvm")
-    id("org.jetbrains.dokka")
-    id("maven-publish")
-    id("io.github.gradle-nexus.publish-plugin") apply false
-    `java-library`
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.nexus.publish) apply false
+
+    `maven-publish`
     signing
+    `java-library`
 }
 
 repositories {
@@ -14,7 +15,7 @@ repositories {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-    skipForExamples()
+    skipExamples()
 
     outputDirectory.set(file("docs"))
     moduleName.set(project.name)
@@ -27,7 +28,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha6"
+    version = "1.0.0-alpha7"
 
     group = "com.river-kt"
 
@@ -52,7 +53,7 @@ subprojects {
     }
 
     tasks.dokkaHtml.configure {
-        skipForExamples()
+        skipExamples()
 
         dokkaSourceSets {
             configureEach {
@@ -152,7 +153,7 @@ subprojects {
     val signingSecretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
 
     tasks.withType<Sign>().configureEach {
-        skipForExamples()
+        skipExamples()
 
         onlyIf {
             signingKeyId != null && signingPassword != null && signingSecretKey != null
@@ -167,12 +168,12 @@ subprojects {
     }
 
     tasks.withType<PublishToMavenRepository>().configureEach {
-        skipForExamples()
+        skipExamples()
         dependsOn(tasks.withType<Sign>())
     }
 
     tasks.withType<AbstractDokkaTask>().configureEach {
-        skipForExamples()
+        skipExamples()
     }
 
     tasks.javadoc {
@@ -187,6 +188,6 @@ subprojects {
     }
 }
 
-fun Task.skipForExamples() {
+fun Task.skipExamples() {
     onlyIf { !project.path.contains("examples") }
 }
