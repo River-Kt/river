@@ -69,3 +69,97 @@ jobs:
       module: Azure Queue Storage
       path: :connector:connector-azure:connector-azure-queue-storage
       containers: azurite
+
+  console:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: Console
+      path: :connector:connector-console
+
+  elasticsearch:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: Elasticsearch
+      path: :connector:connector-elasticsearch
+      containers: elasticsearch
+
+  file:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: File
+      path: :connector:connector-file
+
+  format:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: Formats (JSON, CSV, Positional Flat Line)
+      path: :connector:connector-format
+
+  ftp:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: FTP
+      path: :connector:connector-ftp
+
+  github:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: GitHub
+      path: :connector:connector-github
+
+  google:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: GitHub
+      path: :connector:connector-google
+
+  http:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: GitHub
+      path: :connector:connector-http
+
+  jms:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: JMS
+      path: :connector:connector-jms
+
+  mongodb:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: MongoDB
+      path: :connector:connector-mongodb
+
+  openai:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: OpenAI
+      path: :connector:connector-openai
+
+  rdbms-jdbc:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: JDBC
+      path: :connector:connector-rdbms:connector-rdbms-jdbc
+      containers: postgresql
+
+  rdbms-r2dbc:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: R2DBC
+      path: :connector:connector-rdbms:connector-rdbms-r2dbc
+
+  redhat-debezium:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: Debezium
+      path: :connector:connector-red-hat:connector-red-hat-debezium
+      containers: mysql
+
+  redis:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: Redis
+      path: :connector:connector-redis
+      containers: redis

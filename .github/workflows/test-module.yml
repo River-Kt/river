@@ -19,7 +19,7 @@ on:
 
 jobs:
   run:
-    name: Test ${{ inputs.module }} module
+    name: ${{ inputs.module }} module
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
