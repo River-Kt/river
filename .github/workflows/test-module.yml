@@ -23,7 +23,7 @@ jobs:
       run: ls -lh
     - name: Run docker-compose
       if: ${{ inputs.containers }}
-      run: docker-compose up ${{ inputs.containers }} -d
+      run: docker compose up ${{ inputs.containers }} -d
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:

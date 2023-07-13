@@ -29,6 +29,7 @@ jobs:
     needs: test
     uses: ./.github/workflows/build.yml
   release:
+    needs: build
     uses: ./.github/workflows/release.yml
     secrets:
       SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
