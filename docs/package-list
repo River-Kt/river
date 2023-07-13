@@ -33,6 +33,8 @@ com.river.connector.redis
 module:connector-twilio
 com.river.connector.twilio
 com.river.connector.twilio.model
+module:connector-apache-kafka
+com.river.connector.apache.kafka
 module:connector-aws-java-11-http-spi
 com.river.connector.aws
 module:connector-aws-lambda

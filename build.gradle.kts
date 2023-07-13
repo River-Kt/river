@@ -15,8 +15,7 @@ repositories {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-    skipExamples()
-
+    dependsOn(":connector:dokkaHtmlMultiModule")
     outputDirectory.set(file("docs"))
     moduleName.set(project.name)
 }
@@ -173,7 +172,15 @@ subprojects {
     }
 
     tasks.withType<AbstractDokkaTask>().configureEach {
+        val task = this.path.split(":").last()
+
         skipExamples()
+
+        dependsOn(
+            subprojects.mapNotNull {
+                runCatching { tasks.getByPath("${it.path}:$task") }.getOrNull()
+            }
+        )
     }
 
     tasks.javadoc {
