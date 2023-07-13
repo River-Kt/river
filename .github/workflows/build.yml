@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   run:
+    name: Build River monorepo (core & all connectors)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

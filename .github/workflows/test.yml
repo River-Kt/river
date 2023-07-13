@@ -107,16 +107,16 @@ jobs:
       module: GitHub
       path: :connector:connector-github
 
-  google:
+  google-drive:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: GitHub
-      path: :connector:connector-google
+      module: Google Drive
+      path: :connector:connector-google:connector-google-drive
 
   http:
     uses: ./.github/workflows/test-module.yml
     with:
-      module: GitHub
+      module: http
       path: :connector:connector-http
 
   jms:
@@ -130,6 +130,7 @@ jobs:
     with:
       module: MongoDB
       path: :connector:connector-mongodb
+      containers: mongodb
 
   openai:
     uses: ./.github/workflows/test-module.yml
