@@ -8,20 +8,55 @@ on:
       - main
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Check
-      run: ls -lh
-    - name: Run docker-compose
-      run: docker-compose up -d
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Run tests
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: test --parallel
+  core:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :core
+
+  amqp:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-amqp
+      containers: rabbitmq
+
+  apache-kafka:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-apache:connector-apache-kafka
+      containers: zookeeper kafka
+
+  aws-lambda:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-aws:connector-aws-lambda
+      containers: localstack
+
+  aws-s3:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-aws:connector-aws-s3
+      containers: localstack
+
+  aws-ses:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-aws:connector-aws-ses
+      containers: localstack
+
+  aws-sns:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-aws:connector-aws-sns
+      containers: localstack
+
+  aws-sqs:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-aws:connector-aws-sqs
+      containers: localstack
+
+  azure-queue-storage:
+    uses: ./.github/workflows/test-module.yml
+    with:
+      module: :connector:connector-azure:connector-azure-queue-storage
+      containers: azurite
