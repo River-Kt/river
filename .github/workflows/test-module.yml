@@ -13,10 +13,6 @@ on:
         required: false
         type: string
 
-  push:
-    branches-ignore:
-      - main
-
 jobs:
   run:
     name: ${{ inputs.module }} module

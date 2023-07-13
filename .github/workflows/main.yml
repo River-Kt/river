@@ -24,11 +24,14 @@ permissions:
 
 jobs:
   test:
+    name: Run all River's modules tests
     uses: ./.github/workflows/test.yml
   build:
     needs: test
+    name: Build all monorepo
     uses: ./.github/workflows/build.yml
   release:
+    name: Release all River's modules to Maven Central
     needs: build
     uses: ./.github/workflows/release.yml
     secrets:

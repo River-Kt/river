@@ -3,10 +3,6 @@ name: Run lint and tests
 on:
   workflow_call:
 
-  push:
-    branches-ignore:
-      - main
-
 jobs:
   core:
     uses: ./.github/workflows/test-module.yml
