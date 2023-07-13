@@ -1,13 +1,18 @@
 package com.river.connector.amqp
 
 import com.rabbitmq.client.BuiltinExchangeType
+import com.river.core.toList
+import io.kotest.assertions.AssertionFailedError
+import io.kotest.assertions.retry
+import io.kotest.assertions.timing.eventually
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
-import com.river.core.toList
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class AmqpExtKtTest : FeatureSpec({
     feature("AMQP flow") {
@@ -31,11 +36,13 @@ class AmqpExtKtTest : FeatureSpec({
                 .let { connection.publishFlow("hello", "world", it) }
                 .collect()
 
-            val count =
-                connection
-                    .withChannel { queueDeclarePassive("hello.world").messageCount }
+            eventually(duration = 1.seconds, poll = 100.milliseconds) {
+                val count =
+                    connection
+                        .withChannel { queueDeclarePassive("hello.world").messageCount }
 
-            count shouldBe 1000
+                count shouldBe 1000
+            }
         }
 
         scenario("Basic message consuming") {
