@@ -1,3 +1,6 @@
+![License](https://img.shields.io/github/license/river-kt/river)
+![Maven Central](https://img.shields.io/maven-central/v/com.river-kt/core)
+
 # river
 
 Introducing River, a powerful and flexible reactive stream library for Kotlin that simplifies the process of using and building connectors for multiple enterprise protocols and tools. Heavily inspired by Apache Camel and Alpakka, River makes use of Kotlin's Flow and coroutines to provide a scalable, efficient, and user-friendly way to handle asynchronous and event-based data streams. This library is designed to be flexible and customizable, allowing you to handle complex data streams and integrate with different technologies seamlessly.
@@ -64,6 +67,7 @@ Each connector leverages Kotlin's Flow API, coroutines and the core module to pr
 
 | Connector Name                   | Description                                                                                                                                                                                                                                                                                                         | Module           |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Apacke Kafka | Provides a Kotlin DSL to interact with Kafka brokers, leveraging Kotlin's Flow API as well. Developers can continuously receive, send and commit messages   | connector-apache-kafka |
 | Advanced Message Queuing Protocol (AMQP) | Provides functionality to interact with AMQP brokers using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from AMQP queues using configurable chunk strategies and concurrency.                                                                                                  | connector-amqp |
 | Amazon Simple Storage Service (Amazon S3)  | Allows developers to interact with Amazon S3 buckets via Kotlin's Flow API. It provides high-level functions to download and upload S3 objects.                                                                                                                                                                     | connector-aws-s3 |
 | Amazon Simple Queue Service (Amazon SQS)   | Provides functionality to interact with Amazon SQS using Kotlin's Flow API. Developers can continuously receive, send, and delete messages from Amazon SQS using configurable chunk strategies and concurrency.                                                                                                     | connector-aws-sqs |
@@ -90,7 +94,7 @@ To install a module, you can add the dependency as follows:
 /**
  * Can be any of:
  *  [
- *   connector-aws-s3, connector-aws-sqs, connector-aws-sns, connector-aws-ses, 
+ *   connector-apache-kafka, connector-aws-s3, connector-aws-sqs, connector-aws-sns, connector-aws-ses, 
  *   connector-aws-lambda, connector-rdbms-jdbc, connector-rdbms-r2dbc, connector-redhat-debezium,
  *   connector-azure-queue-storage, connector-format-json, connector-format-csv,
  *   connector-file, connector-amqp, connector-aws-java-11-http-spi, connector-console, 
