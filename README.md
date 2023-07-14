@@ -56,9 +56,7 @@ To get to know the core module a bit further, you can refer to the [site's kdoc]
 To start using it, simply add the following dependencies:
 
 ```kotlin
-val riverVersion = "0.0.1-alpha06"
-
-implementation("com.river-kt:core:$riverVersion")
+implementation("com.river-kt:core:$latestVersion")
 ```
 
 ## The connectors
@@ -103,7 +101,7 @@ To install a module, you can add the dependency as follows:
 */
 val connectorName = "connector-aws-sqs"
 
-implementation("com.river-kt:$connectorName:$riverVersion")
+implementation("com.river-kt:$connectorName:$latestVersion")
 ```
 
 ## Talking is cheap, show me the code!
