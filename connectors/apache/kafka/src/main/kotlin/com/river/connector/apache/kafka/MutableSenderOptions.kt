@@ -6,7 +6,7 @@ import reactor.kafka.sender.SenderOptions
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
-class MutableSenderOptions<K, V>(props: Map<String, Any>) {
+class MutableSenderOptions<K, V>(props: Map<String, Any> = mutableMapOf()) {
     private var underlying: SenderOptions<K, V> = SenderOptions.create(props)
 
     fun properties(builder: PropertyBuilder. () -> Unit) {

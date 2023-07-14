@@ -10,19 +10,25 @@ import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import org.apache.kafka.clients.consumer.Consumer as KafkaConsumer
 
-class MutableReceiverOptions<K, V>(props: Map<String, Any>) {
+class MutableReceiverOptions<K, V>(props: Map<String, Any> = mutableMapOf()) {
     private var underlying: ReceiverOptions<K, V> = ReceiverOptions.create(props)
 
     sealed interface Subscription {
         companion object {
-            fun topics(vararg topic: String): Subscription =
-                Topics(topic.toList())
+            fun topics(topic: String, vararg topics: String): Subscription =
+                topics(listOf(topic) + topics.toList())
+
+            fun topics(topics: List<String>): Subscription =
+                Topics(topics)
 
             fun pattern(pattern: java.util.regex.Pattern): Subscription =
                 Pattern(pattern)
 
-            fun partitionAssignment(vararg partition: TopicPartition): Subscription =
-                PartitionAssignment(partition.toList())
+            fun partitionAssignment(partition: TopicPartition, vararg partitions: TopicPartition): Subscription =
+                partitionAssignment(listOf(partition) + partitions.toList())
+
+            fun partitionAssignment(partitions: List<TopicPartition>): Subscription =
+                PartitionAssignment(partitions)
         }
     }
 
