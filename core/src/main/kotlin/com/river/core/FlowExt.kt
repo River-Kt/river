@@ -1,10 +1,9 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, InternalCoroutinesApi::class)
 
 package com.river.core
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 
@@ -158,7 +157,11 @@ fun <T> flowOfSuspend(item: suspend () -> T) = flow { emit(item()) }
  * @param item The item to be repeatedly emitted by the flow.
  * @return An infinite [Flow] that repeatedly emits the provided item.
  */
-fun <T> indefinitelyRepeat(item: T): Flow<T> = flow { while (true) { emit(item) } }
+fun <T> indefinitelyRepeat(item: T): Flow<T> = flow {
+    while (true) {
+        emit(item)
+    }
+}
 
 /**
  * Creates an (almost) infinite [Flow] that emits sequentially incremented Long numbers starting from the [startAt] parameter.
@@ -202,6 +205,79 @@ fun <E, S> Flow<E>.alsoTo(
             .also { emitAll(it) }
     }
 }
+
+/**
+ * Collects the items emitted by this Flow into a ChannelReceiverContext and applies the given block to it.
+ *
+ * This function launches a new coroutine in the current CoroutineScope in which the given block is executed.
+ * The block is provided with a ChannelReceiverContext that it can use to receive items from the Flow.
+ * Once all items have been collected, the ChannelReceiverContext is marked as completed and the coroutine is joined.
+ *
+ * @param block The block to apply to the ChannelReceiverContext.
+ *
+ * Example usage:
+ *
+ * ```
+ * val flow = flowOf(1, 2, 3, 4, 5)
+ *
+ * flow.collectAsReceiver {
+ *     while (true) {
+ *         val items = next(3)
+ *         println(items)
+ *     }
+ *
+ *     // Prints: [1, 2, 3] and then [4, 5]
+ * }
+ * ```
+ */
+context(CoroutineScope)
+suspend fun <T> Flow<T>.collectAsReceiver(
+    block: suspend ChannelReceiverContext<T>.() -> Unit
+) {
+    val channel = Channel<T>()
+    val context = ChannelReceiverContext(channel)
+    val job = launch { block(context) }
+    toChannel(channel)
+    context.markAsCompleted()
+    job.join()
+}
+
+/**
+ * Collects the items emitted by this Flow into a ChannelReceiverContext and applies the given block to it.
+ *
+ * This function launches a new coroutine in the current CoroutineScope in which the given block is executed.
+ * The block is provided with a ChannelReceiverContext that it can use to receive items from the Flow.
+ * Once all items have been collected, the ChannelReceiverContext is marked as completed and the coroutine is joined.
+ *
+ * @param block The block to apply to the ChannelReceiverContext.
+ *
+ * Example usage:
+ *
+ * ```
+ * val flow = flowOf(1, 2, 3, 4, 5)
+ * flow.collectAsReceiver {
+ *     while (true) {
+ *         val items = next(3)
+ *         println(items)
+ *     }
+ *
+ *     // Prints: [1, 2, 3] and then [4, 5]
+ * }
+ * ```
+ */
+suspend fun <T> Flow<T>.collectAsReceiver(
+    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    block: suspend ChannelReceiverContext<T>.() -> Unit
+) = with(scope) { collectAsReceiver(block) }
+
+/**
+ * This function collects the items emitted by the Flow and sends each one to the given channel.
+ *
+ * @param channel The channel to which the items should be sent.
+ */
+suspend fun <T> Flow<T>.toChannel(
+    channel: Channel<T>
+): Unit = collect { channel.send(it) }
 
 /**
  * Combines two [Flow]s of the same base type [T] into a single [Flow] by concatenating their elements.
