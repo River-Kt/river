@@ -9,5 +9,5 @@ sealed class Acknowledgment {
         val timeout: Int
     ) : Acknowledgment()
 
-    override fun toString() = this.javaClass.simpleName
+    override fun toString(): String = this.javaClass.simpleName
 }

@@ -6,22 +6,14 @@ import com.river.connector.aws.sqs.model.SendMessageRequest
 import com.river.connector.aws.sqs.model.SendMessageResponse
 import com.river.core.*
 import com.river.core.ConcurrencyStrategy.Companion.increaseByOne
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.*
 import kotlin.time.Duration.Companion.milliseconds
-
-internal val SqsAsyncClient.logger: Logger
-    get() = LoggerFactory.getLogger(javaClass)
 
 /**
  * Continuously receives messages from an Amazon Simple Queue Service (SQS) queue using the provided [SqsAsyncClient].
@@ -231,8 +223,6 @@ fun SqsAsyncClient.deleteMessagesFlow(
             .chunked(groupStrategy)
             .mapAsync(concurrency) { messages ->
                 deleteMessageBatch {
-                    logger.info("Deleting ${messages.size} messages from queue $queueUrl")
-
                     it.queueUrl(url)
 
                     it.entries(
@@ -405,7 +395,8 @@ fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
  * @param groupStrategy The strategy to use when chunking messages for processing. Defaults to [GroupStrategy.TimeWindow].
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
  * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
- * @param f A function to process received messages. It receives a list of messages and returns a list of [MessageAcknowledgment].
+ * @param onError The strategy to be used when the message processing encounters an error. Defaults to [OnError.Retry].
+ * @param onMessages A function to process received messages. It receives a list of messages and returns a list of [MessageAcknowledgment].
  *
  * @return A [Job] representing the execution of the flow.
  *
@@ -424,14 +415,15 @@ fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
  * ```
  */
 context(CoroutineScope)
-suspend fun SqsAsyncClient.onMessages(
+fun SqsAsyncClient.onMessages(
     queueName: String,
     concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
     commitConfiguration: CommitConfiguration.() -> Unit = {},
-    f: suspend (List<Message>) -> List<MessageAcknowledgment<Acknowledgment>>
-): Job {
+    onError: OnError = OnError.Retry(250.milliseconds),
+    onMessages: suspend (List<Message>) -> List<MessageAcknowledgment<Acknowledgment>>
+): Job = launch {
     val url = getQueueUrlByName(queueName)
 
     val receiveConfig = ReceiveConfiguration().also(receiveConfiguration)
@@ -446,7 +438,7 @@ suspend fun SqsAsyncClient.onMessages(
     val processingFlow =
         messagesFlow
             .chunked(groupStrategy)
-            .mapAsync(concurrency) { f(it) }
+            .mapAsync(concurrency) { onMessages(it) }
             .flattenIterable()
 
     val acknowledgmentFlow =
@@ -456,7 +448,15 @@ suspend fun SqsAsyncClient.onMessages(
             groupStrategy = commitConfig.groupStrategy
         ) { url }
 
-    return acknowledgmentFlow.launch()
+    acknowledgmentFlow
+        .retryWhen { cause, attempt ->
+            when (onError) {
+                OnError.Complete -> false
+                OnError.Throw -> throw cause
+                is OnError.Retry -> onError.maxAttempts < attempt
+            }
+        }
+        .collect()
 }
 
 /**
@@ -473,7 +473,8 @@ suspend fun SqsAsyncClient.onMessages(
  * @param concurrency The level of concurrency for processing messages. Defaults to 1.
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
  * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
- * @param f A function to process a received message. It receives a single message and returns a [MessageAcknowledgment].
+ * @param onError The strategy to be used when the message processing encounters an error. Defaults to [OnError.Retry].
+ * @param onMessage A function to process a received message. It receives a single message and returns a [MessageAcknowledgment].
  *
  * @return A [Job] representing the execution of the flow.
  *
@@ -492,16 +493,18 @@ suspend fun SqsAsyncClient.onMessages(
  * ```
  */
 context(CoroutineScope)
-suspend fun SqsAsyncClient.onMessage(
+fun SqsAsyncClient.onMessage(
     queueName: String,
     concurrency: Int = 1,
     receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
     commitConfiguration: CommitConfiguration.() -> Unit = {},
-    f: suspend (Message) -> MessageAcknowledgment<Acknowledgment>
+    onError: OnError = OnError.Retry(250.milliseconds),
+    onMessage: suspend (Message) -> MessageAcknowledgment<Acknowledgment>
 ): Job = onMessages(
     queueName = queueName,
     concurrency = concurrency,
     groupStrategy = GroupStrategy.Count(1),
     receiveConfiguration = receiveConfiguration,
-    commitConfiguration = commitConfiguration
-) { listOf(f(it.first())) }
+    commitConfiguration = commitConfiguration,
+    onError = onError
+) { messages -> messages.map { onMessage(it) } }
