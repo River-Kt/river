@@ -5,10 +5,7 @@ import com.river.connector.aws.s3.uploadSplitItems
 import com.river.connector.format.csv.rawCsv
 import com.river.connector.format.json.asParsedJson
 import com.river.connector.red.hat.debezium.debeziumFlow
-import com.river.core.GroupStrategy
-import com.river.core.intersperse
-import com.river.core.launchCollect
-import com.river.core.mapAsync
+import com.river.core.*
 import io.debezium.engine.ChangeEvent
 import io.debezium.engine.DebeziumEngine
 import io.debezium.engine.format.Json
@@ -28,6 +25,7 @@ import java.net.URI
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
+@ExperimentalRiverApi
 suspend fun main() = coroutineScope {
     s3AsyncClient.createBucket { it.bucket("catalog") }.await()
 
@@ -69,7 +67,7 @@ fun csvSink(
                 splitStrategy = GroupStrategy.TimeWindow(1000, 1.seconds),
                 key = { "$name.csv.$it" }
             ) { line -> line.toByteArray() }
-            .launchCollect()
+            .launch()
 
     return csvSink to sinkJob
 }

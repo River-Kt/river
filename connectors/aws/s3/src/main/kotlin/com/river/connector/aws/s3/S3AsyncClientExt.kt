@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.river.connector.aws.s3
 
 import com.river.core.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.reactive.asFlow
@@ -287,7 +284,7 @@ fun S3AsyncClient.upload(
     initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
 ): Flow<S3Response> =
     uploadBytes(
-        upstream = upstream.flatMapConcat { it.toList().asFlow() },
+        upstream = upstream.flatMapIterable { it.toList() },
         concurrency = concurrency,
         initialRequest = initialRequest
     )
@@ -335,7 +332,7 @@ fun S3AsyncClient.uploadSplit(
     upstream
         .split(splitStrategy)
         .withIndex()
-        .flatMapConcat { (part, chunk) ->
+        .flatMapFlow { (part, chunk) ->
             internalUploadSplit(splitStrategy, chunk, bucket, key, part, concurrency)
         }
 
@@ -391,7 +388,7 @@ fun <T> S3AsyncClient.uploadSplitItems(
         .split(splitStrategy)
         .map { it.map(f).flatMapIterable { it.toList() } }
         .withIndex()
-        .flatMapConcat { (part, chunk) ->
+        .flatMapFlow { (part, chunk) ->
             internalUploadSplit(splitStrategy, chunk, bucket, key, part, concurrency)
         }
 

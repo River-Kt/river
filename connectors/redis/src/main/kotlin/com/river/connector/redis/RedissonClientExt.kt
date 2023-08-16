@@ -3,6 +3,7 @@ package com.river.connector.redis
 import com.river.connector.redis.internal.RedisAsyncSemaphore
 import com.river.core.AsyncSemaphore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 import org.redisson.api.RedissonClient
 
@@ -20,6 +21,7 @@ import kotlinx.coroutines.future.await as coAwait
  *
  * @return A suspending function that creates an [AsyncSemaphore] when invoked.
  */
+@ExperimentalCoroutinesApi
 fun RedissonClient.semaphore(
     name: String,
     concurrencyLevel: Int,

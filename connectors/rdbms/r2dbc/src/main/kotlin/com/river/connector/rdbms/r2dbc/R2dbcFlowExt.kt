@@ -1,17 +1,15 @@
-@file:OptIn(FlowPreview::class)
-
 package com.river.connector.rdbms.r2dbc
 
 import com.river.connector.rdbms.r2dbc.model.Returning
-import com.river.core.GroupStrategy
-import com.river.core.chunked
-import com.river.core.mapAsync
+import com.river.core.*
 import io.r2dbc.spi.Connection
 import io.r2dbc.spi.Result
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.Statement
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -50,7 +48,7 @@ fun Connection.query(
                 .also(prepare)
                 .execute()
                 .asFlow()
-                .flatMapConcat {
+                .flatMapFlow {
                     it.map { row, rowMetadata ->
                         rowMetadata.columnMetadatas.associate { metadata ->
                             val columnName = metadata.name
@@ -84,7 +82,7 @@ fun Connection.singleUpdate(
     createStatement(sql)
         .execute()
         .asFlow()
-        .flatMapConcat { it.rowsUpdated.asFlow() }
+        .flatMapFlow { it.rowsUpdated.asFlow() }
 
 /**
  * Executes an SQL update statement for each item in the provided upstream Flow.
@@ -129,8 +127,8 @@ fun <T> Connection.singleUpdate(
                 .execute()
                 .asFlow()
         }
-        .flattenConcat()
-        .flatMapConcat { it.rowsUpdated.asFlow() }
+        .flattenFlow()
+        .flatMapFlow { it.rowsUpdated.asFlow() }
 
 /**
  * Extension function for Flow<Result> that emits the number of updated rows.
@@ -138,7 +136,7 @@ fun <T> Connection.singleUpdate(
  * @return A Flow<Long> emitting the number of updated rows for each Result.
  */
 fun Flow<Result>.rowsUpdated(): Flow<Long> =
-    flatMapConcat { it.rowsUpdated.asFlow() }
+    flatMapFlow { it.rowsUpdated.asFlow() }
 
 /**
  * Extension function for Flow<Result> that emits the rows retrieved by a query.
@@ -146,7 +144,7 @@ fun Flow<Result>.rowsUpdated(): Flow<Long> =
  * @return A Flow<Row> emitting the rows for each Result.
  */
 fun Flow<Result>.asRows(): Flow<Row> =
-    flatMapConcat { it.map { r, _ -> r }.asFlow() }
+    flatMapFlow { it.map { r, _ -> r }.asFlow() }
 
 /**
  * Extension function for Flow<Result> that maps each row to a custom type using the provided
@@ -169,7 +167,7 @@ fun Flow<Result>.asRows(): Flow<Row> =
  * ```
  */
 fun <T> Flow<Result>.mapRow(f: suspend (Row) -> T): Flow<T> =
-    flatMapConcat { it.map { r, _ -> r }.asFlow() }
+    flatMapFlow { it.map { r, _ -> r }.asFlow() }
         .map { f(it) }
 
 /**
@@ -240,7 +238,7 @@ fun <T> Connection.batchUpdate(
                 .execute()
                 .asFlow()
         }
-        .flattenConcat()
+        .flattenFlow()
 
 /**
  * Executes a batch update for a specified [upstream] flow of items using a given [groupStrategy] and [concurrency].
@@ -285,4 +283,4 @@ fun <T> Connection.batchUpdate(
                 .execute()
                 .asFlow()
         }
-        .flattenConcat()
+        .flattenFlow()

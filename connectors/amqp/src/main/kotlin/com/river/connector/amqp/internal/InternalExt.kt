@@ -1,6 +1,8 @@
-package com.river.connector.amqp
+package com.river.connector.amqp.internal
 
 import com.rabbitmq.client.*
+import com.river.connector.amqp.ReceivingMessage
+import com.river.core.ExperimentalRiverApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,10 +11,12 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.channels.Channel as KotlinChannel
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 private val SingleThreadMessage: CoroutineDispatcher =
     Dispatchers.IO.limitedParallelism(1)
 
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 internal fun Connection.internalConsume(
     queue: String,
     autoAck: Boolean,
@@ -61,6 +65,7 @@ internal fun Connection.internalConsume(
     return channel.consumeAsFlow()
 }
 
+@ExperimentalRiverApi
 private fun Channel.basicConsume(
     queue: String,
     autoAck: Boolean,

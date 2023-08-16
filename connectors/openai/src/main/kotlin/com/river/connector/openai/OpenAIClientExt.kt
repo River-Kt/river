@@ -4,6 +4,7 @@ import com.river.connector.http.coSend
 import com.river.connector.http.get
 import com.river.connector.http.post
 import com.river.connector.openai.model.*
+import com.river.core.ExperimentalRiverApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.flow
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun OpenAIClient.models(): Flow<ModelObject> =
     flow {
         val request = get("$baseUrl/models") { authorization { bearer(apiKey) } }
@@ -55,6 +57,7 @@ fun OpenAIClient.models(): Flow<ModelObject> =
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun OpenAIClient.chatCompletions(
     request: ChatCompletionRequest
 ): Flow<ChatCompletionResponse> = completionStream {
@@ -82,6 +85,7 @@ fun OpenAIClient.chatCompletions(
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun OpenAIClient.completions(
     request: CompletionRequest
 ): Flow<CompletionResponse> = completionStream {

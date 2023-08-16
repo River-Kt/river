@@ -6,7 +6,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 
-fun <E> CoroutineScope.launchChannelConsumer(
+@ExperimentalRiverApi
+fun <E> CoroutineScope.consume(
     capacity: Int = Channel.RENDEZVOUS,
     onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
     onUndeliveredElement: ((E) -> Unit)? = null,

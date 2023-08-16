@@ -1,11 +1,15 @@
+@file:OptIn(ExperimentalRiverApi::class)
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.river.connector.aws.sqs.model.SendMessageRequest
 import com.river.connector.aws.sqs.sendMessageFlow
-import com.river.core.collectAsync
-import com.river.core.launchCollect
+import com.river.core.ExperimentalRiverApi
 import com.river.core.pollWithState
 import com.river.core.throttle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.regions.Region
@@ -33,7 +37,7 @@ fun keepOnPublishing(
 
     return sqsAsyncClient
         .sendMessageFlow(requestFlow) { queueUrl }
-        .launchCollect()
+        .launchIn(CoroutineScope(Dispatchers.Default))
 }
 
 inline fun withWiremock(f: (WireMockServer, Int) -> Unit) {

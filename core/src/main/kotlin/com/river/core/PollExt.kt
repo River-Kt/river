@@ -1,7 +1,10 @@
 package com.river.core
 
 import com.river.core.internal.PollingFlow
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transformWhile
 
 /**
  * Creates a flow that continuously polls elements concurrently by successively applying the [f] function.
@@ -72,6 +75,7 @@ fun <T> poll(
  * }.collect { item -> println(item) }
  * ```
  */
+@ExperimentalRiverApi
 fun <T, S> pollWithState(
     initial: S,
     shouldStop: (S) -> Boolean = { false },

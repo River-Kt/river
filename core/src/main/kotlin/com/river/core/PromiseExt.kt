@@ -7,16 +7,19 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
+@ExperimentalRiverApi
 suspend fun <T> withPromise(f: suspend (CompletableDeferred<T>) -> Unit): T =
     CompletableDeferred<T>()
         .also { f(it)  }
         .await()
 
+@ExperimentalRiverApi
 suspend fun <T> CoroutineScope.withPromise(f: suspend (CompletableDeferred<T>) -> Unit): T =
     CompletableDeferred<T>()
         .also { launch { f(it) }  }
         .await()
 
+@ExperimentalRiverApi
 fun <T> promiseFlow(f: suspend (CompletableDeferred<Flow<T>>) -> Unit): Flow<T> =
     flow {
         val flow: Flow<T> = withPromise { f(it) }

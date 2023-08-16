@@ -1,5 +1,3 @@
-@file:OptIn(FlowPreview::class)
-
 package com.river.connector.mongodb
 
 import com.mongodb.client.model.InsertManyOptions
@@ -9,9 +7,9 @@ import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
 import com.river.core.GroupStrategy
 import com.river.core.chunked
+import com.river.core.flattenFlow
 import com.river.core.mapAsync
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
 import org.bson.Document
@@ -67,7 +65,7 @@ fun <T> MongoCollection<T>.insertMany(
     flow
         .chunked(groupStrategy)
         .mapAsync(concurrency) { insertMany(it, options).asFlow() }
-        .flattenConcat()
+        .flattenFlow()
 
 /**
  * Updates documents in a MongoDB collection using a flow of update documents and a filter.
@@ -121,7 +119,7 @@ fun MongoCollection<Document>.updateMany(
     flow
         .chunked(groupStrategy)
         .mapAsync(concurrency) { updateMany(filter, it).asFlow() }
-        .flattenConcat()
+        .flattenFlow()
 
 /**
  * Replaces documents in a MongoDB collection using a flow of documents and a filter.

@@ -1,19 +1,15 @@
-@file:OptIn(FlowPreview::class, ExperimentalTime::class)
-
 package com.river.connector.elasticsearch
-
-import com.river.core.*
 
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient
 import co.elastic.clients.elasticsearch.core.BulkRequest
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem
-import kotlinx.coroutines.FlowPreview
+import com.river.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.future.await
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
 
+@ExperimentalRiverApi
 fun <T> Flow<T>.toDocument(
     f: (T) -> Pair<String, String>
 ): Flow<Document<T>> =
@@ -22,10 +18,12 @@ fun <T> Flow<T>.toDocument(
         Document(id, index, it)
     }
 
+@ExperimentalRiverApi
 inline fun <reified T> ElasticsearchAsyncClient.paginatedSearchFlow(
     configuration: PaginatedSearch
 ) = configuration.paginatedSearchFlow(this, T::class.java)
 
+@ExperimentalRiverApi
 suspend fun ElasticsearchAsyncClient.maxResultWindow(
     index: String,
     default: Int = 10000
@@ -63,6 +61,7 @@ suspend fun ElasticsearchAsyncClient.maxResultWindow(
  *  }
  * ```
  */
+@ExperimentalRiverApi
 fun <T> ElasticsearchAsyncClient.indexFlow(
     upstream: Flow<Document<T>>,
     concurrency: Int = 1,

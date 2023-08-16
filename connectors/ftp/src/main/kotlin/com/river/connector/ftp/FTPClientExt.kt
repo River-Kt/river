@@ -3,6 +3,7 @@ package com.river.connector.ftp
 import com.river.connector.file.asFlow
 import com.river.connector.file.asInputStream
 import com.river.connector.ftp.model.FtpConfiguration
+import com.river.core.ExperimentalRiverApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -38,6 +39,7 @@ private val logger = LoggerFactory.getLogger(FTPSClient::class.java)
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun connect(
     host: String,
     port: Int = 21,
@@ -71,6 +73,7 @@ fun connect(
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun connect(configuration: FtpConfiguration): Flow<FTPClient> =
     flow {
         val properties = mapOf(
@@ -122,6 +125,7 @@ fun connect(configuration: FtpConfiguration): Flow<FTPClient> =
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun FTPClient.download(
     remotePath: String,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -158,6 +162,7 @@ fun FTPClient.download(
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun FTPClient.upload(
     remotePath: String,
     content: Flow<ByteArray>,

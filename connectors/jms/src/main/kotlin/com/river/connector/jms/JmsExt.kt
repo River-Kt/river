@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
-
 package com.river.connector.jms
 
 import com.river.connector.jms.model.*
@@ -16,7 +14,6 @@ import javax.jms.ConnectionFactory
 import javax.jms.JMSContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 /**
  * Consumes messages from a specified JMS queue using a reactive Flow API.
@@ -46,6 +43,7 @@ import kotlin.time.ExperimentalTime
  *  }
  * ```
  */
+@ExperimentalCoroutinesApi
 fun ConnectionFactory.consume(
     queueName: String,
     credentials: Credentials? = null,
@@ -112,6 +110,7 @@ fun ConnectionFactory.consume(
  *  connectionFactory.sendToDestination(destination, messagesFlow)
  *      .collect { println("Message sent") }
  */
+@ExperimentalCoroutinesApi
 fun ConnectionFactory.sendToDestination(
     destination: JmsDestination,
     upstream: Flow<JmsMessage>,

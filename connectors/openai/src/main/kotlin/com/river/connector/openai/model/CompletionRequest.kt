@@ -1,5 +1,8 @@
 package com.river.connector.openai.model
 
+import com.river.core.ExperimentalRiverApi
+
+@ExperimentalRiverApi
 data class CompletionRequest(
     val prompt: List<String>,
     val maxTokens: Int = 16,

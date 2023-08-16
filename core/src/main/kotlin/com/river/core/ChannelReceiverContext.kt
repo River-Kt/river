@@ -27,6 +27,7 @@ import kotlin.time.Duration
  * context.markAsCompleted()
  * ```
  */
+@ExperimentalRiverApi
 interface ChannelReceiverContext<E> {
     /**
      * Awaits for the next item from the channel.

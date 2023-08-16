@@ -1,7 +1,7 @@
 package com.river.connector.file
 
+import com.river.core.ExperimentalRiverApi
 import com.river.core.asByteArray
-import com.river.core.launchCollect
 import com.river.core.poll
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -19,6 +19,7 @@ import java.util.zip.ZipOutputStream
 import kotlin.io.path.inputStream
 import kotlin.io.path.writeBytes
 
+@ExperimentalRiverApi
 suspend fun Flow<ByteArray>.writeTo(
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     outputStream: () -> OutputStream,
@@ -28,11 +29,13 @@ suspend fun Flow<ByteArray>.writeTo(
     }
 }
 
+@ExperimentalRiverApi
 fun Path.asFlow(
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
     vararg options: OpenOption
 ) = inputStream(*options).asFlow(dispatcher)
 
+@ExperimentalRiverApi
 suspend fun Flow<ByteArray>.writeTo(
     path: Path,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -43,10 +46,11 @@ suspend fun Flow<ByteArray>.writeTo(
     )
 ) = flowOn(dispatcher).collect { path.writeBytes(it, *options) }
 
+@ExperimentalRiverApi
 fun Flow<ByteArray>.zipFile(
     entryName: String,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): Flow<ByteArray> = flow {
+): Flow<ByteArray> = channelFlow {
     PipedOutputStream().let { os ->
         val zipChannel = Channel<ByteArray>()
 
@@ -59,7 +63,8 @@ fun Flow<ByteArray>.zipFile(
         zipChannel
             .consumeAsFlow()
             .flowOn(dispatcher)
-            .launchCollect { zipOS.write(it) }
+            .onEach { zipOS.write(it)  }
+            .launchIn(this)
 
         flowOn(dispatcher)
             .onCompletion {
@@ -67,12 +72,14 @@ fun Flow<ByteArray>.zipFile(
                 zipOS.closeEntry()
                 zipOS.close()
             }
-            .launchCollect { zipChannel.send(it) }
+            .onEach { zipChannel.send(it) }
+            .launchIn(this)
 
-        emitAll(pis.asFlow())
+        pis.asFlow().collect { send(it) }
     }
 }.flowOn(dispatcher)
 
+@ExperimentalRiverApi
 suspend fun Flow<ByteArray>.asInputStream(
     bufferSize: Int = 1024,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -81,11 +88,13 @@ suspend fun Flow<ByteArray>.asInputStream(
     val inputStream = PipedInputStream(bufferSize).also { it.connect(os) }
 
     onCompletion { os.close() }
-        .launchCollect(this) { os.write(it) }
+        .onEach { os.write(it) }
+        .launchIn(this)
 
     inputStream
 }
 
+@ExperimentalRiverApi
 fun InputStream.asFlow(
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): Flow<ByteArray> =
@@ -97,8 +106,10 @@ fun InputStream.asFlow(
         }
     }.flowOn(dispatcher)
 
+@ExperimentalRiverApi
 class ContentfulZipEntry(entry: ZipEntry, val data: ByteArray) : ZipEntry(entry)
 
+@ExperimentalRiverApi
 fun Flow<ByteArray>.unzipFile(
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): Flow<ContentfulZipEntry> = channelFlow {
@@ -121,7 +132,8 @@ fun Flow<ByteArray>.unzipFile(
             zipChannel
                 .consumeAsFlow()
                 .flowOn(dispatcher)
-                .launchCollect(this) { os.write(it) }
+                .onEach { os.write(it) }
+                .launchIn(this)
 
         flowOn(dispatcher).collect { zipChannel.send(it) }
 

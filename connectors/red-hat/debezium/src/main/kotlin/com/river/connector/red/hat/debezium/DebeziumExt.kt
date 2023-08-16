@@ -1,9 +1,14 @@
 package com.river.connector.red.hat.debezium
 
-import com.river.connector.red.hat.debezium.model.*
+import com.river.connector.red.hat.debezium.internal.DebeziumChannelNotifier
+import com.river.connector.red.hat.debezium.model.CommittableOffset
+import com.river.connector.red.hat.debezium.model.CommittableRecord
+import com.river.core.ExperimentalRiverApi
 import io.debezium.engine.DebeziumEngine
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.onCompletion
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -36,6 +41,7 @@ private val logger = LoggerFactory.getLogger("com.river.connector.red.hat.debezi
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun <R> debeziumFlow(
     maxRecordsInFlight: Int = 250,
     executor: ExecutorService = Executors.newSingleThreadExecutor(),

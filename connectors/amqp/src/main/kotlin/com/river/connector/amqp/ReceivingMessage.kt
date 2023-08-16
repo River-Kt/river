@@ -3,8 +3,10 @@ package com.river.connector.amqp
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Envelope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.nio.charset.Charset
 
+@ExperimentalCoroutinesApi
 sealed interface ReceivingMessage {
     val consumerTag: String
     val envelope: Envelope

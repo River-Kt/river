@@ -32,7 +32,7 @@ interface AsyncSemaphore {
      * Tries to acquire a permit from this semaphore. This function is marked as a suspend function because it may
      * perform I/O operations, but it won't suspend in case that no permit is available at the moment.
      *
-     * @return `true` if a permit was acquired and `false` otherwise.
+     * @return `permit` if a permit was acquired and `null` otherwise.
      */
     suspend fun tryAcquire(): String?
 

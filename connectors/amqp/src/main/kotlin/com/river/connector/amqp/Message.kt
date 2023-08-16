@@ -1,7 +1,9 @@
 package com.river.connector.amqp
 
 import com.rabbitmq.client.AMQP
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 sealed interface Message {
     val body: ByteArray
     val properties: AMQP.BasicProperties

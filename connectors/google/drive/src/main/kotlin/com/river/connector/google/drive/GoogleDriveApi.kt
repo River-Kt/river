@@ -1,14 +1,13 @@
-@file:OptIn(ObsoleteCoroutinesApi::class)
-
 package com.river.connector.google.drive
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.river.connector.google.drive.internal.BearerTokenActor
+import com.river.core.ExperimentalRiverApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import java.net.http.HttpClient
 
+@ExperimentalRiverApi
 class GoogleDriveApi(
     private val serviceAccount: JsonNode,
     private val scope: CoroutineScope = defaultCoroutineScope,

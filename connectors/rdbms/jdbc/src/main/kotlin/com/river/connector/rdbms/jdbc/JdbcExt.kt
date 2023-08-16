@@ -1,7 +1,7 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.river.connector.rdbms.jdbc
 
+import com.river.core.ExperimentalRiverApi
 import com.river.core.GroupStrategy
 import com.river.core.GroupStrategy.TimeWindow
 import com.river.core.chunked
@@ -39,6 +39,8 @@ typealias Row = Map<String, Any?>
  *     }
  * ```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 fun Jdbc.singleUpdate(
     sql: String,
     prepare: suspend PreparedStatement.() -> Unit = {}
@@ -73,6 +75,8 @@ fun Jdbc.singleUpdate(
  * }
  * ```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 fun <T> Jdbc.singleUpdate(
     sql: String,
     upstream: Flow<T>,
@@ -113,6 +117,8 @@ fun <T> Jdbc.singleUpdate(
  *  updatedRows.collect { println("Updated $it rows.") }
  * ```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 fun <T> Jdbc.batchUpdate(
     sql: String,
     upstream: Flow<T>,
@@ -154,6 +160,8 @@ fun <T> Jdbc.batchUpdate(
  *  people.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 inline fun <reified T : Any> Jdbc.typedQuery(
     sql: String,
     fetchSize: Int = 100,
@@ -180,6 +188,8 @@ inline fun <reified T : Any> Jdbc.typedQuery(
  *  people.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 inline fun <reified T : Any> Jdbc.typedQuery(
     sql: String,
     fetchSize: Int = 100,
@@ -212,6 +222,8 @@ inline fun <reified T : Any> Jdbc.typedQuery(
  *  result.collect { println(it) }
  *```
  */
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 fun Jdbc.query(
     sql: String,
     fetchSize: Int = 100,

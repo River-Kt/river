@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.river.connector.console
 
 import com.river.core.poll
@@ -28,6 +26,7 @@ enum class OutType { DEFAULT, ERROR }
  *  consoleInputFlow.collect { input -> println("You entered: $input") }
  * ```
  */
+@ExperimentalCoroutinesApi
 fun consoleIn(
     dispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
 ): Flow<String> =
@@ -52,6 +51,7 @@ fun consoleIn(
  *  peopleFlow.consoleOut().collect()
  * ```
  */
+@ExperimentalCoroutinesApi
 fun <T : Any> Flow<T>.consoleOut(
     dispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1),
     print: Print = Print.BREAK_LINE,

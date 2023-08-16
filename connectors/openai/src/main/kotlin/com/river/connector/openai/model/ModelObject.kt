@@ -1,5 +1,8 @@
 package com.river.connector.openai.model
 
+import com.river.core.ExperimentalRiverApi
+
+@ExperimentalRiverApi
 data class ModelObject(
     val id: String,
     val `object`: String,
@@ -10,6 +13,7 @@ data class ModelObject(
     val parent: String?
 )
 
+@ExperimentalRiverApi
 data class Permission(
     val id: String,
     val `object`: String,

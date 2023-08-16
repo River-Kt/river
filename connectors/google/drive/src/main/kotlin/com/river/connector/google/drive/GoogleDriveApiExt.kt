@@ -6,11 +6,12 @@ import com.river.connector.http.coSend
 import com.river.connector.http.get
 import com.river.connector.http.ofFlow
 import com.river.connector.http.ofString
+import com.river.core.ExperimentalRiverApi
 import com.river.core.asByteArray
 import com.river.core.pollWithState
-import com.river.core.stoppableFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * This function allows for listing files on Google Drive with an optional query to filter the files.
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.emitAll
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun GoogleDriveApi.listFiles(
     query: FilesListQuery.() -> Unit = {}
 ): Flow<GoogleDriveFile> =
@@ -77,9 +79,10 @@ fun GoogleDriveApi.listFiles(
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun GoogleDriveApi.download(
     fileId: String
-): Flow<ByteArray> = stoppableFlow {
+): Flow<ByteArray> = flow {
     val accessToken = currentToken()
 
     val request = get("$baseUrl/v3/files/$fileId") {

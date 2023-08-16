@@ -1,7 +1,8 @@
 package com.river.connector.elasticsearch
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.river.core.ExperimentalRiverApi
 
+@ExperimentalRiverApi
 data class Document<T>(
     val id: String,
     val index: String,

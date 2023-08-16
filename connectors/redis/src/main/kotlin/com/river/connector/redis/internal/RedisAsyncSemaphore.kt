@@ -1,10 +1,7 @@
 package com.river.connector.redis.internal
 
 import com.river.core.AsyncSemaphore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.redisson.api.RPermitExpirableSemaphore
@@ -17,6 +14,7 @@ import kotlinx.coroutines.future.await as coAwait
  * This class uses a [RPermitExpirableSemaphore] to manage the permits in a distributed environment.
  * Permits are released automatically after a given lease time.
  */
+@ExperimentalCoroutinesApi
 internal class RedisAsyncSemaphore(
     override val totalPermits: Int,
     val scope: CoroutineScope,

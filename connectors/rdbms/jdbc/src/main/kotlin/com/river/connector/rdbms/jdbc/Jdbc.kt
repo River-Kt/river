@@ -1,13 +1,14 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.river.connector.rdbms.jdbc
 
+import com.river.core.ExperimentalRiverApi
 import com.river.core.objectPool
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.DriverManager
 
+@ExperimentalCoroutinesApi
+@ExperimentalRiverApi
 class Jdbc(
     connectionPoolSize: Int = 10,
     private val connectionFactory: () -> Connection,

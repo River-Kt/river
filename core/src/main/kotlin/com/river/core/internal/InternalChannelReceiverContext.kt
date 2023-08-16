@@ -1,6 +1,7 @@
 package com.river.core.internal
 
 import com.river.core.ChannelReceiverContext
+import com.river.core.ExperimentalRiverApi
 import com.river.core.toList
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
 
+@ExperimentalRiverApi
 internal class InternalChannelReceiverContext<T>(
     private val channel: Channel<T>
 ) : ChannelReceiverContext<T> {

@@ -1,7 +1,9 @@
 package com.river.connector.openai.model
 
 import com.fasterxml.jackson.annotation.JsonValue
+import com.river.core.ExperimentalRiverApi
 
+@ExperimentalRiverApi
 data class ChatCompletionResponse(
     val id: String,
     val objectType: String?,

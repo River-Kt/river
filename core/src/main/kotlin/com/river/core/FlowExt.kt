@@ -1,20 +1,10 @@
-@file:OptIn(ExperimentalCoroutinesApi::class, InternalCoroutinesApi::class)
-
 package com.river.core
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
-
-/**
- * Introduces a delay between the emissions of the [Flow].
- *
- * @param duration The duration of the delay between emissions.
- * @return A [Flow] with a delay applied between emissions.
- */
-fun <T> Flow<T>.delay(duration: Duration): Flow<T> =
-    onEach { kotlinx.coroutines.delay(duration) }
 
 /**
  * Collects the specified number of items [size] from the [Flow] into a [List].
@@ -36,19 +26,39 @@ suspend fun <T> Flow<T>.toList(size: Int): List<T> =
 suspend fun <T> Flow<T>.toList(
     size: Int,
     duration: Duration
-): List<T> =
-    stoppableFlow {
-        var counter = 0
+): List<T> {
+    val acc = mutableListOf<T>()
+    withTimeoutOrNull(duration) { take(size).collect { acc.add(it) } }
+    return acc
+}
 
-        withTimeoutOrNull(duration) {
-            collect {
-                if (++counter <= size) emit(it)
-                else halt()
-            }
-        }
+/**
+ * Collects the items from the [Flow] into a [List] within the given [duration].
+ *
+ * @param duration The maximum duration allowed for collecting items.
+ *
+ * @return A [List] of collected items.
+ */
+suspend fun <T> Flow<T>.toList(duration: Duration): List<T> =
+    toList(Int.MAX_VALUE, duration)
 
-        halt()
-    }.toList()
+/**
+ * Flattens a [Flow] of [Flow] items into a [Flow] of individual items.
+ *
+ * @return A [Flow] of individual items.
+ */
+fun <T> Flow<Flow<T>>.flattenFlow() =
+    flow {
+        collect { value -> emitAll(value) }
+    }
+
+/**
+ * Flattens a [Flow] of [T] items into a [Flow] of individual items [R].
+ *
+ * @return A [Flow] of individual items.
+ */
+fun <T, R> Flow<T>.flatMapFlow(mapper: suspend (T) -> Flow<R>): Flow<R> =
+    map(mapper).flattenFlow()
 
 /**
  * Flattens a [Flow] of [Iterable] items into a [Flow] of individual items.
@@ -63,8 +73,8 @@ fun <T> Flow<Iterable<T>>.flattenIterable(): Flow<T> =
  *
  * @return A [Flow] of individual items.
  */
-fun <T, R> Flow<T>.flatMapIterable(f: (T) -> Iterable<R>): Flow<R> =
-    map(f).flatMapConcat { it.asFlow() }
+fun <T, R> Flow<T>.flatMapIterable(mapper: suspend (T) -> Iterable<R>): Flow<R> =
+    flatMapFlow { mapper(it).asFlow() }
 
 /**
  * Counts the number of items emitted by the flow within the specified [duration] window.
@@ -76,34 +86,6 @@ suspend fun <T> Flow<T>.countOnWindow(duration: Duration): Int {
     var counter = 0
     return withTimeoutOrNull(duration) { collect { counter++ }; counter } ?: counter
 }
-
-/**
- * The [launchCollect] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
- *
- * This function returns a [Job] instance that represents the coroutine launched to collect the elements.
- *
- * The coroutine will continue running until the flow completes or an exception is thrown.
- *
- * If the caller needs to cancel the coroutine before it completes, they can cancel the returned [Job].
- */
-fun <T> Flow<T>.launchCollect(
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
-    collector: FlowCollector<T> = FlowCollector { }
-): Job = with(scope) { launchCollect(collector) }
-
-/**
- * The [launchCollect] function launches a coroutine to collect the elements emitted by the current [Flow] in an asynchronous way.
- *
- * This function returns a [Job] instance that represents the coroutine launched to collect the elements.
- *
- * The coroutine will continue running until the flow completes or an exception is thrown.
- *
- * If the caller needs to cancel the coroutine before it completes, they can cancel the returned [Job].
- */
-context(CoroutineScope)
-fun <T> Flow<T>.launchCollect(
-    collector: FlowCollector<T> = FlowCollector { }
-): Job = launch { collect(collector) }
 
 /**
  * The [collectCatching] function collects the elements emitted by the current [Flow] in a suspending way and returns
@@ -157,11 +139,10 @@ fun <T> flowOfSuspend(item: suspend () -> T) = flow { emit(item()) }
  * @param item The item to be repeatedly emitted by the flow.
  * @return An infinite [Flow] that repeatedly emits the provided item.
  */
-fun <T> indefinitelyRepeat(item: T): Flow<T> = flow {
-    while (true) {
-        emit(item)
+fun <T> indefinitelyRepeat(item: T): Flow<T> =
+    flow {
+        while (true) { emit(item) }
     }
-}
 
 /**
  * Creates an (almost) infinite [Flow] that emits sequentially incremented Long numbers starting from the [startAt] parameter.
@@ -169,17 +150,18 @@ fun <T> indefinitelyRepeat(item: T): Flow<T> = flow {
  * @param startAt The inclusive starting point.
  * @return An (almost) infinite [Flow] of sequentially incremented Long numbers.
  */
-fun unboundedLongFlow(startAt: Long = 0): Flow<Long> = flow {
-    var number = startAt
+fun unboundedLongFlow(startAt: Long = 0): Flow<Long> =
+    flow {
+        var number = startAt
 
-    while (true) {
-        emit(number++)
+        while (true) {
+            emit(number++)
+        }
     }
-}
 
 /**
  * Allows the [Flow] to be collected and transformed into another [Flow] concurrently. The
- * transformed [Flow] is collected asynchronously in the provided [scope]. The original flow
+ * transformed [Flow] is collected asynchronously in the provided [coroutineScope]. The original flow
  * and the transformed flow share the same buffer with the specified [bufferCapacity],
  * [onBufferOverflow] policy, and [onUndeliveredElement] handler.
  *
@@ -189,22 +171,24 @@ fun unboundedLongFlow(startAt: Long = 0): Flow<Long> = flow {
  * @param flow The transformation function that maps the original flow to a new flow.
  * @return A [Flow] of the original items.
  */
+@ExperimentalRiverApi
 fun <E, S> Flow<E>.alsoTo(
     bufferCapacity: Int = Channel.BUFFERED,
     onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,
     onUndeliveredElement: ((E) -> Unit)? = null,
     flow: Flow<E>.() -> Flow<S>,
-): Flow<Pair<E, S>> = flow {
-    coroutineScope {
-        val channel = Channel(bufferCapacity, onBufferOverflow, onUndeliveredElement)
-        val alsoToFlow = flow(channel.consumeAsFlow().buffer(bufferCapacity))
+): Flow<Pair<E, S>> =
+    flow {
+        coroutineScope {
+            val channel = Channel(bufferCapacity, onBufferOverflow, onUndeliveredElement)
+            val alsoToFlow = flow(channel.consumeAsFlow().buffer(bufferCapacity))
 
-        onEach { channel.send(it) }
-            .buffer(bufferCapacity)
-            .zip(alsoToFlow) { f, s -> f to s }
-            .also { emitAll(it) }
+            onEach { channel.send(it) }
+                .buffer(bufferCapacity)
+                .zip(alsoToFlow) { f, s -> f to s }
+                .also { emitAll(it) }
+        }
     }
-}
 
 /**
  * Collects the items emitted by this Flow into a ChannelReceiverContext and applies the given block to it.
@@ -231,6 +215,7 @@ fun <E, S> Flow<E>.alsoTo(
  * ```
  */
 context(CoroutineScope)
+@ExperimentalRiverApi
 suspend fun <T> Flow<T>.collectAsReceiver(
     block: suspend ChannelReceiverContext<T>.() -> Unit
 ) {
@@ -265,6 +250,7 @@ suspend fun <T> Flow<T>.collectAsReceiver(
  * }
  * ```
  */
+@ExperimentalRiverApi
 suspend fun <T> Flow<T>.collectAsReceiver(
     scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
     block: suspend ChannelReceiverContext<T>.() -> Unit
@@ -278,6 +264,17 @@ suspend fun <T> Flow<T>.collectAsReceiver(
 suspend fun <T> Flow<T>.toChannel(
     channel: Channel<T>
 ): Unit = collect { channel.send(it) }
+
+internal fun CoroutineScope.self() = this
+
+context(CoroutineScope)
+fun <T> Flow<T>.launch(): Job = launchIn(self())
+
+context(CoroutineScope)
+fun <T> Flow<T>.launchCollect(
+    collector: FlowCollector<T> = FlowCollector {}
+): Job = launch { collect(collector) }
+
 
 /**
  * Combines two [Flow]s of the same base type [T] into a single [Flow] by concatenating their elements.
@@ -296,4 +293,4 @@ suspend fun <T> Flow<T>.toChannel(
  */
 operator fun <T, R : T> Flow<T>.plus(other: Flow<R>) =
     flowOf(this, other)
-        .flattenConcat()
+        .flattenFlow()

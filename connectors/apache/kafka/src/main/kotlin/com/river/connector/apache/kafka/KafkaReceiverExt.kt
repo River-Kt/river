@@ -1,6 +1,7 @@
 package com.river.connector.apache.kafka
 
-import com.river.core.launchChannelConsumer
+import com.river.core.ExperimentalRiverApi
+import com.river.core.consume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -185,10 +186,11 @@ fun <K, V> kafkaSender(
  * }
  * ```
  */
+@ExperimentalRiverApi
 fun <K, V, T> CoroutineScope.kafkaSenderChannel(
     options: MutableSenderOptions<K, V>.() -> Unit
 ): Channel<SenderRecord<K, V, T>> =
-    launchChannelConsumer {
+    consume {
         val sender = kafkaSender(options)
 
         sender

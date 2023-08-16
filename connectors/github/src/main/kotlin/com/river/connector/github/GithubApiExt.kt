@@ -6,10 +6,12 @@ import com.river.connector.github.model.query.CommitQuery
 import com.river.connector.github.model.query.PullRequestQuery
 import com.river.connector.github.model.query.RepositoryIssueQuery
 import com.river.connector.github.model.query.RepositoryQuery
-import com.river.core.*
+import com.river.connector.http.coSend
 import com.river.connector.http.get
 import com.river.connector.http.ofFlow
-import com.river.connector.http.coSend
+import com.river.core.ExperimentalRiverApi
+import com.river.core.mapAsync
+import com.river.core.onEachAsync
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
@@ -35,6 +37,7 @@ import java.nio.ByteBuffer
  * issuesFlow.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.issuesAsFlow(
     repositoryName: String,
     concurrency: Int = 1,
@@ -60,6 +63,7 @@ fun GithubApi.issuesAsFlow(
  * repositoriesFlow.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.repositoriesAsFlow(
     username: String,
     concurrency: Int = 1,
@@ -85,6 +89,7 @@ fun GithubApi.repositoriesAsFlow(
  * pullRequestsFlow.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.pullRequestsAsFlow(
     repositoryName: String,
     concurrency: Int = 1,
@@ -109,6 +114,7 @@ fun GithubApi.pullRequestsAsFlow(
  * commitsFlow.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.commitsAsFlow(
     repositoryName: String,
     concurrency: Int = 1,
@@ -141,6 +147,7 @@ fun GithubApi.commitsAsFlow(
  * treeFlow.collect { println(it) }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.treeAsFlow(
     repositoryName: String,
     fileExtensions: List<String> = emptyList(),
@@ -148,13 +155,13 @@ fun GithubApi.treeAsFlow(
     sha: String? = null,
     concurrency: Int = 100,
 ): Flow<TreeRef.TreeEntry> =
-    flow {
+    channelFlow {
         val channel = Channel<Pair<String, CompletableDeferred<TreeRef>>>().apply {
             receiveAsFlow()
                 .onEachAsync(concurrency) { (sha, callback) ->
                     callback.complete(tree(repositoryName, sha))
                 }
-                .launchCollect()
+                .launchIn(this@channelFlow)
         }
 
         val stack = mutableListOf<TreeRef>()
@@ -164,14 +171,15 @@ fun GithubApi.treeAsFlow(
         while (stack.isNotEmpty()) {
             val next = stack.removeFirst()
 
-            emitAll(
-                next.tree.filter {
+            next
+                .tree
+                .filter {
                     when (it) {
                         is TreeRef.TreeEntry.Blob -> it.path.split(".").lastOrNull() in fileExtensions
                         is TreeRef.TreeEntry.Tree -> true
                     }
-                }.asFlow()
-            )
+                }
+                .forEach { send(it) }
 
             val stacks =
                 next.tree.filterIsInstance<TreeRef.TreeEntry.Tree>()
@@ -206,6 +214,7 @@ fun GithubApi.treeAsFlow(
  * archiveFlow.collect { byteBuffer -> ... }
  * ```
  */
+@ExperimentalRiverApi
 fun GithubApi.downloadRepositoryArchive(
     repositoryName: String,
     compressionType: CompressionType = CompressionType.ZIP,

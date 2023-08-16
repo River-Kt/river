@@ -68,11 +68,29 @@ fun QueueAsyncClient.deleteMessagesFlow(
     upstream: Flow<QueueMessageItem>,
     concurrency: Int = 100,
 ): Flow<Unit> =
-    upstream
-        .mapAsync(concurrency) {
-            deleteMessage(it.messageId, it.popReceipt).awaitFirstOrNull()
-            Unit
-        }
+    upstream.mapAsync(concurrency) { it.delete() }
+
+/**
+ * Delete the message from the Azure Storage Queue.
+ *
+ * Example usage:
+ *
+ * ```
+ *  with(queueAsyncClient) {
+ *      val messagesFlow = receiveMessagesAsFlow()
+ *
+ *      messagesFlow.collect {
+ *          it.delete()
+ *      }
+ *  }
+ *
+ * ```
+ */
+context(QueueAsyncClient)
+suspend fun QueueMessageItem.delete() {
+    deleteMessage(messageId, popReceipt)
+        .awaitFirstOrNull()
+}
 
 /**
  * Sends messages to an Azure Storage Queue using an upstream flow of SendMessageRequest objects.

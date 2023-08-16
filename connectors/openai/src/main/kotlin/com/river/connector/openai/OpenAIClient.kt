@@ -9,6 +9,7 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.river.connector.format.json.asParsedJson
 import com.river.connector.http.*
+import com.river.core.ExperimentalRiverApi
 import com.river.core.flatMapIterable
 import com.river.core.joinToString
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.takeWhile
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 
+@ExperimentalRiverApi
 class OpenAIClient(
     internal val apiKey: String,
     internal val baseUrl: String = OpenAIClient.baseUrl,

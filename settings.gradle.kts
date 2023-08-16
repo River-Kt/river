@@ -38,7 +38,6 @@ include(
     "connectors:rdbms:jdbc",
     "connectors:rdbms:r2dbc",
     "connectors:red-hat:debezium",
-    "connectors:twilio",
     "connectors:openai",
     "connectors:redis",
 

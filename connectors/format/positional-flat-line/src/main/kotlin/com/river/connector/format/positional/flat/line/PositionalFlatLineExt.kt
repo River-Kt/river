@@ -1,10 +1,12 @@
 package com.river.connector.format.positional.flat.line
 
+import com.river.core.ExperimentalRiverApi
 import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
+@ExperimentalRiverApi
 data class Field<T>(
     val name: String,
     val padding: Char,
@@ -18,6 +20,7 @@ data class Field<T>(
             .let(parser)
 }
 
+@ExperimentalRiverApi
 data class RecordDef(
     val fields: Map<String, Field<*>>
 ) {
@@ -25,6 +28,7 @@ data class RecordDef(
         fields.mapValues { (_, v) -> v.parse(line) }
 }
 
+@ExperimentalRiverApi
 class RecordBuilder {
     val long: (String) -> Long = { it.toLong() }
     val int: (String) -> Int = { it.toInt() }
@@ -57,21 +61,26 @@ class RecordBuilder {
     fun build() = RecordDef(fields.associateBy { it.name })
 }
 
+@ExperimentalRiverApi
 fun record(builder: RecordBuilder.() -> Unit) =
     RecordBuilder()
         .also(builder)
         .build()
 
+@ExperimentalRiverApi
 infix fun <T> Map<String, Any?>.mappedAs(f: (Map<String, Any?>) -> T) =
     f(this)
 
+@ExperimentalRiverApi
 infix fun String.parsedTo(record: RecordDef) =
     record.parse(this)
 
+@ExperimentalRiverApi
 fun Flow<String>.toPositionalFlatLine(
     record: RecordBuilder.() -> Unit
 ): Flow<Map<String, Any?>> = toPositionalFlatLine(record(record))
 
+@ExperimentalRiverApi
 fun <T> Flow<String>.toPositionalFlatLine(
     mappedAs: (Map<String, Any?>) -> T,
     record: RecordBuilder.() -> Unit
@@ -79,11 +88,13 @@ fun <T> Flow<String>.toPositionalFlatLine(
     toPositionalFlatLine(record(record))
         .map(mappedAs)
 
+@ExperimentalRiverApi
 fun Flow<String>.toPositionalFlatLine(
     record: RecordDef
 ): Flow<Map<String, Any?>> =
     lines().map { record.parse(it) }
 
+@ExperimentalRiverApi
 fun <T> Flow<String>.toPositionalFlatLine(
     record: RecordDef,
     f: (Map<String, Any?>) -> T

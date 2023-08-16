@@ -1,6 +1,7 @@
 package com.river.core
 
 import com.river.core.internal.StoppableFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -23,6 +24,8 @@ import kotlinx.coroutines.flow.Flow
  *  } // 1, 2, 3, 4
  * ```
  */
+@ExperimentalCoroutinesApi
+@ExperimentalRiverApi
 fun <T> stoppableFlow(block: suspend StoppableFlowCollector<T>.() -> Unit): Flow<T> =
     StoppableFlow { block(StoppableFlowCollector(this)) }
 
@@ -42,6 +45,8 @@ fun <T> stoppableFlow(block: suspend StoppableFlowCollector<T>.() -> Unit): Flow
  *      .collect(::println) //1, 2, 3
  * ```
  */
+@ExperimentalCoroutinesApi
+@ExperimentalRiverApi
 fun <T> Flow<T>.earlyCompleteIf(
     stopPredicate: suspend (T) -> Boolean
 ): Flow<T> =

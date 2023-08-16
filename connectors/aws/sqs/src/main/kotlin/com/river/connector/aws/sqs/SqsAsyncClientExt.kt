@@ -7,7 +7,9 @@ import com.river.connector.aws.sqs.model.SendMessageResponse
 import com.river.core.*
 import com.river.core.ConcurrencyStrategy.Companion.increaseByOne
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
@@ -92,7 +94,7 @@ fun SqsAsyncClient.sendMessageFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String,
 ): Flow<SendMessageResponse> =
-    flowOfSuspend(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapFlow { url ->
         upstream
             .map { it.asMessageRequestEntry() }
             .chunked(groupStrategy)
@@ -165,7 +167,7 @@ fun SqsAsyncClient.changeMessageVisibilityFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<ChangeMessageVisibility>, ChangeMessageVisibilityBatchResponse>> =
-    flowOfSuspend(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapFlow { url ->
         upstream
             .chunked(groupStrategy)
             .mapAsync(concurrency) { messages ->
@@ -224,7 +226,7 @@ fun SqsAsyncClient.deleteMessagesFlow(
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
 ): Flow<Pair<MessageAcknowledgment<Delete>, DeleteMessageBatchResponse>> =
-    flowOfSuspend(queueUrl).flatMapConcat { url ->
+    flowOfSuspend(queueUrl).flatMapFlow { url ->
         upstream
             .chunked(groupStrategy)
             .mapAsync(concurrency) { messages ->
@@ -244,8 +246,8 @@ fun SqsAsyncClient.deleteMessagesFlow(
                             }
                     )
                 }
-                    .await()
-                    .let { response -> messages.map { it to response } }
+                .await()
+                .let { response -> messages.map { it to response } }
             }
             .flattenIterable()
     }
@@ -292,7 +294,7 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
     concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     queueUrl: suspend () -> String
-): Flow<AcknowledgmentResult<SdkResponse>> = flowOfSuspend(queueUrl).flatMapConcat { url ->
+): Flow<AcknowledgmentResult<SdkResponse>> = flowOfSuspend(queueUrl).flatMapFlow { url ->
     val deleteMessageChannel: Channel<MessageAcknowledgment<Delete>> = Channel()
     val changeMessageVisibilityChannel: Channel<MessageAcknowledgment<ChangeMessageVisibility>> = Channel()
     val ignoreChannel: Channel<MessageAcknowledgment<Ignore>> = Channel()
@@ -316,24 +318,29 @@ fun SqsAsyncClient.acknowledgmentMessageFlow(
             .receiveAsFlow()
             .map { it to null }
 
-    upstream
-        .onCompletion {
-            deleteMessageChannel.close()
-            ignoreChannel.close()
-            changeMessageVisibilityChannel.close()
-        }
-        .launchCollect { ack: MessageAcknowledgment<out Acknowledgment> ->
-            @Suppress("UNCHECKED_CAST")
-            val channel = when (ack.acknowledgment) {
-                is ChangeMessageVisibility -> changeMessageVisibilityChannel
-                Delete -> deleteMessageChannel
-                Ignore -> ignoreChannel
-            } as Channel<MessageAcknowledgment<out Acknowledgment>>
+    val coroutine = CoroutineScope(Dispatchers.Default)
 
-            channel.send(ack)
-        }
+    with(coroutine) {
+        upstream
+            .onCompletion {
+                deleteMessageChannel.close()
+                ignoreChannel.close()
+                changeMessageVisibilityChannel.close()
+            }
+            .launchCollect { ack: MessageAcknowledgment<out Acknowledgment> ->
+                @Suppress("UNCHECKED_CAST")
+                val channel = when (ack.acknowledgment) {
+                    is ChangeMessageVisibility -> changeMessageVisibilityChannel
+                    Delete -> deleteMessageChannel
+                    Ignore -> ignoreChannel
+                } as Channel<MessageAcknowledgment<out Acknowledgment>>
+
+                channel.send(ack)
+            }
+    }
 
     merge(deleteFlow, changeVisibilityFlow, ignoreFlow)
+        .onCompletion { coroutine.cancel() }
         .map { (ack, response) -> AcknowledgmentResult(ack.message, ack.acknowledgment, response) }
 }
 
@@ -449,7 +456,7 @@ suspend fun SqsAsyncClient.onMessages(
             groupStrategy = commitConfig.groupStrategy
         ) { url }
 
-    return acknowledgmentFlow.launchCollect()
+    return acknowledgmentFlow.launch()
 }
 
 /**

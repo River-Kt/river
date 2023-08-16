@@ -7,9 +7,12 @@ import co.elastic.clients.elasticsearch.core.SearchRequest
 import co.elastic.clients.elasticsearch.core.search.Hit
 import co.elastic.clients.util.ObjectBuilder
 import com.river.core.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 
+@ExperimentalRiverApi
+@ExperimentalCoroutinesApi
 sealed interface PaginatedSearch {
     fun <T> paginatedSearchFlow(
         client: ElasticsearchAsyncClient,

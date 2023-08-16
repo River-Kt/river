@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 import com.river.connector.rdbms.jdbc.Jdbc
 import com.river.connector.rdbms.jdbc.singleUpdate
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
