@@ -11,6 +11,7 @@ module:connector-elasticsearch
 com.river.connector.elasticsearch
 module:connector-file
 com.river.connector.file
+com.river.connector.file.model
 module:connector-ftp
 com.river.connector.ftp
 com.river.connector.ftp.model

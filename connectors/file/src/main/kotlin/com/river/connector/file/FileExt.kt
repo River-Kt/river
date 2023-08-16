@@ -1,147 +1,151 @@
 package com.river.connector.file
 
 import com.river.core.ExperimentalRiverApi
-import com.river.core.asByteArray
-import com.river.core.poll
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import java.io.InputStream
-import java.io.OutputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
+import com.river.core.alsoTo
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import java.nio.ByteBuffer
 import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
-import kotlin.io.path.inputStream
-import kotlin.io.path.writeBytes
 
-@ExperimentalRiverApi
+/**
+ * Reads the content of the specified [file] into a [Flow] of ByteArrays using the given [bufferSize].
+ *
+ * @param file The file path to be read.
+ * @param bufferSize The size of the buffer to read data chunks into. Defaults to 1024.
+ * @param options The options specifying how the file is opened. Defaults to [StandardOpenOption.READ].
+ *
+ * @return A [Flow] of ByteArrays representing chunks of content from the file.
+ *
+ * Example usage:
+ * ```
+ * val file: Path = ...
+ * val byteArrayFlow = readFileAsFlow(file, 1024)
+ * byteArrayFlow.collect { bytes -> ... }
+ * ```
+ */
+fun readFileAsFlow(
+    file: Path,
+    bufferSize: Int = 1024,
+    vararg options: OpenOption = arrayOf(
+        StandardOpenOption.READ
+    )
+): Flow<ByteArray> = file.readAsFlow(bufferSize, *options)
+
+/**
+ * Writes the content of this [Flow] of ByteArrays to the specified [file].
+ *
+ * @param file The file path to write to.
+ * @param options The options specifying how the file is opened. Defaults to [StandardOpenOption.WRITE] and [StandardOpenOption.CREATE].
+ *
+ * Example usage:
+ * ```
+ * val file: Path = ...
+ * val byteArrayFlow: Flow<ByteArray> = ...
+ * byteArrayFlow.writeTo(file)
+ * ```
+ */
 suspend fun Flow<ByteArray>.writeTo(
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    outputStream: () -> OutputStream,
-) = outputStream().let { os ->
-    withContext(dispatcher) {
-        os.use { collect { os.write(it) } }
-    }
-}
-
-@ExperimentalRiverApi
-fun Path.asFlow(
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    vararg options: OpenOption
-) = inputStream(*options).asFlow(dispatcher)
-
-@ExperimentalRiverApi
-suspend fun Flow<ByteArray>.writeTo(
-    path: Path,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    file: Path,
     vararg options: OpenOption = arrayOf(
         StandardOpenOption.WRITE,
-        StandardOpenOption.CREATE,
-        StandardOpenOption.APPEND
+        StandardOpenOption.CREATE
     )
-) = flowOn(dispatcher).collect { path.writeBytes(it, *options) }
+) = file.writeFrom(this, *options)
 
+/**
+ * Appends the content of this [Flow] of ByteArrays to the specified [file].
+ *
+ * @param file The file path to append to.
+ * @param options The options specifying how the file is opened. Defaults to [StandardOpenOption.WRITE] and [StandardOpenOption.CREATE].
+ *
+ * Example usage:
+ * ```
+ * val file: Path = ...
+ * val byteArrayFlow: Flow<ByteArray> = ...
+ * byteArrayFlow.appendTo(file)
+ * ```
+ */
+suspend fun Flow<ByteArray>.appendTo(
+    file: Path,
+    vararg options: OpenOption = arrayOf(
+        StandardOpenOption.WRITE,
+        StandardOpenOption.CREATE
+    )
+) = file.appendFrom(this, *options)
+
+/**
+ * Transforms the content of this [Flow] of type [T] using the given [mapper] to a [Flow] of ByteArrays,
+ * then writes the ByteArrays to the specified [file] while also returning the original content.
+ *
+ * @param file The file path to write to.
+ * @param options The options specifying how the file is opened. Defaults to [StandardOpenOption.WRITE] and [StandardOpenOption.CREATE].
+ * @param mapper A function to transform items of type [T] to [ByteArray].
+ *
+ * @return A [Flow] of type [T] representing the original content.
+ *
+ * Example usage:
+ * ```
+ * val file: Path = ...
+ * val stringFlow: Flow<String> = ...
+ * stringFlow
+ *     .alsoWriteTo(file) { string -> string.toByteArray() }
+ *     .collect { originalString -> ... }
+ * ```
+ */
 @ExperimentalRiverApi
-fun Flow<ByteArray>.zipFile(
-    entryName: String,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): Flow<ByteArray> = channelFlow {
-    PipedOutputStream().let { os ->
-        val zipChannel = Channel<ByteArray>()
+suspend fun <T> Flow<T>.alsoWriteTo(
+    file: Path,
+    vararg options: OpenOption = arrayOf(
+        StandardOpenOption.WRITE,
+        StandardOpenOption.CREATE
+    ),
+    mapper: suspend (T) -> ByteArray
+): Flow<T> =
+    alsoTo {
+        val channel = file.asyncChannel(*options)
+        var location = 0L
 
-        val pis = PipedInputStream().also { it.connect(os) }
-        val zipOS = ZipOutputStream(os)
+        map(mapper)
+            .onEach { channel.coWrite(ByteBuffer.wrap(it), location) }
+            .onEach { location += it.size }
+    }.map { it.first }
 
-        val entry = ZipEntry(entryName)
-        zipOS.putNextEntry(entry)
-
-        zipChannel
-            .consumeAsFlow()
-            .flowOn(dispatcher)
-            .onEach { zipOS.write(it)  }
-            .launchIn(this)
-
-        flowOn(dispatcher)
-            .onCompletion {
-                zipChannel.close()
-                zipOS.closeEntry()
-                zipOS.close()
-            }
-            .onEach { zipChannel.send(it) }
-            .launchIn(this)
-
-        pis.asFlow().collect { send(it) }
-    }
-}.flowOn(dispatcher)
-
+/**
+ * Transforms the content of this [Flow] of type [T] using the given [mapper] to a [Flow] of ByteArrays,
+ * then appends the ByteArrays to the specified [file] while also returning the original content.
+ *
+ * @param file The file path to append to.
+ * @param options The options specifying how the file is opened. Defaults to [StandardOpenOption.WRITE] and [StandardOpenOption.CREATE].
+ * @param mapper A function to transform items of type [T] to [ByteArray].
+ *
+ * @return A [Flow] of type [T] representing the original content.
+ *
+ * Example usage:
+ * ```
+ * val file: Path = ...
+ * val stringFlow: Flow<String> = ...
+ * stringFlow
+ *     .alsoAppendTo(file) { string -> string.toByteArray() }
+ *     .collect { originalString -> ... }
+ * ```
+ */
 @ExperimentalRiverApi
-suspend fun Flow<ByteArray>.asInputStream(
-    bufferSize: Int = 1024,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
-): InputStream = withContext(dispatcher) {
-    val os = PipedOutputStream()
-    val inputStream = PipedInputStream(bufferSize).also { it.connect(os) }
+suspend fun <T> Flow<T>.alsoAppendTo(
+    file: Path,
+    vararg options: OpenOption = arrayOf(
+        StandardOpenOption.WRITE,
+        StandardOpenOption.CREATE
+    ),
+    mapper: suspend (T) -> ByteArray
+): Flow<T> =
+    alsoTo {
+        val channel = file.asyncChannel(*options)
+        var location = channel.size()
 
-    onCompletion { os.close() }
-        .onEach { os.write(it) }
-        .launchIn(this)
-
-    inputStream
-}
-
-@ExperimentalRiverApi
-fun InputStream.asFlow(
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
-): Flow<ByteArray> =
-    flow {
-        use {
-            poll(stopOnEmptyList = true) { readNBytes(8).toList() }
-                .asByteArray()
-                .collect { emit(it) }
-        }
-    }.flowOn(dispatcher)
-
-@ExperimentalRiverApi
-class ContentfulZipEntry(entry: ZipEntry, val data: ByteArray) : ZipEntry(entry)
-
-@ExperimentalRiverApi
-fun Flow<ByteArray>.unzipFile(
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
-): Flow<ContentfulZipEntry> = channelFlow {
-    coroutineScope {
-        val os = PipedOutputStream()
-        val pis = PipedInputStream().also { it.connect(os) }
-
-        val zipChannel = Channel<ByteArray>()
-        val zipIS = ZipInputStream(pis)
-
-        val readJob = launch {
-            while (isActive) {
-                zipIS.nextEntry?.also { entry ->
-                    send(ContentfulZipEntry(entry, zipIS.readBytes()))
-                }
-            }
-        }
-
-        val writeJob =
-            zipChannel
-                .consumeAsFlow()
-                .flowOn(dispatcher)
-                .onEach { os.write(it) }
-                .launchIn(this)
-
-        flowOn(dispatcher).collect { zipChannel.send(it) }
-
-        zipChannel.close()
-        writeJob.cancelAndJoin()
-        readJob.cancelAndJoin()
-        os.close()
-        zipIS.close()
-        pis.close()
-    }
-}.flowOn(dispatcher)
+        map(mapper)
+            .onEach { channel.coWrite(ByteBuffer.wrap(it), location) }
+            .onEach { location += it.size }
+    }.map { it.first }

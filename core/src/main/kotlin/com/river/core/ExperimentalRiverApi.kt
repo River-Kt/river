@@ -17,5 +17,10 @@ import kotlin.annotation.AnnotationTarget.*
     PROPERTY_SETTER,
     TYPEALIAS
 )
-@RequiresOptIn(level = RequiresOptIn.Level.WARNING)
+@RequiresOptIn(
+    level = RequiresOptIn.Level.WARNING,
+    message = "This operation is being evaluated and may not exist in the future. " +
+            "You can provide feedback about the operation directly via GitHub issues. " +
+            "By doing so, the more likely the operation will be improved or marked as stable."
+)
 annotation class ExperimentalRiverApi
