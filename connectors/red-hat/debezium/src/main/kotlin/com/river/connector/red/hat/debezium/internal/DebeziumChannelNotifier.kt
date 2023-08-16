@@ -4,11 +4,13 @@ import com.river.connector.red.hat.debezium.model.CommittableOffset
 import com.river.connector.red.hat.debezium.model.CommittableRecord
 import io.debezium.engine.DebeziumEngine
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 
+@ExperimentalCoroutinesApi
 internal class DebeziumChannelNotifier<R>(
     private val recordChannel: SendChannel<CommittableRecord<R>>
 ) : DebeziumEngine.ChangeConsumer<R> {

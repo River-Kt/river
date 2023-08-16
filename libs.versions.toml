@@ -1,10 +1,9 @@
 [versions]
 kotlin = "1.8.20"
 aws-sdk = "2.20.86"
-coroutines = "1.7.1"
+coroutines = "1.7.3"
 slf4j = "1.7.36"
 commons-net = "3.8.0"
-twilio = "9.1.2"
 jackson = "2.15.2"
 elasticsearch = "8.5.1"
 rabbitmq = "5.16.0"
@@ -14,7 +13,7 @@ r2dbc = "1.0.0.RELEASE"
 azure = "12.6.0"
 postgresql-jdbc = "42.6.0"
 mysql-jdbc = "8.0.33"
-debezium = "2.2.1.Final"
+debezium = "2.3.2.Final"
 mongodb = "4.9.1"
 apache-ftpserver = "1.2.0"
 mock-ftpserver = "2.7.1"
@@ -25,7 +24,6 @@ kotest-wiremock = "2.0.0"
 ktor = "2.3.0"
 java-jwt = "4.4.0"
 redisson = "3.22.1"
-lettuce = "6.2.4.RELEASE"
 reactor-kafka = "1.3.19"
 reactor-kotlin = "1.2.2"
 logback = "1.4.8"
@@ -68,8 +66,6 @@ azure-queue-storage = { module = "com.azure:azure-storage-queue", version.ref = 
 
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
-
-twilio = { module = "com.twilio.sdk:twilio", version.ref = "twilio" }
 
 jackson = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 
