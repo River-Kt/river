@@ -51,7 +51,7 @@ fun <T> Flow<T>.throttle(
  *      }
  * ```
  */
-fun <T> Flow<T>.throttle(
+fun <T, P> Flow<T>.throttle(
     strategy: ThrottleStrategy = ThrottleStrategy.Suspend,
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>
 ): Flow<T> = ThrottleFlow(semaphore, strategy, this)

@@ -115,7 +115,7 @@ class SqsFlowExtKtTest : FeatureSpec({
                             receiveRequest { waitTimeSeconds = 0 }
                         }
                     ) {
-                        it.acknowledgeWith(Acknowledgment.Delete)
+                        Acknowledgment.Delete
                     }
 
                 consumerJob.join()

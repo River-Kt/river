@@ -17,10 +17,10 @@ import kotlinx.coroutines.future.await as coAwait
 @ExperimentalCoroutinesApi
 internal class RedisAsyncSemaphore(
     override val totalPermits: Int,
-    val scope: CoroutineScope,
-    val leaseTime: Duration,
+    private val scope: CoroutineScope,
+    private val leaseTime: Duration,
     private val rSemaphore: RPermitExpirableSemaphore
-) : AsyncSemaphore {
+) : AsyncSemaphore<String> {
     private val mutex = Mutex()
     private val acquired: MutableMap<String, Job> = mutableMapOf()
 

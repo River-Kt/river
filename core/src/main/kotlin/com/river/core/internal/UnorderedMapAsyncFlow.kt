@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 
-internal class UnorderedMapAsyncFlow<T, R>(
+internal class UnorderedMapAsyncFlow<T, R, P>(
     private val upstream: Flow<T>,
-    private val semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+    private val semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     private val transform: suspend (T) -> R
 ) : Flow<R> {
     override suspend fun collect(collector: FlowCollector<R>) =

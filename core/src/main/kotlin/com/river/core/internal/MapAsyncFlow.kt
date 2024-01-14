@@ -7,16 +7,16 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 
-internal class MapAsyncFlow<T, R>(
+internal class MapAsyncFlow<T, R, P>(
     private val upstream: Flow<T>,
-    private val semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+    private val semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     private val transform: suspend (T) -> R
 ) : Flow<R> {
     override suspend fun collect(collector: FlowCollector<R>) {
         coroutineScope {
             val semaphore = semaphore()
 
-            val channel: Flow<Deferred<Pair<String, R>>> =
+            val channel: Flow<Deferred<Pair<P, R>>> =
                 flow {
                     upstream
                         .collect {

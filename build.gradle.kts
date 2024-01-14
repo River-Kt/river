@@ -27,7 +27,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha11"
+    version = "1.0.0-alpha12"
 
     group = "com.river-kt"
 
@@ -192,6 +192,7 @@ subprojects {
     dependencies {
         api(rootProject.libs.coroutines)
         testImplementation(rootProject.libs.kotest.junit5)
+        testImplementation(rootProject.libs.turbine)
     }
 }
 

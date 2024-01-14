@@ -26,7 +26,7 @@ fun RedissonClient.semaphore(
     name: String,
     concurrencyLevel: Int,
     leaseTime: Duration = 10.seconds
-): suspend CoroutineScope.() -> AsyncSemaphore = {
+): suspend CoroutineScope.() -> AsyncSemaphore<String> = {
     val semaphore = getPermitExpirableSemaphore(name)
     semaphore.setPermitsAsync(concurrencyLevel).coAwait()
     RedisAsyncSemaphore(concurrencyLevel, this, leaseTime, semaphore)

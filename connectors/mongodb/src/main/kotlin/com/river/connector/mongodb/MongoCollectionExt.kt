@@ -32,7 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *  collection.insert(documentsFlow).collect { result -> println("Document inserted: ${result.insertedId}") }
  * ```
  */
-fun <T> MongoCollection<T>.insert(
+fun <T : Any> MongoCollection<T>.insert(
     flow: Flow<T>,
     concurrency: Int = 1,
 ): Flow<InsertOneResult> =
@@ -139,7 +139,7 @@ fun MongoCollection<Document>.updateMany(
  *  collection.replace(replacementsFlow, filter).collect { result -> println("Documents replaced: ${result.modifiedCount}") }
  * ```
  */
-fun <T> MongoCollection<T>.replace(
+fun <T : Any> MongoCollection<T>.replace(
     flow: Flow<T>,
     filter: Bson,
     concurrency: Int = 1,
@@ -162,7 +162,7 @@ fun <T> MongoCollection<T>.replace(
  *  collection.replace(replacementsFlow).collect { result -> println("Documents replaced: ${result.modifiedCount}") }
  * ```
  */
-fun <T> MongoCollection<T>.replace(
+fun <T : Any> MongoCollection<T>.replace(
     flow: Flow<Pair<Bson, T>>,
     concurrency: Int = 1,
 ): Flow<UpdateResult> =

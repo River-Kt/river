@@ -52,8 +52,8 @@ fun <T, R> Flow<T>.mapAsync(
  *
  * @return A new flow with the transformed items.
  */
-fun <T, R> Flow<T>.mapAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, R, P> Flow<T>.mapAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     transform: suspend (T) -> R
 ): Flow<R> = MapAsyncFlow(
     upstream = this,
@@ -107,8 +107,8 @@ fun <T, R> Flow<T>.unorderedMapAsync(
  *
  * @return A new flow with the transformed items.
  */
-fun <T, R> Flow<T>.unorderedMapAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, R, P> Flow<T>.unorderedMapAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     transform: suspend (T) -> R
 ): Flow<R> = UnorderedMapAsyncFlow(
     upstream = this,
@@ -163,8 +163,8 @@ fun <T, R> Flow<T>.flatMapIterableAsync(
  *
  * @return A new flow with the transformed and flattened items.
  */
-fun <T, R> Flow<T>.flatMapIterableAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, R, P> Flow<T>.flatMapIterableAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     transform: suspend (T) -> Iterable<R>
 ): Flow<R> = mapAsync(semaphore, transform).flattenIterable()
 
@@ -215,8 +215,8 @@ fun <T, R> Flow<T>.unorderedFlatMapIterableAsync(
  *
  * @return A new flow with the transformed and flattened items.
  */
-fun <T, R> Flow<T>.unorderedFlatMapIterableAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, R, P> Flow<T>.unorderedFlatMapIterableAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     transform: suspend (T) -> Iterable<R>
 ): Flow<R> = unorderedMapAsync(semaphore, transform).flattenIterable()
 
@@ -266,8 +266,8 @@ fun <T> Flow<T>.onEachAsync(
  *
  * @return The same flow with the side-effecting [block] applied to each item.
  */
-fun <T> Flow<T>.onEachAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, P> Flow<T>.onEachAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     block: suspend (T) -> Unit
 ): Flow<T> = mapAsync(semaphore) { it.also { block(it) } }
 
@@ -317,8 +317,8 @@ fun <T> Flow<T>.unorderedOnEachAsync(
  *
  * @return A new flow with the same elements, side-effecting [block] applied to each item, possibly unordered.
  */
-fun <T> Flow<T>.unorderedOnEachAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+fun <T, P> Flow<T>.unorderedOnEachAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     block: suspend (T) -> Unit
 ): Flow<T> = unorderedMapAsync(semaphore) { it.also { block(it) } }
 
@@ -357,7 +357,7 @@ suspend fun <T> Flow<T>.collectAsync(
  * @param semaphore The suspending function that creates an [AsyncSemaphore].
  * @param block The transformation function to apply to each item.
  */
-suspend fun <T> Flow<T>.collectAsync(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+suspend fun <T, P> Flow<T>.collectAsync(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     block: suspend (T) -> Unit
 ): Unit = onEachAsync(semaphore, block).collect()

@@ -499,7 +499,7 @@ fun SqsAsyncClient.onMessage(
     receiveConfiguration: ReceiveConfiguration.() -> Unit = {},
     commitConfiguration: CommitConfiguration.() -> Unit = {},
     onError: OnError = OnError.Retry(250.milliseconds),
-    onMessage: suspend (Message) -> MessageAcknowledgment<Acknowledgment>
+    onMessage: suspend (Message) -> Acknowledgment
 ): Job = onMessages(
     queueName = queueName,
     concurrency = concurrency,
@@ -507,4 +507,4 @@ fun SqsAsyncClient.onMessage(
     receiveConfiguration = receiveConfiguration,
     commitConfiguration = commitConfiguration,
     onError = onError
-) { messages -> messages.map { onMessage(it) } }
+) { messages -> messages.map { MessageAcknowledgment(it, onMessage(it)) } }

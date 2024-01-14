@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 
-internal class ThrottleFlow<T>(
-    semaphore: suspend CoroutineScope.() -> AsyncSemaphore,
+internal class ThrottleFlow<T, P>(
+    semaphore: suspend CoroutineScope.() -> AsyncSemaphore<P>,
     strategy: ThrottleStrategy = ThrottleStrategy.Suspend,
     upstream: Flow<T>
 ) : Flow<T> {

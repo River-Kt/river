@@ -1,11 +1,12 @@
 package com.river.connector.aws.s3
 
-import com.river.core.*
 import com.river.core.GroupStrategy.Count
+import com.river.core.asByteArray
+import com.river.core.asBytes
+import com.river.core.intersperse
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
@@ -111,12 +112,8 @@ class S3AsyncClientExtTest : FeatureSpec({
             count shouldBe 2104969
         }
 
-        // Localstack seems to not like selectObjectContent very much,
-        // the following example should return the first item, but it doesn't.
-        // I tested directly against AWS S3, and, it works just fine, so I assume it's probably a Localstack bug.
-        // Also, Localstack prints the following error to the console:
-        // ProtocolSerializerError: Expected iterator for streaming event serialization.
-        scenario("Querying data using selectObjectContent") {
+        // This is a pro Localstack feature. Disabled for now
+        xscenario("Querying data using selectObjectContent") {
             val items = 100
 
             s3Client

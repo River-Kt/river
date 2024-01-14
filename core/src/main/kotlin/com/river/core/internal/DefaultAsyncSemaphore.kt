@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
-import java.util.*
 import kotlin.time.Duration
 
 /**
@@ -19,62 +18,86 @@ internal class DefaultAsyncSemaphore(
     private val scope: CoroutineScope,
     override val totalPermits: Int,
     private val leaseTime: Duration? = null,
-) : AsyncSemaphore {
+) : AsyncSemaphore<Int> {
     private val mutex = Mutex()
-    private val acquired: MutableMap<String, Job?> = mutableMapOf()
     private val internal = Semaphore(totalPermits)
+
+    private val permits: Array<SimplePermit> =
+        (0 until totalPermits)
+            .map { SimplePermit(it, SimplePermit.State.Available) }
+            .toTypedArray()
+
+    private val available
+        get() = permits.filter { it.state is SimplePermit.State.Available }
+
+    private val nextAvailable
+        get() = available.first()
+
+    class SimplePermit(
+        val id: Int,
+        var state: State
+    ) {
+        sealed interface State {
+            class Acquired(val timeout: Job?): State
+            object Available : State
+        }
+    }
 
     override suspend fun available(): Int =
         internal.availablePermits
 
-    override suspend fun acquire(): String {
+    override suspend fun acquire(): Int {
         internal.acquire()
-        val id = random
+        val permit = nextAvailable
 
-        acquired[id] = leaseTime?.let {
+        permit.state = SimplePermit.State.Acquired(leaseTime?.let {
             mutex.withLock {
                 scope.launch {
                     delay(leaseTime)
-                    release(id)
+                    release(permit.id)
                 }
             }
-        }
+        })
 
-        return id
+        return permit.id
     }
 
-    override suspend fun tryAcquire(): String? {
+    override suspend fun tryAcquire(): Int? {
         if (!internal.tryAcquire()) {
             return null
         }
 
-        val id = random
+        val permit = nextAvailable
 
-        acquired[id] = leaseTime?.let {
+        permit.state = SimplePermit.State.Acquired(leaseTime?.let {
             mutex.withLock {
                 scope.launch {
                     delay(leaseTime)
-                    release(id)
+                    release(permit.id)
                 }
             }
-        }
+        })
 
-        return id
+        return permit.id
     }
 
-    override suspend fun release(permit: String) {
+    override suspend fun release(permit: Int) {
         mutex.withLock {
-            if (acquired.containsKey(permit)) {
-                acquired[permit]?.cancel()
-                internal.release()
-                acquired.remove(permit)
+            val p = permits[permit]
+
+            when (val state = p.state) {
+                is SimplePermit.State.Acquired -> {
+                    state.timeout?.cancel()
+                    permits[permit].state = SimplePermit.State.Available
+                    internal.release()
+                }
+
+                SimplePermit.State.Available -> {
+                }
             }
         }
     }
 
     override suspend fun releaseAll() =
-        acquired.forEach { (key, _) -> release(key) }
-
-    private val random: String
-        get() = UUID.randomUUID().toString()
+       permits.forEach { release(it.id) }
 }
