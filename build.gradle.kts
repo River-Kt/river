@@ -196,34 +196,34 @@ subprojects {
                     }
                 }
 
-                withXml {
-                    asNode().appendNode("dependencies").apply {
-                        val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
-
-                        for (dependency in dependencies) {
-                            appendNode("dependency").apply {
-                                appendNode("groupId", dependency.group)
-                                appendNode("artifactId", dependency.name)
-                                appendNode("version", dependency.version)
-
-                                val excludeRules =
-                                    if (dependency is ModuleDependency) dependency.excludeRules
-                                    else emptySet()
-
-                                if (excludeRules.isNotEmpty()) {
-                                    appendNode("exclusions").apply {
-                                        appendNode("exclusion").apply {
-                                            excludeRules.forEach { excludeRule ->
-                                                appendNode("groupId", excludeRule.group)
-                                                appendNode("artifactId", excludeRule.module)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+//                withXml {
+//                    asNode().appendNode("dependencies").apply {
+//                        val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
+//
+//                        for (dependency in dependencies) {
+//                            appendNode("dependency").apply {
+//                                appendNode("groupId", dependency.group)
+//                                appendNode("artifactId", dependency.name)
+//                                appendNode("version", dependency.version)
+//
+//                                val excludeRules =
+//                                    if (dependency is ModuleDependency) dependency.excludeRules
+//                                    else emptySet()
+//
+//                                if (excludeRules.isNotEmpty()) {
+//                                    appendNode("exclusions").apply {
+//                                        appendNode("exclusion").apply {
+//                                            excludeRules.forEach { excludeRule ->
+//                                                appendNode("groupId", excludeRule.group)
+//                                                appendNode("artifactId", excludeRule.module)
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -242,6 +242,50 @@ subprojects {
 
     val signAllPublications by tasks.registering {
         dependsOn(tasks.withType<Sign>())
+    }
+
+    val publishWindowsArtifacts by tasks.registering {
+        dependsOn(
+            tasks
+                .withType<PublishToMavenRepository>()
+                .filter { it.name.contains("mingw", ignoreCase = true) }
+        )
+    }
+
+    val publishOSXArtifacts by tasks.registering {
+        val appleOs = listOf("ios", "macos", "watchos", "tvos")
+
+        dependsOn(
+            tasks
+                .withType<PublishToMavenRepository>()
+                .filter { p ->
+                    appleOs.any { p.name.contains(it, ignoreCase = true) }
+                }
+        )
+    }
+
+    val publishJvmArtifacts by tasks.registering {
+        dependsOn(
+            tasks
+                .withType<PublishToMavenRepository>()
+                .filter { it.name.contains("jvm", ignoreCase = true) }
+        )
+    }
+
+    val publishLinuxArtifacts by tasks.registering {
+        dependsOn(
+            tasks
+                .withType<PublishToMavenRepository>()
+                .filter { it.name.contains("linux", ignoreCase = true) }
+        )
+    }
+
+    val publishJsArtifacts by tasks.registering {
+        dependsOn(
+            tasks
+                .withType<PublishToMavenRepository>()
+                .filter { it.name.contains("js", ignoreCase = true) }
+        )
     }
 
     signing {
