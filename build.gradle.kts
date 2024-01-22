@@ -156,70 +156,66 @@ subprojects {
             }
         }
 
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = "com.river-kt"
-                artifactId = project.name
-                version = "${project.version}"
+        publications.forEach { publication ->
+            if (publication !is MavenPublication) {
+                return@forEach
+            }
 
-//                artifact(tasks["jvmJar"])
+            publication.artifact(tasks["sourcesJar"]) {
+                classifier = "sources"
+            }
 
-                artifact(tasks["sourcesJar"]) {
-                    classifier = "sources"
+            publication.artifact(tasks["javadocJar"]) {
+                classifier = "javadoc"
+            }
+
+            publication.pom {
+                name.set(project.name)
+                description.set("Extensions & Enterprise Integrations for Kotlin flows.")
+
+                url.set("https://river-kt.com")
+
+                scm {
+                    connection.set("scm:git:git:github.com/River-Kt/river.git")
+                    developerConnection.set("scm:git:ssh://github.com/River-Kt/river.git")
+                    url.set("https://github.com/River-Kt/river")
                 }
 
-                artifact(tasks["javadocJar"]) {
-                    classifier = "javadoc"
+                licenses {
+                    license {
+                        name.set("The MIT License")
+                        url.set("https://opensource.org/license/mit/")
+                    }
                 }
 
-                pom {
-                    name.set(project.name)
-                    description.set("Extensions & Enterprise Integrations for Kotlin flows.")
-
-                    url.set("https://river-kt.com")
-
-                    scm {
-                        connection.set("scm:git:git:github.com/River-Kt/river.git")
-                        developerConnection.set("scm:git:ssh://github.com/River-Kt/river.git")
-                        url.set("https://github.com/River-Kt/river")
+                developers {
+                    developer {
+                        id.set("gabfssilva")
+                        name.set("Gabriel Francisco")
+                        email.set("gabfssilva@gmail.com")
                     }
+                }
 
-                    licenses {
-                        license {
-                            name.set("The MIT License")
-                            url.set("https://opensource.org/license/mit/")
-                        }
-                    }
+                withXml {
+                    asNode().appendNode("dependencies").apply {
+                        val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
 
-                    developers {
-                        developer {
-                            id.set("gabfssilva")
-                            name.set("Gabriel Francisco")
-                            email.set("gabfssilva@gmail.com")
-                        }
-                    }
+                        for (dependency in dependencies) {
+                            appendNode("dependency").apply {
+                                appendNode("groupId", dependency.group)
+                                appendNode("artifactId", dependency.name)
+                                appendNode("version", dependency.version)
 
-                    withXml {
-                        asNode().appendNode("dependencies").apply {
-                            val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
+                                val excludeRules =
+                                    if (dependency is ModuleDependency) dependency.excludeRules
+                                    else emptySet()
 
-                            for (dependency in dependencies) {
-                                appendNode("dependency").apply {
-                                    appendNode("groupId", dependency.group)
-                                    appendNode("artifactId", dependency.name)
-                                    appendNode("version", dependency.version)
-
-                                    val excludeRules =
-                                        if (dependency is ModuleDependency) dependency.excludeRules
-                                        else emptySet()
-
-                                    if (excludeRules.isNotEmpty()) {
-                                        appendNode("exclusions").apply {
-                                            appendNode("exclusion").apply {
-                                                excludeRules.forEach { excludeRule ->
-                                                    appendNode("groupId", excludeRule.group)
-                                                    appendNode("artifactId", excludeRule.module)
-                                                }
+                                if (excludeRules.isNotEmpty()) {
+                                    appendNode("exclusions").apply {
+                                        appendNode("exclusion").apply {
+                                            excludeRules.forEach { excludeRule ->
+                                                appendNode("groupId", excludeRule.group)
+                                                appendNode("artifactId", excludeRule.module)
                                             }
                                         }
                                     }
@@ -246,9 +242,7 @@ subprojects {
 
     signing {
         useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
-
-        sign(publishing.publications["maven"])
-        sign(tasks["javadocJar"])
+        sign(publishing.publications)
     }
 
     tasks.withType<PublishToMavenRepository>().configureEach {
