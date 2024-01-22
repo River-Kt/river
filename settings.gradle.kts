@@ -18,7 +18,7 @@ rootProject.name = "river"
 
 include(
     "core",
-    "connectors",
+//    "connectors",
     "connectors:aws",
     "connectors:amqp",
     "connectors:apache:kafka",

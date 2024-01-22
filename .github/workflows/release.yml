@@ -35,7 +35,7 @@ jobs:
       - name: Assembly
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: jar sourcesJar javadocJar --parallel --stacktrace
+          arguments: assemble sourcesJar javadocJar --parallel --stacktrace
 
       - name: Sign & publish to Maven Central
         uses: gradle/gradle-build-action@v2
@@ -46,4 +46,4 @@ jobs:
           RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
           RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
         with:
-          arguments: jar sourcesJar javadocJar signMavenPublication signJavadocJar publish --stacktrace
+          arguments: assemble sourcesJar javadocJar signMavenPublication signJavadocJar publish --stacktrace

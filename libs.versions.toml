@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.22"
-dokka = "1.8.20"
+dokka = "1.9.10"
 aws-sdk = "2.23.2"
 coroutines = "1.7.3"
 slf4j = "1.7.36"

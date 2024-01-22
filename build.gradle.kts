@@ -137,6 +137,13 @@ subprojects {
         }
     }
 
+    val javadocJar by tasks.registering(Jar::class) {
+        archiveClassifier.set("javadoc")
+        from(tasks.dokkaHtml)
+        dependsOn("dokkaHtml")
+        skipExamples()
+    }
+
     publishing {
         repositories {
             maven {
@@ -155,15 +162,15 @@ subprojects {
                 artifactId = project.name
                 version = "${project.version}"
 
-//                artifact(tasks["jar"])
-//
-//                artifact(tasks["sourcesJar"]) {
-//                    classifier = "sources"
-//                }
-//
-//                artifact(tasks["javadocJar"]) {
-//                    classifier = "javadoc"
-//                }
+//                artifact(tasks["jvmJar"])
+
+                artifact(tasks["sourcesJar"]) {
+                    classifier = "sources"
+                }
+
+                artifact(tasks["javadocJar"]) {
+                    classifier = "javadoc"
+                }
 
                 pom {
                     name.set(project.name)
@@ -241,7 +248,7 @@ subprojects {
         useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
 
         sign(publishing.publications["maven"])
-//        sign(tasks["javadocJar"])
+        sign(tasks["javadocJar"])
     }
 
     tasks.withType<PublishToMavenRepository>().configureEach {
