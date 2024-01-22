@@ -46,4 +46,4 @@ jobs:
           RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
           RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
         with:
-          arguments: assemble sourcesJar javadocJar signMavenPublication signJavadocJar publish --stacktrace
+          arguments: assemble sourcesJar javadocJar signAllPublications publish --stacktrace

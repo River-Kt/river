@@ -240,6 +240,10 @@ subprojects {
         }
     }
 
+    val signAllPublications by tasks.registering {
+        dependsOn(tasks.withType<Sign>())
+    }
+
     signing {
         useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
         sign(publishing.publications)
