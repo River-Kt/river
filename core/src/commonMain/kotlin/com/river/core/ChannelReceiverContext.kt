@@ -3,6 +3,7 @@ package com.river.core
 import com.river.core.internal.InternalChannelReceiverContext
 
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration
 
 /**
@@ -35,6 +36,14 @@ interface ChannelReceiverContext<E> {
      * @return The next item from the channel.
      */
     suspend fun next(): E
+
+    /**
+     * Awaits for the next item from the channel, or null if the timeout is reached.
+     *
+     * @return The next item from the channel, or null.
+     */
+    suspend fun next(timeout: Duration): E? =
+        withTimeoutOrNull(timeout) { next() }
 
     /**
      * Awaits for the next N items from the channel. This method will suspend indefinitely until N items are received.

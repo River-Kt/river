@@ -1,17 +1,27 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.android.build.gradle.LibraryExtension as AndroidExtension
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android) apply false
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotest.multiplatform)
     alias(libs.plugins.dokka)
     alias(libs.plugins.nexus.publish) apply false
+    alias(libs.plugins.setup.android.sdk)
 
     `maven-publish`
     signing
-    `java-library`
 }
+
+group = "com.river-kt"
 
 repositories {
     mavenCentral()
+    google()
 }
 
 tasks.dokkaHtmlMultiModule.configure {
@@ -20,24 +30,90 @@ tasks.dokkaHtmlMultiModule.configure {
     moduleName.set(project.name)
 }
 
+kotlin {
+    jvm {
+        withSourcesJar(false)
+    }
+}
+
+setupAndroidSdk {
+    sdkToolsVersion("11076708_latest")
+}
+
 subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.multiplatform")
+    apply(plugin = "io.kotest.multiplatform")
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
-    apply(plugin = "java-library")
     apply(plugin = "signing")
 
-    version = "1.0.0-alpha12"
-
+    version = "1.0.0-alpha13"
     group = "com.river-kt"
 
-    java {
-        withJavadocJar()
-        withSourcesJar()
+    kotlin {
+        jvmToolchain(17)
+
+        compilerOptions {
+            freeCompilerArgs = listOf("-Xcontext-receivers")
+        }
+
+        jvm().compilations.all {
+            compilerOptions.configure {
+                jvmTarget.set(JvmTarget.JVM_17)
+                freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
+            }
+        }
+
+        sourceSets {
+            val commonMain by getting {
+                dependencies {
+                    api(rootProject.libs.coroutines)
+                    api(rootProject.libs.kotlinx.datetime)
+                }
+            }
+
+            val commonTest by getting {
+                dependencies {
+                    api(rootProject.libs.kotest.assertions.core)
+                    api(rootProject.libs.kotest.engine)
+                    api(rootProject.libs.turbine)
+                    api(rootProject.libs.kotlin.reflect)
+                }
+
+                languageSettings {
+                    optIn("com.river.core.ExperimentalRiverApi")
+                    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                }
+            }
+
+            val jvmTest by getting {
+                dependencies {
+                    api(rootProject.libs.kotest.junit5)
+                }
+            }
+
+            afterEvaluate {
+                if (androidEnabled()) {
+                    val androidUnitTest by getting {
+                        dependencies {
+                            implementation(rootProject.libs.kotest.junit5)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pluginManager.withPlugin("com.android.library") {
+        extensions.configure<AndroidExtension> {
+            namespace = "com.river"
+            compileSdk = 30
+        }
     }
 
     repositories {
         mavenCentral()
+        google()
     }
 
     tasks.withType<Test>().configureEach {
@@ -79,15 +155,15 @@ subprojects {
                 artifactId = project.name
                 version = "${project.version}"
 
-                artifact(tasks["jar"])
-
-                artifact(tasks["sourcesJar"]) {
-                    classifier = "sources"
-                }
-
-                artifact(tasks["javadocJar"]) {
-                    classifier = "javadoc"
-                }
+//                artifact(tasks["jar"])
+//
+//                artifact(tasks["sourcesJar"]) {
+//                    classifier = "sources"
+//                }
+//
+//                artifact(tasks["javadocJar"]) {
+//                    classifier = "javadoc"
+//                }
 
                 pom {
                     name.set(project.name)
@@ -118,7 +194,9 @@ subprojects {
 
                     withXml {
                         asNode().appendNode("dependencies").apply {
-                            for (dependency in configurations["api"].dependencies) {
+                            val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
+
+                            for (dependency in dependencies) {
                                 appendNode("dependency").apply {
                                     appendNode("groupId", dependency.group)
                                     appendNode("artifactId", dependency.name)
@@ -163,7 +241,7 @@ subprojects {
         useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
 
         sign(publishing.publications["maven"])
-        sign(tasks["javadocJar"])
+//        sign(tasks["javadocJar"])
     }
 
     tasks.withType<PublishToMavenRepository>().configureEach {
@@ -183,19 +261,15 @@ subprojects {
         )
     }
 
-    tasks.javadoc {
-        if (JavaVersion.current().isJava9Compatible) {
-            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
-        }
-    }
-
-    dependencies {
-        api(rootProject.libs.coroutines)
-        testImplementation(rootProject.libs.kotest.junit5)
-        testImplementation(rootProject.libs.turbine)
-    }
+//    tasks.javadoc {
+//        if (JavaVersion.current().isJava9Compatible) {
+//            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+//        }
+//    }
 }
 
 fun Task.skipExamples() {
     onlyIf { !project.path.contains("examples") }
 }
+
+fun Project.androidEnabled() = pluginManager.hasPlugin("com.android.library")

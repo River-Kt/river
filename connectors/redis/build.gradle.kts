@@ -1,3 +1,9 @@
-dependencies {
-    api(libs.redisson)
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(libs.redisson)
+            }
+        }
+    }
 }

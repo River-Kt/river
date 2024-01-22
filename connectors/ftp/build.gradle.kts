@@ -1,6 +1,18 @@
-dependencies {
-    api(project.modules.file)
-    api(libs.commons.net)
+kotlin {
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                val modules = modules { project(it) }
 
-    testImplementation(libs.mock.ftpserver)
+                api(modules.file)
+                api(libs.commons.net)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                api(libs.mock.ftpserver)
+            }
+        }
+    }
 }

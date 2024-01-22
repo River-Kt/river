@@ -1,9 +1,16 @@
-dependencies {
-    // core is inherited
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                // core is inherited
+                val modules = modules { project(it) }
 
-    implementation(project.modules.http)
-    implementation(project.modules.sqs)
+                implementation(modules.http)
+                implementation(modules.sqs)
 
-    implementation(libs.wiremock)
-    implementation(libs.kotlin.wiremock)
+                implementation(libs.wiremock)
+                implementation(libs.kotlin.wiremock)
+            }
+        }
+    }
 }

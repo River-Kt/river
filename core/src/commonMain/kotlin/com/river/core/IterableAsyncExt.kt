@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.toList
  */
 @ExperimentalRiverApi
 infix fun <T> List<CompletableDeferred<T>>.completeAll(values: List<T>): Boolean =
-    assert(size == values.size) { "Promises & values sizes must match" }
+    check(size == values.size) { "Promises & values sizes must match" }
         .let {
             (this zip values)
                 .map { (promise, value) -> promise.complete(value) }

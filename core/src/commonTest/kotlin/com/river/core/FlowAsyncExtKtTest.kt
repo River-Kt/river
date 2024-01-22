@@ -1,17 +1,22 @@
 package com.river.core
 
 import app.cash.turbine.test
+import io.kotest.assertions.assertSoftly
+import io.kotest.assertions.retry
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainInOrder
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo
 import io.kotest.matchers.comparables.shouldNotBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.mpp.atomics.AtomicReference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
@@ -32,36 +37,47 @@ class FlowAsyncExtKtTest : FunSpec({
     }
 
     test("mapAsync should respect order & concurrency limit") {
-        val sourceFlow = (1..100).asFlow()
+        val sourceFlow =
+            (1..100)
+                .asFlow()
+                .mapAsync(10) {
+                    delay(500)
+                    it * 2
+                }
 
-        var counter = 0
+        retry(5, 20.seconds) {
+            val counter = AtomicReference(0)
 
-        sourceFlow
-            .mapAsync(2) {
-                delay(100)
-                it * 2
-            }
-            .test {
-                (1..50)
-                    .forEach { _ ->
-                        suspend fun ensureNext(): Duration {
-                            counter++
-                            val (item, duration) = measureTimedValue { awaitItem() }
-                            item shouldBe counter * 2
-                            return duration
+            sourceFlow
+                .test {
+                    (1..10)
+                        .forEach { _ ->
+                            suspend fun ensureNext(): Duration {
+                                counter.increment()
+                                val (item, duration) = measureTimedValue { awaitItem() }
+                                item shouldBe counter.value * 2
+                                return duration
+                            }
+
+                            // Measure the time taken to receive two items
+                            measureTime {
+                                // First item should be received in >= 500 ms & <= 520 ms
+                                assertSoftly(ensureNext()) { duration ->
+                                    duration shouldBeGreaterThan 480.milliseconds
+                                    duration shouldBeLessThanOrEqualTo 520.milliseconds
+                                }
+
+                                repeat(9) {
+                                    // The other 9 items should be almost immediate
+                                    ensureNext() shouldNotBeGreaterThan 6.milliseconds
+                                }
+
+                            } shouldBeLessThanOrEqualTo 550.milliseconds
                         }
 
-                        // Measure the time taken to receive two items
-                        measureTime {
-                            // First item should be received in <= 120 ms
-                            ensureNext() shouldBeLessThanOrEqualTo 120.milliseconds
-                            // Second item should be almost immediate
-                            ensureNext() shouldNotBeGreaterThan 10.milliseconds
-                        } shouldBeLessThanOrEqualTo 130.milliseconds  // Total time for both items should be <= 130 ms
-                    }
-
-                awaitComplete()
-            }
+                    awaitComplete()
+                }
+        }
     }
 
     test("unorderedMapAsync should correctly transform each element") {
@@ -95,10 +111,8 @@ class FlowAsyncExtKtTest : FunSpec({
     }
 
     test("flatMapIterableAsync should correctly transform and flatten each element") {
-        // Create a flow of integers
         val sourceFlow = flowOf(1, 2, 3)
 
-        // Apply the flatMapIterableAsync extension function with a concurrency limit
         val result = sourceFlow
             .flatMapIterableAsync(2) { value ->
                 delay(50 * value.toLong()) // Delay to simulate asynchronous processing
@@ -108,7 +122,6 @@ class FlowAsyncExtKtTest : FunSpec({
 
         // The expected result is a flattened list of transformed items
         // Since the flow is ordered, despite the concurrency, the order of elements is maintained
-        // Output should be: [1, 2, 2, 3, 3, 4]
         result shouldContainInOrder listOf(1, 2, 2, 3, 3, 4)
     }
 

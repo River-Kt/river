@@ -1,12 +1,25 @@
 subprojects {
-    dependencies {
-        api(rootProject.modules.http)
+    kotlin {
+        jvm {
+            configurations.all {
+                exclude("software.amazon.awssdk", "netty-nio-client")
+            }
+        }
 
-        api(rootProject.libs.aws.http.client.spi)
-        api(rootProject.libs.coroutines.reactive)
+        sourceSets {
+            val jvmMain by getting {
+                dependencies {
+                    val modules = modules { project(it) }
 
-        if (project.name != "connector-aws-java-11-http-spi") {
-            api(rootProject.modules.awsHttp11Spi)
+                    api(modules.http)
+                    api(rootProject.libs.aws.http.client.spi)
+                    api(rootProject.libs.coroutines.reactive)
+
+                    if (project.name != "connector-aws-java-11-http-spi") {
+                        api(modules.awsHttp11Spi)
+                    }
+                }
+            }
         }
     }
 }

@@ -1,19 +1,20 @@
 package com.river.core
 
 import com.river.core.internal.DefaultObjectPool
-import java.time.ZonedDateTime
+
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.toJavaDuration
 
 interface ObjectPool<T> {
     class ObjectHolder<T>(
         val instance: T,
         val maxDuration: Duration,
-        val createdAt: ZonedDateTime
+        val createdAt: Instant = Clock.System.now()
     ) {
         fun shouldBeClosed(): Boolean =
-            ZonedDateTime.now() >= createdAt.plus(maxDuration.toJavaDuration())
+            Clock.System.now() >= (createdAt + maxDuration)
     }
 
     suspend fun borrow(): ObjectHolder<T>

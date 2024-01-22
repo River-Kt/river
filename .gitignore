@@ -4,3 +4,5 @@ build
 volume/
 .DS_Store
 data/
+kotlin-js-store/
+local.properties

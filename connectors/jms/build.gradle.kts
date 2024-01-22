@@ -1,6 +1,16 @@
-dependencies {
-    api(libs.jms.api)
+kotlin {
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                api(libs.jms.api)
+            }
+        }
 
-    testImplementation(libs.artemis.client)
-    testImplementation(libs.artemis.server)
+        val jvmTest by getting {
+            dependencies {
+                api(libs.artemis.client)
+                api(libs.artemis.server)
+            }
+        }
+    }
 }

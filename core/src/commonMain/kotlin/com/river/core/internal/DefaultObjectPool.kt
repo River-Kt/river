@@ -4,7 +4,6 @@ import com.river.core.ObjectPool
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.time.ZonedDateTime.now
 import kotlin.time.Duration
 
 internal class DefaultObjectPool<T>(
@@ -20,7 +19,7 @@ internal class DefaultObjectPool<T>(
     private val channel = Channel<ObjectPool.ObjectHolder<T>>(size)
 
     init {
-        initial.forEach { channel.trySend(ObjectPool.ObjectHolder(it, maxDuration, now())) }
+        initial.forEach { channel.trySend(ObjectPool.ObjectHolder(it, maxDuration)) }
         created = initial.size
     }
 
@@ -68,5 +67,5 @@ internal class DefaultObjectPool<T>(
     }
 
     private suspend fun new(): ObjectPool.ObjectHolder<T> =
-        ObjectPool.ObjectHolder(factory(), maxDuration, now())
+        ObjectPool.ObjectHolder(factory(), maxDuration)
 }

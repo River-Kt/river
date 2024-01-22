@@ -1,11 +1,18 @@
-dependencies {
-    // core is inherited
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                // core is inherited
+                val modules = modules { project(it) }
 
-    implementation(project.modules.debezium)
-    implementation(project.modules.csv)
-    implementation(project.modules.json)
-    implementation(project.modules.s3)
+                implementation(modules.debezium)
+                implementation(modules.csv)
+                implementation(modules.json)
+                implementation(modules.s3)
 
-    implementation(libs.debezium.postgres)
-    implementation(libs.postgresql.jdbc)
+                implementation(libs.debezium.postgres)
+                implementation(libs.postgresql.jdbc)
+            }
+        }
+    }
 }

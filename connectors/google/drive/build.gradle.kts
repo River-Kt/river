@@ -1,8 +1,20 @@
-dependencies {
-    api(project.modules.http)
-    api(project.modules.json)
-    api(libs.jackson)
-    api(libs.java.jwt)
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                val modules = modules { project(it) }
 
-    testImplementation(libs.kotest.wiremock)
+                api(modules.http)
+                api(modules.json)
+                api(libs.jackson)
+                api(libs.java.jwt)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                api(libs.kotest.wiremock)
+            }
+        }
+    }
 }

@@ -1,3 +1,9 @@
-dependencies {
-    api(libs.jackson)
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                api(libs.jackson)
+            }
+        }
+    }
 }
