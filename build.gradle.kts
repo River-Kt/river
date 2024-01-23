@@ -6,12 +6,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import com.android.build.gradle.LibraryExtension as AndroidExtension
 
 plugins {
+    alias(libs.plugins.setup.android.sdk)
     alias(libs.plugins.android) apply false
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotest.multiplatform)
     alias(libs.plugins.dokka)
     alias(libs.plugins.nexus.publish) apply false
-    alias(libs.plugins.setup.android.sdk)
+    alias(libs.plugins.os.detector)
 
     `maven-publish`
     signing
@@ -46,6 +47,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "signing")
+    apply(plugin = "com.google.osdetector")
 
     version = "1.0.0-alpha13"
     group = "com.river-kt"
@@ -92,12 +94,10 @@ subprojects {
                 }
             }
 
-            afterEvaluate {
-                if (androidEnabled()) {
-                    val androidUnitTest by getting {
-                        dependencies {
-                            implementation(rootProject.libs.kotest.junit5)
-                        }
+            onAndroidEnabled {
+                val androidUnitTest by getting {
+                    dependencies {
+                        implementation(rootProject.libs.kotest.junit5)
                     }
                 }
             }
@@ -159,10 +159,6 @@ subprojects {
         publications.forEach { publication ->
             if (publication !is MavenPublication) {
                 return@forEach
-            }
-
-            publication.artifact(tasks["sourcesJar"]) {
-                classifier = "sources"
             }
 
             publication.artifact(tasks["javadocJar"]) {
@@ -244,48 +240,54 @@ subprojects {
         dependsOn(tasks.withType<Sign>())
     }
 
-    val publishWindowsArtifacts by tasks.registering {
-        dependsOn(
-            tasks
-                .withType<PublishToMavenRepository>()
-                .filter { it.name.contains("mingw", ignoreCase = true) }
-        )
+    onWindows {
+        val publishWindowsArtifacts by tasks.registering {
+            dependsOn(
+                tasks
+                    .withType<PublishToMavenRepository>()
+                    .filter { it.name.contains("mingw", ignoreCase = true) }
+            )
+        }
     }
 
-    val publishOSXArtifacts by tasks.registering {
-        val appleOs = listOf("ios", "macos", "watchos", "tvos")
+    onMacOS {
+        val publishOSXArtifacts by tasks.registering {
+            val appleOs = listOf("ios", "macos", "watchos", "tvos")
 
-        dependsOn(
-            tasks
-                .withType<PublishToMavenRepository>()
-                .filter { p ->
-                    appleOs.any { p.name.contains(it, ignoreCase = true) }
-                }
-        )
+            dependsOn(
+                tasks
+                    .withType<PublishToMavenRepository>()
+                    .filter { p ->
+                        appleOs.any { p.name.contains(it, ignoreCase = true) }
+                    }
+            )
+        }
     }
 
-    val publishJvmArtifacts by tasks.registering {
-        dependsOn(
-            tasks
-                .withType<PublishToMavenRepository>()
-                .filter { it.name.contains("jvm", ignoreCase = true) }
-        )
-    }
+    onLinux {
+        val publishJvmArtifacts by tasks.registering {
+            dependsOn(
+                tasks
+                    .withType<PublishToMavenRepository>()
+                    .filter { it.name.contains("jvm", ignoreCase = true) }
+            )
+        }
 
-    val publishLinuxArtifacts by tasks.registering {
-        dependsOn(
-            tasks
-                .withType<PublishToMavenRepository>()
-                .filter { it.name.contains("linux", ignoreCase = true) }
-        )
-    }
+        val publishLinuxArtifacts by tasks.registering {
+            dependsOn(
+                tasks
+                    .withType<PublishToMavenRepository>()
+                    .filter { it.name.contains("linux", ignoreCase = true) }
+            )
+        }
 
-    val publishJsArtifacts by tasks.registering {
-        dependsOn(
-            tasks
-                .withType<PublishToMavenRepository>()
-                .filter { it.name.contains("js", ignoreCase = true) }
-        )
+        val publishJsArtifacts by tasks.registering {
+            dependsOn(
+                tasks
+                    .withType<PublishToMavenRepository>()
+                    .filter { it.name.contains("js", ignoreCase = true) }
+            )
+        }
     }
 
     signing {
@@ -321,4 +323,23 @@ fun Task.skipExamples() {
     onlyIf { !project.path.contains("examples") }
 }
 
-fun Project.androidEnabled() = pluginManager.hasPlugin("com.android.library")
+fun Project.onAndroidEnabled(block: () -> Unit) {
+    afterEvaluate {
+        if (pluginManager.hasPlugin("com.android.library")) block()
+    }
+}
+
+fun Project.onWindows(block: () -> Unit) {
+    if (os == "windows") block()
+}
+
+fun Project.onLinux(block: () -> Unit) {
+    if (os == "linux") block()
+}
+
+fun Project.onMacOS(block: () -> Unit) {
+    if (os == "osx") block()
+}
+
+val Project.os: String
+    get() = osdetector.os
