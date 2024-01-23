@@ -12,10 +12,23 @@ on:
       containers:
         required: false
         type: string
+      linux:
+        required: false
+        type: boolean
+        default: true
+      windows:
+        required: false
+        type: boolean
+        default: false
+      osx:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  run:
+  linux-test:
     name: ${{ inputs.module }} module
+    if: ${{ inputs.linux }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -33,3 +46,43 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: ${{ inputs.path }}:test
+  windows-test:
+    name: ${{ inputs.module }} module
+    if: ${{ inputs.windows }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check
+        run: ls -lh
+      - name: Run docker-compose
+        if: ${{ inputs.containers }}
+        run: docker compose up ${{ inputs.containers }} -d
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Run tests
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: ${{ inputs.path }}:test
+  osx-test:
+    name: ${{ inputs.module }} module
+    if: ${{ inputs.osx }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check
+        run: ls -lh
+      - name: Run docker-compose
+        if: ${{ inputs.containers }}
+        run: docker compose up ${{ inputs.containers }} -d
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Run tests
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: ${{ inputs.path }}:test

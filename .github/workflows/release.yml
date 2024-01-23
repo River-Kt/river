@@ -24,56 +24,6 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Assembly
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assemble sourcesJar javadocJar --parallel --stacktrace
-
-      - name: Sign & publish to Maven Central
-        uses: gradle/gradle-build-action@v2
-        env:
-          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          SIGNING_SECRET_FILE: ${{ secrets.SIGNING_SECRET_FILE }}
-          RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
-          RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
-        with:
-          arguments: assemble sourcesJar javadocJar signAllPublications publishJvmArtifacts publishLinuxArtifacts publishJsArtifacts --stacktrace
-
-  windows-release:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Assembly
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assemble sourcesJar javadocJar --parallel --stacktrace
-
-      - name: Sign & publish to Maven Central
-        uses: gradle/gradle-build-action@v2
-        env:
-          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          SIGNING_SECRET_FILE: ${{ secrets.SIGNING_SECRET_FILE }}
-          RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
-          RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
-        with:
-          arguments: assemble sourcesJar javadocJar publishWindowsArtifacts publish --stacktrace
-
-  macos-release:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -96,4 +46,4 @@ jobs:
           RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
           RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
         with:
-          arguments: assemble sourcesJar javadocJar publishOSXArtifacts publish --stacktrace
+          arguments: assemble sourcesJar javadocJar signAllPublications publish --stacktrace

@@ -4,7 +4,7 @@ import com.river.core.ExperimentalRiverApi
 import com.river.core.lines
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @ExperimentalRiverApi
 data class Field<T>(

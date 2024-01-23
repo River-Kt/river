@@ -49,7 +49,7 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "com.google.osdetector")
 
-    version = "1.0.0-alpha13"
+    version = rootProject.libs.versions.river.get()
     group = "com.river-kt"
 
     kotlin {
@@ -107,7 +107,7 @@ subprojects {
     pluginManager.withPlugin("com.android.library") {
         extensions.configure<AndroidExtension> {
             namespace = "com.river"
-            compileSdk = 30
+            compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
         }
     }
 
@@ -191,35 +191,6 @@ subprojects {
                         email.set("gabfssilva@gmail.com")
                     }
                 }
-
-//                withXml {
-//                    asNode().appendNode("dependencies").apply {
-//                        val dependencies = configurations.asMap["api"]?.dependencies ?: emptySet()
-//
-//                        for (dependency in dependencies) {
-//                            appendNode("dependency").apply {
-//                                appendNode("groupId", dependency.group)
-//                                appendNode("artifactId", dependency.name)
-//                                appendNode("version", dependency.version)
-//
-//                                val excludeRules =
-//                                    if (dependency is ModuleDependency) dependency.excludeRules
-//                                    else emptySet()
-//
-//                                if (excludeRules.isNotEmpty()) {
-//                                    appendNode("exclusions").apply {
-//                                        appendNode("exclusion").apply {
-//                                            excludeRules.forEach { excludeRule ->
-//                                                appendNode("groupId", excludeRule.group)
-//                                                appendNode("artifactId", excludeRule.module)
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
     }
@@ -240,64 +211,14 @@ subprojects {
         dependsOn(tasks.withType<Sign>())
     }
 
-    onWindows {
-        val publishWindowsArtifacts by tasks.registering {
-            dependsOn(
-                tasks
-                    .withType<PublishToMavenRepository>()
-                    .filter { it.name.contains("mingw", ignoreCase = true) }
-            )
-        }
-    }
-
-    onMacOS {
-        val publishOSXArtifacts by tasks.registering {
-            val appleOs = listOf("ios", "macos", "watchos", "tvos")
-
-            dependsOn(
-                tasks
-                    .withType<PublishToMavenRepository>()
-                    .filter { p ->
-                        appleOs.any { p.name.contains(it, ignoreCase = true) }
-                    }
-            )
-        }
-    }
-
-    onLinux {
-        val publishJvmArtifacts by tasks.registering {
-            dependsOn(
-                tasks
-                    .withType<PublishToMavenRepository>()
-                    .filter { it.name.contains("jvm", ignoreCase = true) }
-            )
-        }
-
-        val publishLinuxArtifacts by tasks.registering {
-            dependsOn(
-                tasks
-                    .withType<PublishToMavenRepository>()
-                    .filter { it.name.contains("linux", ignoreCase = true) }
-            )
-        }
-
-        val publishJsArtifacts by tasks.registering {
-            dependsOn(
-                tasks
-                    .withType<PublishToMavenRepository>()
-                    .filter { it.name.contains("js", ignoreCase = true) }
-            )
-        }
-    }
-
     signing {
         useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
         sign(publishing.publications)
     }
 
-    tasks.withType<PublishToMavenRepository>().configureEach {
+    tasks.withType<AbstractPublishToMaven>().configureEach {
         skipExamples()
-        dependsOn(tasks.withType<Sign>())
+        dependsOn(signAllPublications)
     }
 
     tasks.withType<AbstractDokkaTask>().configureEach {
@@ -311,12 +232,6 @@ subprojects {
             }
         )
     }
-
-//    tasks.javadoc {
-//        if (JavaVersion.current().isJava9Compatible) {
-//            (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
-//        }
-//    }
 }
 
 fun Task.skipExamples() {

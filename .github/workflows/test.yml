@@ -9,6 +9,9 @@ jobs:
     with:
       module: River Core
       path: :core
+      windows: true
+      linux: true
+      osx: true
 
   amqp:
     uses: ./.github/workflows/test-module.yml
@@ -90,6 +93,9 @@ jobs:
     with:
       module: Formats (JSON, CSV, Positional Flat Line)
       path: :connector:connector-format
+      windows: true
+      linux: true
+      osx: true
 
   ftp:
     uses: ./.github/workflows/test-module.yml

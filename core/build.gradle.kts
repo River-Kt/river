@@ -13,7 +13,9 @@ kotlin {
         nodejs()
     }
 
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
 
     macosArm64()
     macosX64()
