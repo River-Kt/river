@@ -6,22 +6,8 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.map
 
-class CsvExtKtTest : FeatureSpec({
+class CsvExtKtJvmTest : FeatureSpec({
     feature("CSV generation") {
-        scenario("raw csv") {
-            val numbers = (1..100).asFlow()
-
-            numbers
-                .rawCsv("n", "n * 2") { listOf("$it", "${it * 2}") }
-                .collectIndexed { index, value ->
-                    if (index == 0) {
-                        value shouldBe "n;n * 2"
-                    } else {
-                        value shouldBe "$index;${index * 2}"
-                    }
-                }
-        }
-
         scenario("reified csv generation") {
             data class Payment(
                 val id: Long,

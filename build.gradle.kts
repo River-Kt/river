@@ -1,9 +1,9 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import com.android.build.gradle.LibraryExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import com.android.build.gradle.LibraryExtension as AndroidExtension
 
 plugins {
     alias(libs.plugins.setup.android.sdk)
@@ -52,65 +52,6 @@ subprojects {
     version = rootProject.libs.versions.river.get()
     group = "com.river-kt"
 
-    kotlin {
-        jvmToolchain(17)
-
-        compilerOptions {
-            freeCompilerArgs = listOf("-Xcontext-receivers")
-        }
-
-        jvm().compilations.all {
-            compilerOptions.configure {
-                jvmTarget.set(JvmTarget.JVM_17)
-                freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
-            }
-        }
-
-        sourceSets {
-            val commonMain by getting {
-                dependencies {
-                    api(rootProject.libs.coroutines)
-                    api(rootProject.libs.kotlinx.datetime)
-                }
-            }
-
-            val commonTest by getting {
-                dependencies {
-                    api(rootProject.libs.kotest.assertions.core)
-                    api(rootProject.libs.kotest.engine)
-                    api(rootProject.libs.turbine)
-                    api(rootProject.libs.kotlin.reflect)
-                }
-
-                languageSettings {
-                    optIn("com.river.core.ExperimentalRiverApi")
-                    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                }
-            }
-
-            val jvmTest by getting {
-                dependencies {
-                    api(rootProject.libs.kotest.junit5)
-                }
-            }
-
-            onAndroidEnabled {
-                val androidUnitTest by getting {
-                    dependencies {
-                        implementation(rootProject.libs.kotest.junit5)
-                    }
-                }
-            }
-        }
-    }
-
-    pluginManager.withPlugin("com.android.library") {
-        extensions.configure<AndroidExtension> {
-            namespace = "com.river"
-            compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
-        }
-    }
-
     repositories {
         mavenCentral()
         google()
@@ -127,110 +68,171 @@ subprojects {
         }
     }
 
-    tasks.dokkaHtml.configure {
-        skipExamples()
+    kotlin {
+        jvmToolchain(17)
 
-        dokkaSourceSets {
-            configureEach {
-                samples.from("src/sample/kotlin")
-            }
+        compilerOptions {
+            freeCompilerArgs = listOf("-Xcontext-receivers")
         }
-    }
 
-    val javadocJar by tasks.registering(Jar::class) {
-        archiveClassifier.set("javadoc")
-        from(tasks.dokkaHtml)
-        dependsOn("dokkaHtml")
-        skipExamples()
-    }
-
-    publishing {
-        repositories {
-            maven {
-                name = "OSSRH"
-                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = System.getenv("RELEASER_NEXUS2_USERNAME")
-                    password = System.getenv("RELEASER_NEXUS2_PASSWORD")
-                }
+        jvm().compilations.all {
+            compilerOptions.configure {
+                jvmTarget.set(JvmTarget.JVM_17)
+                freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
             }
         }
 
-        publications.forEach { publication ->
-            if (publication !is MavenPublication) {
-                return@forEach
+        sourceSets {
+            commonMain {
+                dependencies {
+                    api(rootProject.libs.coroutines)
+                    api(rootProject.libs.kotlinx.datetime)
+                }
             }
 
-            publication.artifact(tasks["javadocJar"]) {
-                classifier = "javadoc"
+            commonTest {
+                dependencies {
+                    api(rootProject.libs.kotest.assertions.core)
+                    api(rootProject.libs.kotest.engine)
+                    api(rootProject.libs.turbine)
+                    api(rootProject.libs.kotlin.reflect)
+                }
+
+                languageSettings {
+                    optIn("com.river.core.ExperimentalRiverApi")
+                    optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                }
             }
 
-            publication.pom {
-                name.set(project.name)
-                description.set("Extensions & Enterprise Integrations for Kotlin flows.")
-
-                url.set("https://river-kt.com")
-
-                scm {
-                    connection.set("scm:git:git:github.com/River-Kt/river.git")
-                    developerConnection.set("scm:git:ssh://github.com/River-Kt/river.git")
-                    url.set("https://github.com/River-Kt/river")
+            jvmTest {
+                dependencies {
+                    api(rootProject.libs.kotest.junit5)
                 }
+            }
 
-                licenses {
-                    license {
-                        name.set("The MIT License")
-                        url.set("https://opensource.org/license/mit/")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("gabfssilva")
-                        name.set("Gabriel Francisco")
-                        email.set("gabfssilva@gmail.com")
+            onAndroidEnabled {
+                val androidUnitTest by getting {
+                    dependencies {
+                        implementation(rootProject.libs.kotest.junit5)
                     }
                 }
             }
         }
     }
 
-    val signingKeyId by lazy { System.getenv("SIGNING_KEY_ID") }
-    val signingPassword by lazy { System.getenv("SIGNING_PASSWORD") }
-    val signingSecretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
+    pluginManager.withPlugin("com.android.library") {
+        extensions.configure<LibraryExtension> {
+            namespace = "com.river"
+            compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
 
-    tasks.withType<Sign>().configureEach {
-        skipExamples()
-
-        onlyIf {
-            signingKeyId != null && signingPassword != null && signingSecretKey != null
+            publishing {
+                multipleVariants {
+                    withJavadocJar()
+                }
+            }
         }
     }
 
-    val signAllPublications by tasks.registering {
-        dependsOn(tasks.withType<Sign>())
-    }
+    afterEvaluate {
+        tasks.dokkaHtml.configure {
+            skipExamples()
 
-    signing {
-        useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
-        sign(publishing.publications)
-    }
-
-    tasks.withType<AbstractPublishToMaven>().configureEach {
-        skipExamples()
-        dependsOn(signAllPublications)
-    }
-
-    tasks.withType<AbstractDokkaTask>().configureEach {
-        val task = this.path.split(":").last()
-
-        skipExamples()
-
-        dependsOn(
-            subprojects.mapNotNull {
-                runCatching { tasks.getByPath("${it.path}:$task") }.getOrNull()
+            dokkaSourceSets {
+                configureEach {
+                    samples.from("src/sample/kotlin")
+                }
             }
-        )
+        }
+
+        val javadocJar by tasks.registering(Jar::class) {
+            archiveClassifier.set("javadoc")
+            from(tasks.dokkaHtml)
+            dependsOn("dokkaHtml")
+            skipExamples()
+        }
+
+        publishing {
+            repositories {
+                maven {
+                    name = "OSSRH"
+                    url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    credentials {
+                        username = System.getenv("RELEASER_NEXUS2_USERNAME")
+                        password = System.getenv("RELEASER_NEXUS2_PASSWORD")
+                    }
+                }
+            }
+
+            publications.withType<MavenPublication> {
+                artifact(tasks["javadocJar"]) { classifier = "javadoc" }
+
+                pom {
+                    name.set(project.name)
+                    description.set("Extensions & Enterprise Integrations for Kotlin flows.")
+
+                    url.set("https://river-kt.com")
+
+                    scm {
+                        connection.set("scm:git:git:github.com/River-Kt/river.git")
+                        developerConnection.set("scm:git:ssh://github.com/River-Kt/river.git")
+                        url.set("https://github.com/River-Kt/river")
+                    }
+
+                    licenses {
+                        license {
+                            name.set("The MIT License")
+                            url.set("https://opensource.org/license/mit/")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("gabfssilva")
+                            name.set("Gabriel Francisco")
+                            email.set("gabfssilva@gmail.com")
+                        }
+                    }
+                }
+            }
+        }
+
+        val signingKeyId by lazy { System.getenv("SIGNING_KEY_ID") }
+        val signingPassword by lazy { System.getenv("SIGNING_PASSWORD") }
+        val signingSecretKey by lazy { System.getenv("SIGNING_SECRET_FILE") }
+
+        tasks.withType<Sign>().configureEach {
+            skipExamples()
+
+            onlyIf {
+                signingKeyId != null && signingPassword != null && signingSecretKey != null
+            }
+        }
+
+        val signAllPublications by tasks.registering {
+            dependsOn(tasks.withType<Sign>())
+        }
+
+        signing {
+            useInMemoryPgpKeys(signingKeyId, signingSecretKey, signingPassword)
+            sign(publishing.publications)
+        }
+
+        tasks.withType<AbstractPublishToMaven>().configureEach {
+            skipExamples()
+            dependsOn(signAllPublications)
+        }
+
+        tasks.withType<AbstractDokkaTask>().configureEach {
+            val task = this.path.split(":").last()
+
+            skipExamples()
+
+            dependsOn(
+                subprojects.mapNotNull {
+                    runCatching { tasks.getByPath("${it.path}:$task") }.getOrNull()
+                }
+            )
+        }
     }
 }
 
@@ -239,9 +241,7 @@ fun Task.skipExamples() {
 }
 
 fun Project.onAndroidEnabled(block: () -> Unit) {
-    afterEvaluate {
-        if (pluginManager.hasPlugin("com.android.library")) block()
-    }
+    if (pluginManager.hasPlugin("com.android.library")) block()
 }
 
 fun Project.onWindows(block: () -> Unit) {
