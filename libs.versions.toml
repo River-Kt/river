@@ -1,6 +1,8 @@
 [versions]
-kotlin = "1.9.21"
-dokka = "1.8.20"
+river = "1.0.0-alpha13"
+kotlin = "1.9.22"
+java = "17"
+dokka = "1.9.10"
 aws-sdk = "2.23.2"
 coroutines = "1.7.3"
 slf4j = "1.7.36"
@@ -18,7 +20,7 @@ debezium = "2.3.2.Final"
 mongodb = "4.9.1"
 apache-ftpserver = "1.2.0"
 mock-ftpserver = "2.7.1"
-kotest = "5.6.2"
+kotest = "5.8.0"
 wiremock = "2.27.2"
 kotlin-wiremock = "2.0.2"
 kotest-wiremock = "2.0.0"
@@ -29,12 +31,27 @@ reactor-kafka = "1.3.19"
 reactor-kotlin = "1.2.2"
 logback = "1.4.8"
 turbine = "1.0.0"
+kotlinx-datetime = "0.5.0"
+android = "8.1.4"
+setup-android-sdk = "3.1.0"
+os-detector = "1.7.3"
+android-compile-sdk = "30"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+
+kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }
+
+android = { id = "com.android.library", version.ref = "android" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+setup-android-sdk = { id = "com.quittle.setup-android-sdk", version.ref = "setup-android-sdk" }
+
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "1.3.0" }
+
+os-detector = { id = "com.google.osdetector", version.ref = "os-detector" }
 
 [libraries]
 # kotlin
@@ -45,6 +62,8 @@ coroutines-jdk9 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk9", ve
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
 # aws
 aws-http-client-spi = { module = "software.amazon.awssdk:http-client-spi", version.ref = "aws-sdk" }
 aws-sqs = { module = "software.amazon.awssdk:sqs", version.ref = "aws-sdk" }
@@ -54,6 +73,8 @@ aws-ses = { module = "software.amazon.awssdk:ses", version.ref = "aws-sdk" }
 aws-lambda = { module = "software.amazon.awssdk:lambda", version.ref = "aws-sdk" }
 
 # testing
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 wiremock = { module = "com.github.tomakehurst:wiremock", version.ref = "wiremock" }
 kotlin-wiremock = { module = "com.marcinziolo:kotlin-wiremock", version.ref = "kotlin-wiremock" }

@@ -1,5 +1,9 @@
-dependencies {
-    api(libs.aws.s3) {
-        exclude("software.amazon.awssdk", "netty-nio-client")
+kotlin {
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                api(rootProject.libs.aws.s3)
+            }
+        }
     }
 }

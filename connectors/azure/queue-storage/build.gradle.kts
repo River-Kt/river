@@ -1,3 +1,9 @@
-dependencies {
-    api(libs.azure.queue.storage)
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                api(libs.azure.queue.storage)
+            }
+        }
+    }
 }

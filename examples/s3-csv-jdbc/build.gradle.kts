@@ -1,8 +1,16 @@
-dependencies {
-    // core is inherited
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                // core is inherited
+                val modules = modules { project(it) }
 
-    implementation(project.modules.csv)
-    implementation(project.modules.s3)
-    implementation(project.modules.jdbc)
-    implementation(libs.postgresql.jdbc)
+                implementation(modules.csv)
+                implementation(modules.s3)
+                implementation(modules.jdbc)
+
+                implementation(libs.postgresql.jdbc)
+            }
+        }
+    }
 }

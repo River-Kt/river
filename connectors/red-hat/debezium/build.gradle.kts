@@ -1,9 +1,20 @@
-dependencies {
-    api(libs.debezium.api)
-    api(libs.debezium.embedded)
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                api(libs.debezium.api)
+                api(libs.debezium.embedded)
+            }
+        }
 
-    testImplementation(libs.debezium.mysql)
-    testImplementation(libs.mysql.jdbc)
+        jvmTest {
+            dependencies {
+                val modules = modules { project(it) }
 
-    testImplementation(project.modules.jdbc)
+                api(libs.debezium.mysql)
+                api(libs.mysql.jdbc)
+                api(modules.jdbc)
+            }
+        }
+    }
 }

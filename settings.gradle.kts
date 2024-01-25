@@ -6,11 +6,20 @@ dependencyResolutionManagement {
     }
 }
 
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = "river"
 
 include(
     "core",
-    "connectors",
+//    "connectors",
+    "connectors:aws",
     "connectors:amqp",
     "connectors:apache:kafka",
     "connectors:aws:dynamodb",
@@ -40,7 +49,6 @@ include(
     "connectors:red-hat:debezium",
     "connectors:openai",
     "connectors:redis",
-
     "examples:sqs-to-http",
     "examples:s3-csv-jdbc",
     "examples:debezium-csv-s3",

@@ -1,5 +1,13 @@
-dependencies {
-    api(project.modules.http)
-    api(project.modules.json)
-    api(libs.jackson)
+kotlin {
+    sourceSets {
+        jvmMain {
+            dependencies {
+                val modules = modules { project(it) }
+
+                api(modules.http)
+                api(modules.json)
+                api(libs.jackson)
+            }
+        }
+    }
 }
