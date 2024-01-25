@@ -1,5 +1,5 @@
 [versions]
-river = "1.0.0-alpha13"
+river = "1.0.0-alpha14"
 kotlin = "1.9.22"
 java = "17"
 dokka = "1.9.10"

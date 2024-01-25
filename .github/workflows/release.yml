@@ -14,10 +14,6 @@ on:
       RELEASER_NEXUS2_PASSWORD:
         required: true
 
-  push:
-    branches-ignore:
-      - main
-
 permissions:
   id-token: write
   contents: write

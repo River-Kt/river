@@ -9,9 +9,6 @@ jobs:
     with:
       module: River Core
       path: :core
-      windows: true
-      linux: true
-      osx: true
 
   amqp:
     uses: ./.github/workflows/test-module.yml
