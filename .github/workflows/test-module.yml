@@ -32,4 +32,4 @@ jobs:
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: ${{ inputs.path }}:test
+          arguments: ${{ inputs.path }}:allTests
