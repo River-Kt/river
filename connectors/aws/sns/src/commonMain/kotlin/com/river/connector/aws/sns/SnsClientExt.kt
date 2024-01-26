@@ -3,13 +3,17 @@ package com.river.connector.aws.sns
 import com.river.connector.aws.sns.model.PublishMessageRequest
 import com.river.connector.aws.sns.model.PublishMessageResponse
 import com.river.core.GroupStrategy
+import com.river.core.chunked
+import com.river.core.flattenIterable
+import com.river.core.mapAsync
 import kotlinx.coroutines.flow.Flow
-import software.amazon.awssdk.services.sns.SnsAsyncClient
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * The [publishFlow] function is used to publish messages concurrently to an Amazon Simple Notification Service (SNS)
- * topic using a [SnsAsyncClient].
+ * topic using a [SnsClient].
  *
  * It takes an input [Flow] of [PublishMessageRequest] and publishes the messages
  * concurrently, respecting the specified [groupStrategy].
@@ -28,7 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * Example usage:
  * ```
- * val snsClient: SnsAsyncClient = ...
+ * val snsClient: SnsClient = ...
  * val messages: Flow<PublishMessageRequest> = ...
  *
  * val responses: Flow<PublishMessageResponse> = snsClient.publishFlow(topicArn, messages) {
@@ -43,11 +47,19 @@ import kotlin.time.Duration.Companion.milliseconds
  * }
  * ```
  */
-fun SnsAsyncClient.publishFlow(
+fun SnsClient.publishFlow(
     upstream: Flow<PublishMessageRequest>,
     concurrency: Int = 1,
     groupStrategy: GroupStrategy = GroupStrategy.TimeWindow(10, 250.milliseconds),
     topicArn: suspend () -> String
 ): Flow<PublishMessageResponse> =
-    SnsClient(this)
-        .publishFlow(upstream, concurrency, groupStrategy, topicArn)
+    flow {
+        val arn = topicArn()
+
+        emitAll(
+            upstream
+                .chunked(groupStrategy)
+                .mapAsync(concurrency) { chunk -> publishBatch(arn, chunk) }
+                .flattenIterable()
+        )
+    }

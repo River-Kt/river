@@ -1,8 +1,12 @@
 kotlin {
     sourceSets {
-        val jvmMain by getting {
+        macosMain {
+
+        }
+
+        jvmMain {
             dependencies {
-                api(rootProject.libs.aws.sns)
+                api(libs.aws.sns)
             }
         }
     }
