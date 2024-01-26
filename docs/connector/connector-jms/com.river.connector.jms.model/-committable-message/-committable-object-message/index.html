@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>CommittableObjectMessage</title>
-<link href="../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../../styles/style.css" rel="Stylesheet">
-<link href="../../../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../../../styles/main.css" rel="Stylesheet">
 <link href="../../../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../../scripts/platform-content-handler.js" async></script>
@@ -29,48 +32,54 @@
 <script type="text/javascript" src="../../../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../../../index.html">
-<span>river</span>            </a>    </div>
-    <div>
-    </div>
-    <div class="pull-right d-flex">
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-jms:dokkaHtmlPartial/main">jvm</button>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../../index.html">
+                            river
+                    </a>            </div>
+            <div class="library-version">
+            </div>
         </div>
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-jms:dokkaHtmlPartial/jvmMain">jvm</button>
+        </div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-    <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="connector-jms::com.river.connector.jms.model/CommittableMessage.CommittableObjectMessage///PointingToDeclaration//-1791223465">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="connector-jms::com.river.connector.jms.model/CommittableMessage.CommittableObjectMessage///PointingToDeclaration//360134420">
   <div class="breadcrumbs"><a href="../../../index.html">connector-jms</a><span class="delimiter">/</span><a href="../../index.html">com.river.connector.jms.model</a><span class="delimiter">/</span><a href="../index.html">CommittableMessage</a><span class="delimiter">/</span><span class="current">CommittableObjectMessage</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Committable</span><wbr><span>Object</span><wbr><span><span>Message</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">CommittableObjectMessage</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">inner<span class="token operator">: </span><span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span><span class="token punctuation">, </span></span><span class="parameter ">coAcknowledge<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span> : <a href="../index.html">CommittableMessage</a>, <span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">CommittableObjectMessage</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">inner<span class="token operator">: </span><span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span><span class="token punctuation">, </span></span><span class="parameter ">coAcknowledge<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span> : <a href="../index.html">CommittableMessage</a>, <span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-1886941130%2FConstructors%2F-1791223465" anchor-label="CommittableObjectMessage" id="-1886941130%2FConstructors%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-1886941130%2FConstructors%2F360134420" anchor-label="CommittableObjectMessage" id="-1886941130%2FConstructors%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-committable-object-message.html"><span>Committable</span><wbr><span>Object</span><wbr><span><span>Message</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1886941130%2FConstructors%2F-1791223465"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1886941130%2FConstructors%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">inner<span class="token operator">: </span><span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span><span class="token punctuation">, </span></span><span class="parameter ">coAcknowledge<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">inner<span class="token operator">: </span><span data-unresolved-link="javax.jms/ObjectMessage///PointingToDeclaration/">ObjectMessage</span><span class="token punctuation">, </span></span><span class="parameter ">coAcknowledge<span class="token operator">: </span><span class="token keyword">suspend </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -79,782 +88,782 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="191177525%2FFunctions%2F-1791223465" anchor-label="acknowledge" id="191177525%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="191177525%2FFunctions%2F360134420" anchor-label="acknowledge" id="191177525%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="acknowledge.html"><span><span>acknowledge</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="191177525%2FFunctions%2F-1791223465"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="191177525%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="acknowledge.html"><span class="token function">acknowledge</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="acknowledge.html"><span class="token function">acknowledge</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1439454829%2FFunctions%2F-1791223465" anchor-label="clearBody" id="1439454829%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1439454829%2FFunctions%2F360134420" anchor-label="clearBody" id="1439454829%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1439454829%2FFunctions%2F-1791223465"><span>clear</span><wbr><span><span>Body</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1439454829%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1439454829%2FFunctions%2F360134420"><span>clear</span><wbr><span><span>Body</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1439454829%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1439454829%2FFunctions%2F-1791223465"><span class="token function">clearBody</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1439454829%2FFunctions%2F360134420"><span class="token function">clearBody</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1952129660%2FFunctions%2F-1791223465" anchor-label="clearProperties" id="1952129660%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1952129660%2FFunctions%2F360134420" anchor-label="clearProperties" id="1952129660%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1952129660%2FFunctions%2F-1791223465"><span>clear</span><wbr><span><span>Properties</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1952129660%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1952129660%2FFunctions%2F360134420"><span>clear</span><wbr><span><span>Properties</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1952129660%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1952129660%2FFunctions%2F-1791223465"><span class="token function">clearProperties</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1952129660%2FFunctions%2F360134420"><span class="token function">clearProperties</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1563466680%2FFunctions%2F-1791223465" anchor-label="coAcknowledge" id="1563466680%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1563466680%2FFunctions%2F360134420" anchor-label="coAcknowledge" id="1563466680%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../co-acknowledge.html"><span>co</span><wbr><span><span>Acknowledge</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1563466680%2FFunctions%2F-1791223465"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1563466680%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="../co-acknowledge.html"><span class="token function">coAcknowledge</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="../co-acknowledge.html"><span class="token function">coAcknowledge</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1757854357%2FFunctions%2F-1791223465" anchor-label="getBody" id="-1757854357%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1757854357%2FFunctions%2F360134420" anchor-label="getBody" id="-1757854357%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1757854357%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>Body</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1757854357%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1757854357%2FFunctions%2F360134420"><span>get</span><wbr><span><span>Body</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1757854357%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="../-committable-bytes-message/index.html#-1757854357%2FFunctions%2F-1791223465"><span class="token function">getBody</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="../-committable-bytes-message/index.html#-1757854357%2FFunctions%2F360134420"><span class="token function">getBody</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../../../connector/connector-jms/com.river.connector.jms.model/-committable-message/-committable-object-message/get-body.html">T</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-289664211%2FFunctions%2F-1791223465" anchor-label="getBooleanProperty" id="-289664211%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-289664211%2FFunctions%2F360134420" anchor-label="getBooleanProperty" id="-289664211%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-289664211%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Boolean</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-289664211%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-289664211%2FFunctions%2F360134420"><span>get</span><wbr><span>Boolean</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-289664211%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-289664211%2FFunctions%2F-1791223465"><span class="token function">getBooleanProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-289664211%2FFunctions%2F360134420"><span class="token function">getBooleanProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-596050981%2FFunctions%2F-1791223465" anchor-label="getByteProperty" id="-596050981%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-596050981%2FFunctions%2F360134420" anchor-label="getByteProperty" id="-596050981%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-596050981%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Byte</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-596050981%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-596050981%2FFunctions%2F360134420"><span>get</span><wbr><span>Byte</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-596050981%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-596050981%2FFunctions%2F-1791223465"><span class="token function">getByteProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-596050981%2FFunctions%2F360134420"><span class="token function">getByteProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="315485476%2FFunctions%2F-1791223465" anchor-label="getDoubleProperty" id="315485476%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="315485476%2FFunctions%2F360134420" anchor-label="getDoubleProperty" id="315485476%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#315485476%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Double</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="315485476%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#315485476%2FFunctions%2F360134420"><span>get</span><wbr><span>Double</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="315485476%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#315485476%2FFunctions%2F-1791223465"><span class="token function">getDoubleProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html">Double</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#315485476%2FFunctions%2F360134420"><span class="token function">getDoubleProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html">Double</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="571053217%2FFunctions%2F-1791223465" anchor-label="getFloatProperty" id="571053217%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="571053217%2FFunctions%2F360134420" anchor-label="getFloatProperty" id="571053217%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#571053217%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Float</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="571053217%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#571053217%2FFunctions%2F360134420"><span>get</span><wbr><span>Float</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="571053217%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#571053217%2FFunctions%2F-1791223465"><span class="token function">getFloatProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#571053217%2FFunctions%2F360134420"><span class="token function">getFloatProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="807294772%2FFunctions%2F-1791223465" anchor-label="getIntProperty" id="807294772%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="807294772%2FFunctions%2F360134420" anchor-label="getIntProperty" id="807294772%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#807294772%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Int</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="807294772%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#807294772%2FFunctions%2F360134420"><span>get</span><wbr><span>Int</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="807294772%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#807294772%2FFunctions%2F-1791223465"><span class="token function">getIntProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#807294772%2FFunctions%2F360134420"><span class="token function">getIntProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="817584089%2FFunctions%2F-1791223465" anchor-label="getJMSCorrelationID" id="817584089%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="817584089%2FFunctions%2F360134420" anchor-label="getJMSCorrelationID" id="817584089%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#817584089%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSCorrelation</span><wbr><span><span>ID</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="817584089%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#817584089%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSCorrelation</span><wbr><span><span>ID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="817584089%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#817584089%2FFunctions%2F-1791223465"><span class="token function">getJMSCorrelationID</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#817584089%2FFunctions%2F360134420"><span class="token function">getJMSCorrelationID</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1976627448%2FFunctions%2F-1791223465" anchor-label="getJMSCorrelationIDAsBytes" id="-1976627448%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1976627448%2FFunctions%2F360134420" anchor-label="getJMSCorrelationIDAsBytes" id="-1976627448%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1976627448%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSCorrelation</span><wbr><span>IDAs</span><wbr><span><span>Bytes</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1976627448%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1976627448%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSCorrelation</span><wbr><span>IDAs</span><wbr><span><span>Bytes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1976627448%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1976627448%2FFunctions%2F-1791223465"><span class="token function">getJMSCorrelationIDAsBytes</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1976627448%2FFunctions%2F360134420"><span class="token function">getJMSCorrelationIDAsBytes</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="733714733%2FFunctions%2F-1791223465" anchor-label="getJMSDeliveryMode" id="733714733%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="733714733%2FFunctions%2F360134420" anchor-label="getJMSDeliveryMode" id="733714733%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#733714733%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSDelivery</span><wbr><span><span>Mode</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="733714733%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#733714733%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSDelivery</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="733714733%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#733714733%2FFunctions%2F-1791223465"><span class="token function">getJMSDeliveryMode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#733714733%2FFunctions%2F360134420"><span class="token function">getJMSDeliveryMode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1411497149%2FFunctions%2F-1791223465" anchor-label="getJMSDeliveryTime" id="-1411497149%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1411497149%2FFunctions%2F360134420" anchor-label="getJMSDeliveryTime" id="-1411497149%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1411497149%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSDelivery</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1411497149%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1411497149%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSDelivery</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1411497149%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1411497149%2FFunctions%2F-1791223465"><span class="token function">getJMSDeliveryTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1411497149%2FFunctions%2F360134420"><span class="token function">getJMSDeliveryTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-401912504%2FFunctions%2F-1791223465" anchor-label="getJMSDestination" id="-401912504%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-401912504%2FFunctions%2F360134420" anchor-label="getJMSDestination" id="-401912504%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-401912504%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSDestination</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-401912504%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-401912504%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSDestination</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-401912504%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-401912504%2FFunctions%2F-1791223465"><span class="token function">getJMSDestination</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-401912504%2FFunctions%2F360134420"><span class="token function">getJMSDestination</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1806275851%2FFunctions%2F-1791223465" anchor-label="getJMSExpiration" id="-1806275851%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1806275851%2FFunctions%2F360134420" anchor-label="getJMSExpiration" id="-1806275851%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1806275851%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSExpiration</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1806275851%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1806275851%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSExpiration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1806275851%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1806275851%2FFunctions%2F-1791223465"><span class="token function">getJMSExpiration</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1806275851%2FFunctions%2F360134420"><span class="token function">getJMSExpiration</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="581908148%2FFunctions%2F-1791223465" anchor-label="getJMSMessageID" id="581908148%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="581908148%2FFunctions%2F360134420" anchor-label="getJMSMessageID" id="581908148%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#581908148%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSMessage</span><wbr><span><span>ID</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="581908148%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#581908148%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSMessage</span><wbr><span><span>ID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="581908148%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#581908148%2FFunctions%2F-1791223465"><span class="token function">getJMSMessageID</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#581908148%2FFunctions%2F360134420"><span class="token function">getJMSMessageID</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1218551648%2FFunctions%2F-1791223465" anchor-label="getJMSPriority" id="1218551648%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1218551648%2FFunctions%2F360134420" anchor-label="getJMSPriority" id="1218551648%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1218551648%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSPriority</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1218551648%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1218551648%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSPriority</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1218551648%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1218551648%2FFunctions%2F-1791223465"><span class="token function">getJMSPriority</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1218551648%2FFunctions%2F360134420"><span class="token function">getJMSPriority</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1227997957%2FFunctions%2F-1791223465" anchor-label="getJMSRedelivered" id="1227997957%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1227997957%2FFunctions%2F360134420" anchor-label="getJMSRedelivered" id="1227997957%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1227997957%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSRedelivered</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1227997957%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1227997957%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSRedelivered</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1227997957%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1227997957%2FFunctions%2F-1791223465"><span class="token function">getJMSRedelivered</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1227997957%2FFunctions%2F360134420"><span class="token function">getJMSRedelivered</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1556918607%2FFunctions%2F-1791223465" anchor-label="getJMSReplyTo" id="-1556918607%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1556918607%2FFunctions%2F360134420" anchor-label="getJMSReplyTo" id="-1556918607%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1556918607%2FFunctions%2F-1791223465"><span>get</span><wbr><span>JMSReply</span><wbr><span><span>To</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1556918607%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1556918607%2FFunctions%2F360134420"><span>get</span><wbr><span>JMSReply</span><wbr><span><span>To</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1556918607%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1556918607%2FFunctions%2F-1791223465"><span class="token function">getJMSReplyTo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1556918607%2FFunctions%2F360134420"><span class="token function">getJMSReplyTo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="851395456%2FFunctions%2F-1791223465" anchor-label="getJMSTimestamp" id="851395456%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="851395456%2FFunctions%2F360134420" anchor-label="getJMSTimestamp" id="851395456%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#851395456%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSTimestamp</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="851395456%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#851395456%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSTimestamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="851395456%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#851395456%2FFunctions%2F-1791223465"><span class="token function">getJMSTimestamp</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#851395456%2FFunctions%2F360134420"><span class="token function">getJMSTimestamp</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="565926410%2FFunctions%2F-1791223465" anchor-label="getJMSType" id="565926410%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="565926410%2FFunctions%2F360134420" anchor-label="getJMSType" id="565926410%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#565926410%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>JMSType</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="565926410%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#565926410%2FFunctions%2F360134420"><span>get</span><wbr><span><span>JMSType</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="565926410%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#565926410%2FFunctions%2F-1791223465"><span class="token function">getJMSType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#565926410%2FFunctions%2F360134420"><span class="token function">getJMSType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-504498609%2FFunctions%2F-1791223465" anchor-label="getLongProperty" id="-504498609%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-504498609%2FFunctions%2F360134420" anchor-label="getLongProperty" id="-504498609%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-504498609%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Long</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-504498609%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-504498609%2FFunctions%2F360134420"><span>get</span><wbr><span>Long</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-504498609%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-504498609%2FFunctions%2F-1791223465"><span class="token function">getLongProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-504498609%2FFunctions%2F360134420"><span class="token function">getLongProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1448939494%2FFunctions%2F-1791223465" anchor-label="getObject" id="1448939494%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1448939494%2FFunctions%2F360134420" anchor-label="getObject" id="1448939494%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1448939494%2FFunctions%2F-1791223465"><span>get</span><wbr><span><span>Object</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448939494%2FFunctions%2F-1791223465"></span>
+                  <div><a href="index.html#1448939494%2FFunctions%2F360134420"><span>get</span><wbr><span><span>Object</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448939494%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1448939494%2FFunctions%2F-1791223465"><span class="token function">getObject</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1448939494%2FFunctions%2F360134420"><span class="token function">getObject</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="325534738%2FFunctions%2F-1791223465" anchor-label="getObjectProperty" id="325534738%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="325534738%2FFunctions%2F360134420" anchor-label="getObjectProperty" id="325534738%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#325534738%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Object</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="325534738%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#325534738%2FFunctions%2F360134420"><span>get</span><wbr><span>Object</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="325534738%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#325534738%2FFunctions%2F-1791223465"><span class="token function">getObjectProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#325534738%2FFunctions%2F360134420"><span class="token function">getObjectProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="20417889%2FFunctions%2F-1791223465" anchor-label="getPropertyNames" id="20417889%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="20417889%2FFunctions%2F360134420" anchor-label="getPropertyNames" id="20417889%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#20417889%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Property</span><wbr><span><span>Names</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="20417889%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#20417889%2FFunctions%2F360134420"><span>get</span><wbr><span>Property</span><wbr><span><span>Names</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="20417889%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#20417889%2FFunctions%2F-1791223465"><span class="token function">getPropertyNames</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Enumeration.html">Enumeration</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#20417889%2FFunctions%2F360134420"><span class="token function">getPropertyNames</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Enumeration.html">Enumeration</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1612169535%2FFunctions%2F-1791223465" anchor-label="getShortProperty" id="-1612169535%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1612169535%2FFunctions%2F360134420" anchor-label="getShortProperty" id="-1612169535%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1612169535%2FFunctions%2F-1791223465"><span>get</span><wbr><span>Short</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1612169535%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1612169535%2FFunctions%2F360134420"><span>get</span><wbr><span>Short</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1612169535%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1612169535%2FFunctions%2F-1791223465"><span class="token function">getShortProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-short/index.html">Short</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1612169535%2FFunctions%2F360134420"><span class="token function">getShortProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-short/index.html">Short</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1702469276%2FFunctions%2F-1791223465" anchor-label="getStringProperty" id="-1702469276%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1702469276%2FFunctions%2F360134420" anchor-label="getStringProperty" id="-1702469276%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1702469276%2FFunctions%2F-1791223465"><span>get</span><wbr><span>String</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1702469276%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1702469276%2FFunctions%2F360134420"><span>get</span><wbr><span>String</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1702469276%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1702469276%2FFunctions%2F-1791223465"><span class="token function">getStringProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1702469276%2FFunctions%2F360134420"><span class="token function">getStringProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="838618573%2FFunctions%2F-1791223465" anchor-label="isBodyAssignableTo" id="838618573%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="838618573%2FFunctions%2F360134420" anchor-label="isBodyAssignableTo" id="838618573%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#838618573%2FFunctions%2F-1791223465"><span>is</span><wbr><span>Body</span><wbr><span>Assignable</span><wbr><span><span>To</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="838618573%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#838618573%2FFunctions%2F360134420"><span>is</span><wbr><span>Body</span><wbr><span>Assignable</span><wbr><span><span>To</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="838618573%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#838618573%2FFunctions%2F-1791223465"><span class="token function">isBodyAssignableTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#838618573%2FFunctions%2F360134420"><span class="token function">isBodyAssignableTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-268100137%2FFunctions%2F-1791223465" anchor-label="propertyExists" id="-268100137%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-268100137%2FFunctions%2F360134420" anchor-label="propertyExists" id="-268100137%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-268100137%2FFunctions%2F-1791223465"><span>property</span><wbr><span><span>Exists</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-268100137%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-268100137%2FFunctions%2F360134420"><span>property</span><wbr><span><span>Exists</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-268100137%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-268100137%2FFunctions%2F-1791223465"><span class="token function">propertyExists</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-268100137%2FFunctions%2F360134420"><span class="token function">propertyExists</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1128826819%2FFunctions%2F-1791223465" anchor-label="setBooleanProperty" id="1128826819%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1128826819%2FFunctions%2F360134420" anchor-label="setBooleanProperty" id="1128826819%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1128826819%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Boolean</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1128826819%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1128826819%2FFunctions%2F360134420"><span>set</span><wbr><span>Boolean</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1128826819%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1128826819%2FFunctions%2F-1791223465"><span class="token function">setBooleanProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1128826819%2FFunctions%2F360134420"><span class="token function">setBooleanProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1464017589%2FFunctions%2F-1791223465" anchor-label="setByteProperty" id="1464017589%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1464017589%2FFunctions%2F360134420" anchor-label="setByteProperty" id="1464017589%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1464017589%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Byte</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1464017589%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1464017589%2FFunctions%2F360134420"><span>set</span><wbr><span>Byte</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1464017589%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1464017589%2FFunctions%2F-1791223465"><span class="token function">setByteProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1464017589%2FFunctions%2F360134420"><span class="token function">setByteProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html">Byte</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-876026539%2FFunctions%2F-1791223465" anchor-label="setDoubleProperty" id="-876026539%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-876026539%2FFunctions%2F360134420" anchor-label="setDoubleProperty" id="-876026539%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-876026539%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Double</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-876026539%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-876026539%2FFunctions%2F360134420"><span>set</span><wbr><span>Double</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-876026539%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-876026539%2FFunctions%2F-1791223465"><span class="token function">setDoubleProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html">Double</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-876026539%2FFunctions%2F360134420"><span class="token function">setDoubleProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html">Double</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1280633957%2FFunctions%2F-1791223465" anchor-label="setFloatProperty" id="-1280633957%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1280633957%2FFunctions%2F360134420" anchor-label="setFloatProperty" id="-1280633957%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1280633957%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Float</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1280633957%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1280633957%2FFunctions%2F360134420"><span>set</span><wbr><span>Float</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1280633957%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1280633957%2FFunctions%2F-1791223465"><span class="token function">setFloatProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1280633957%2FFunctions%2F360134420"><span class="token function">setFloatProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-280907595%2FFunctions%2F-1791223465" anchor-label="setIntProperty" id="-280907595%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-280907595%2FFunctions%2F360134420" anchor-label="setIntProperty" id="-280907595%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-280907595%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Int</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-280907595%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-280907595%2FFunctions%2F360134420"><span>set</span><wbr><span>Int</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-280907595%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-280907595%2FFunctions%2F-1791223465"><span class="token function">setIntProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-280907595%2FFunctions%2F360134420"><span class="token function">setIntProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1169583575%2FFunctions%2F-1791223465" anchor-label="setJMSCorrelationID" id="1169583575%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1169583575%2FFunctions%2F360134420" anchor-label="setJMSCorrelationID" id="1169583575%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1169583575%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSCorrelation</span><wbr><span><span>ID</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1169583575%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1169583575%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSCorrelation</span><wbr><span><span>ID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1169583575%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1169583575%2FFunctions%2F-1791223465"><span class="token function">setJMSCorrelationID</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1169583575%2FFunctions%2F360134420"><span class="token function">setJMSCorrelationID</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1857206320%2FFunctions%2F-1791223465" anchor-label="setJMSCorrelationIDAsBytes" id="1857206320%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1857206320%2FFunctions%2F360134420" anchor-label="setJMSCorrelationIDAsBytes" id="1857206320%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1857206320%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSCorrelation</span><wbr><span>IDAs</span><wbr><span><span>Bytes</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1857206320%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1857206320%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSCorrelation</span><wbr><span>IDAs</span><wbr><span><span>Bytes</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1857206320%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1857206320%2FFunctions%2F-1791223465"><span class="token function">setJMSCorrelationIDAsBytes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1857206320%2FFunctions%2F360134420"><span class="token function">setJMSCorrelationIDAsBytes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="921309335%2FFunctions%2F-1791223465" anchor-label="setJMSDeliveryMode" id="921309335%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="921309335%2FFunctions%2F360134420" anchor-label="setJMSDeliveryMode" id="921309335%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#921309335%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSDelivery</span><wbr><span><span>Mode</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="921309335%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#921309335%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSDelivery</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="921309335%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#921309335%2FFunctions%2F-1791223465"><span class="token function">setJMSDeliveryMode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#921309335%2FFunctions%2F360134420"><span class="token function">setJMSDeliveryMode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-260214902%2FFunctions%2F-1791223465" anchor-label="setJMSDeliveryTime" id="-260214902%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-260214902%2FFunctions%2F360134420" anchor-label="setJMSDeliveryTime" id="-260214902%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-260214902%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSDelivery</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-260214902%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-260214902%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSDelivery</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-260214902%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-260214902%2FFunctions%2F-1791223465"><span class="token function">setJMSDeliveryTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-260214902%2FFunctions%2F360134420"><span class="token function">setJMSDeliveryTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1162937330%2FFunctions%2F-1791223465" anchor-label="setJMSDestination" id="-1162937330%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1162937330%2FFunctions%2F360134420" anchor-label="setJMSDestination" id="-1162937330%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1162937330%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSDestination</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1162937330%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1162937330%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSDestination</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1162937330%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1162937330%2FFunctions%2F-1791223465"><span class="token function">setJMSDestination</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1162937330%2FFunctions%2F360134420"><span class="token function">setJMSDestination</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-476499560%2FFunctions%2F-1791223465" anchor-label="setJMSExpiration" id="-476499560%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-476499560%2FFunctions%2F360134420" anchor-label="setJMSExpiration" id="-476499560%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-476499560%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSExpiration</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-476499560%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-476499560%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSExpiration</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-476499560%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-476499560%2FFunctions%2F-1791223465"><span class="token function">setJMSExpiration</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-476499560%2FFunctions%2F360134420"><span class="token function">setJMSExpiration</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1073303332%2FFunctions%2F-1791223465" anchor-label="setJMSMessageID" id="-1073303332%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1073303332%2FFunctions%2F360134420" anchor-label="setJMSMessageID" id="-1073303332%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1073303332%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSMessage</span><wbr><span><span>ID</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1073303332%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1073303332%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSMessage</span><wbr><span><span>ID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1073303332%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1073303332%2FFunctions%2F-1791223465"><span class="token function">setJMSMessageID</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1073303332%2FFunctions%2F360134420"><span class="token function">setJMSMessageID</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1304631562%2FFunctions%2F-1791223465" anchor-label="setJMSPriority" id="1304631562%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1304631562%2FFunctions%2F360134420" anchor-label="setJMSPriority" id="1304631562%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1304631562%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSPriority</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1304631562%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1304631562%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSPriority</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1304631562%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1304631562%2FFunctions%2F-1791223465"><span class="token function">setJMSPriority</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1304631562%2FFunctions%2F360134420"><span class="token function">setJMSPriority</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1965121534%2FFunctions%2F-1791223465" anchor-label="setJMSRedelivered" id="1965121534%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="1965121534%2FFunctions%2F360134420" anchor-label="setJMSRedelivered" id="1965121534%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#1965121534%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSRedelivered</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1965121534%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#1965121534%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSRedelivered</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1965121534%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1965121534%2FFunctions%2F-1791223465"><span class="token function">setJMSRedelivered</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#1965121534%2FFunctions%2F360134420"><span class="token function">setJMSRedelivered</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="417762373%2FFunctions%2F-1791223465" anchor-label="setJMSReplyTo" id="417762373%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="417762373%2FFunctions%2F360134420" anchor-label="setJMSReplyTo" id="417762373%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#417762373%2FFunctions%2F-1791223465"><span>set</span><wbr><span>JMSReply</span><wbr><span><span>To</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="417762373%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#417762373%2FFunctions%2F360134420"><span>set</span><wbr><span>JMSReply</span><wbr><span><span>To</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="417762373%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#417762373%2FFunctions%2F-1791223465"><span class="token function">setJMSReplyTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#417762373%2FFunctions%2F360134420"><span class="token function">setJMSReplyTo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="javax.jms/Destination///PointingToDeclaration/">Destination</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-913552187%2FFunctions%2F-1791223465" anchor-label="setJMSTimestamp" id="-913552187%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-913552187%2FFunctions%2F360134420" anchor-label="setJMSTimestamp" id="-913552187%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-913552187%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSTimestamp</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-913552187%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-913552187%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSTimestamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-913552187%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-913552187%2FFunctions%2F-1791223465"><span class="token function">setJMSTimestamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-913552187%2FFunctions%2F360134420"><span class="token function">setJMSTimestamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-565416530%2FFunctions%2F-1791223465" anchor-label="setJMSType" id="-565416530%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-565416530%2FFunctions%2F360134420" anchor-label="setJMSType" id="-565416530%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-565416530%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>JMSType</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-565416530%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-565416530%2FFunctions%2F360134420"><span>set</span><wbr><span><span>JMSType</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-565416530%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-565416530%2FFunctions%2F-1791223465"><span class="token function">setJMSType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-565416530%2FFunctions%2F360134420"><span class="token function">setJMSType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-536950987%2FFunctions%2F-1791223465" anchor-label="setLongProperty" id="-536950987%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-536950987%2FFunctions%2F360134420" anchor-label="setLongProperty" id="-536950987%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-536950987%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Long</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-536950987%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-536950987%2FFunctions%2F360134420"><span>set</span><wbr><span>Long</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-536950987%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-536950987%2FFunctions%2F-1791223465"><span class="token function">setLongProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-536950987%2FFunctions%2F360134420"><span class="token function">setLongProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-590981281%2FFunctions%2F-1791223465" anchor-label="setObject" id="-590981281%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-590981281%2FFunctions%2F360134420" anchor-label="setObject" id="-590981281%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-590981281%2FFunctions%2F-1791223465"><span>set</span><wbr><span><span>Object</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-590981281%2FFunctions%2F-1791223465"></span>
+                  <div><a href="index.html#-590981281%2FFunctions%2F360134420"><span>set</span><wbr><span><span>Object</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-590981281%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-590981281%2FFunctions%2F-1791223465"><span class="token function">setObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-590981281%2FFunctions%2F360134420"><span class="token function">setObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html">Serializable</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1942483742%2FFunctions%2F-1791223465" anchor-label="setObjectProperty" id="-1942483742%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-1942483742%2FFunctions%2F360134420" anchor-label="setObjectProperty" id="-1942483742%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-1942483742%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Object</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1942483742%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-1942483742%2FFunctions%2F360134420"><span>set</span><wbr><span>Object</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1942483742%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1942483742%2FFunctions%2F-1791223465"><span class="token function">setObjectProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-1942483742%2FFunctions%2F360134420"><span class="token function">setObjectProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-826796197%2FFunctions%2F-1791223465" anchor-label="setShortProperty" id="-826796197%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-826796197%2FFunctions%2F360134420" anchor-label="setShortProperty" id="-826796197%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-826796197%2FFunctions%2F-1791223465"><span>set</span><wbr><span>Short</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-826796197%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-826796197%2FFunctions%2F360134420"><span>set</span><wbr><span>Short</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-826796197%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-826796197%2FFunctions%2F-1791223465"><span class="token function">setShortProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-short/index.html">Short</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-826796197%2FFunctions%2F360134420"><span class="token function">setShortProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-short/index.html">Short</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-710525611%2FFunctions%2F-1791223465" anchor-label="setStringProperty" id="-710525611%2FFunctions%2F-1791223465" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/main">
+<a data-name="-710525611%2FFunctions%2F360134420" anchor-label="setStringProperty" id="-710525611%2FFunctions%2F360134420" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-jms:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-jms:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-committable-bytes-message/index.html#-710525611%2FFunctions%2F-1791223465"><span>set</span><wbr><span>String</span><wbr><span><span>Property</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-710525611%2FFunctions%2F-1791223465"></span>
+                  <div><a href="../-committable-bytes-message/index.html#-710525611%2FFunctions%2F360134420"><span>set</span><wbr><span>String</span><wbr><span><span>Property</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-710525611%2FFunctions%2F360134420"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-710525611%2FFunctions%2F-1791223465"><span class="token function">setStringProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-jms:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-committable-bytes-message/index.html#-710525611%2FFunctions%2F360134420"><span class="token function">setStringProperty</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -865,10 +874,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
 

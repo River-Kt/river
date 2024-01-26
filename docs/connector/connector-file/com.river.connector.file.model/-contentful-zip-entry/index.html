@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>ContentfulZipEntry</title>
-<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../styles/style.css" rel="Stylesheet">
-<link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../../../styles/main.css" rel="Stylesheet">
 <link href="../../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
@@ -29,48 +32,54 @@
 <script type="text/javascript" src="../../../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../../../index.html">
-<span>river</span>            </a>    </div>
-    <div>
-    </div>
-    <div class="pull-right d-flex">
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-file:dokkaHtmlPartial/main">jvm</button>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../index.html">
+                            river
+                    </a>            </div>
+            <div class="library-version">
+            </div>
         </div>
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":connector:connector-file:dokkaHtmlPartial/jvmMain">jvm</button>
+        </div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-    <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="connector-file::com.river.connector.file.model/ContentfulZipEntry///PointingToDeclaration//-977918241">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="connector-file::com.river.connector.file.model/ContentfulZipEntry///PointingToDeclaration//1625545868">
   <div class="breadcrumbs"><a href="../../index.html">connector-file</a><span class="delimiter">/</span><a href="../index.html">com.river.connector.file.model</a><span class="delimiter">/</span><span class="current">ContentfulZipEntry</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Contentful</span><wbr><span>Zip</span><wbr><span><span>Entry</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../../../core/com.river.core/-experimental-river-api/index.html"><span class="token annotation builtin">ExperimentalRiverApi</span></a></div></div><span class="token keyword">class </span><a href="index.html">ContentfulZipEntry</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entry<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div><p class="paragraph">Represents a ZIP entry with its content.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>entry</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The original <a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a>.</p></div></div></div></div><div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>data</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The byte content of the entry.</p></div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="../../../../core/com.river.core/-experimental-river-api/index.html"><span class="token annotation builtin">ExperimentalRiverApi</span></a></div></div><span class="token keyword">class </span><a href="index.html">ContentfulZipEntry</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entry<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div><p class="paragraph">Represents a ZIP entry with its content.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>entry</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The original <a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a>.</p></div></div></div></div><div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>data</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The byte content of the entry.</p></div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-2113482461%2FConstructors%2F-977918241" anchor-label="ContentfulZipEntry" id="-2113482461%2FConstructors%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-2113482461%2FConstructors%2F1625545868" anchor-label="ContentfulZipEntry" id="-2113482461%2FConstructors%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-contentful-zip-entry.html"><span>Contentful</span><wbr><span>Zip</span><wbr><span><span>Entry</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2113482461%2FConstructors%2F-977918241"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2113482461%2FConstructors%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entry<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entry<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -79,107 +88,107 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="1966038926%2FProperties%2F-977918241" anchor-label="comment" id="1966038926%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="1966038926%2FProperties%2F1625545868" anchor-label="comment" id="1966038926%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1966038926%2FProperties%2F-977918241"><span><span>comment</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1966038926%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#1966038926%2FProperties%2F1625545868"><span><span>comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1966038926%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#1966038926%2FProperties%2F-977918241">comment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#1966038926%2FProperties%2F1625545868">comment</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2078322247%2FProperties%2F-977918241" anchor-label="crc" id="-2078322247%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-2078322247%2FProperties%2F1625545868" anchor-label="crc" id="-2078322247%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-2078322247%2FProperties%2F-977918241"><span><span>crc</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2078322247%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#-2078322247%2FProperties%2F1625545868"><span><span>crc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2078322247%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2078322247%2FProperties%2F-977918241">crc</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2078322247%2FProperties%2F1625545868">crc</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="781698209%2FProperties%2F-977918241" anchor-label="data" id="781698209%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="781698209%2FProperties%2F1625545868" anchor-label="data" id="781698209%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="data.html"><span><span>data</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="781698209%2FProperties%2F-977918241"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="781698209%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="data.html">data</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="data.html">data</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1098376957%2FProperties%2F-977918241" anchor-label="extra" id="1098376957%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1098376957%2FProperties%2F1625545868" anchor-label="extra" id="1098376957%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1098376957%2FProperties%2F-977918241"><span><span>extra</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1098376957%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#1098376957%2FProperties%2F1625545868"><span><span>extra</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1098376957%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#1098376957%2FProperties%2F-977918241">extra</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#1098376957%2FProperties%2F1625545868">extra</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html">ByteArray</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2082576724%2FProperties%2F-977918241" anchor-label="method" id="-2082576724%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-2082576724%2FProperties%2F1625545868" anchor-label="method" id="-2082576724%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-2082576724%2FProperties%2F-977918241"><span><span>method</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2082576724%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#-2082576724%2FProperties%2F1625545868"><span><span>method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2082576724%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2082576724%2FProperties%2F-977918241">method</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2082576724%2FProperties%2F1625545868">method</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1224440898%2FProperties%2F-977918241" anchor-label="name" id="1224440898%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1224440898%2FProperties%2F1625545868" anchor-label="name" id="1224440898%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1224440898%2FProperties%2F-977918241"><span><span>name</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1224440898%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#1224440898%2FProperties%2F1625545868"><span><span>name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1224440898%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="index.html#1224440898%2FProperties%2F-977918241">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="index.html#1224440898%2FProperties%2F1625545868">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2026829940%2FProperties%2F-977918241" anchor-label="size" id="-2026829940%2FProperties%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-2026829940%2FProperties%2F1625545868" anchor-label="size" id="-2026829940%2FProperties%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-2026829940%2FProperties%2F-977918241"><span><span>size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026829940%2FProperties%2F-977918241"></span>
+                  <div><a href="index.html#-2026829940%2FProperties%2F1625545868"><span><span>size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026829940%2FProperties%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2026829940%2FProperties%2F-977918241">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="index.html#-2026829940%2FProperties%2F1625545868">size</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -188,242 +197,242 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-1100235184%2FFunctions%2F-977918241" anchor-label="clone" id="-1100235184%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-1100235184%2FFunctions%2F1625545868" anchor-label="clone" id="-1100235184%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1100235184%2FFunctions%2F-977918241"><span><span>clone</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1100235184%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-1100235184%2FFunctions%2F1625545868"><span><span>clone</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1100235184%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1100235184%2FFunctions%2F-977918241"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1100235184%2FFunctions%2F1625545868"><span class="token function">clone</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1513749493%2FFunctions%2F-977918241" anchor-label="getCompressedSize" id="1513749493%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1513749493%2FFunctions%2F1625545868" anchor-label="getCompressedSize" id="1513749493%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1513749493%2FFunctions%2F-977918241"><span>get</span><wbr><span>Compressed</span><wbr><span><span>Size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1513749493%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#1513749493%2FFunctions%2F1625545868"><span>get</span><wbr><span>Compressed</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1513749493%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1513749493%2FFunctions%2F-977918241"><span class="token function">getCompressedSize</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1513749493%2FFunctions%2F1625545868"><span class="token function">getCompressedSize</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1670962549%2FFunctions%2F-977918241" anchor-label="getCreationTime" id="-1670962549%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-1670962549%2FFunctions%2F1625545868" anchor-label="getCreationTime" id="-1670962549%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1670962549%2FFunctions%2F-977918241"><span>get</span><wbr><span>Creation</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1670962549%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-1670962549%2FFunctions%2F1625545868"><span>get</span><wbr><span>Creation</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1670962549%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1670962549%2FFunctions%2F-977918241"><span class="token function">getCreationTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1670962549%2FFunctions%2F1625545868"><span class="token function">getCreationTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1423541552%2FFunctions%2F-977918241" anchor-label="getLastAccessTime" id="1423541552%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1423541552%2FFunctions%2F1625545868" anchor-label="getLastAccessTime" id="1423541552%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1423541552%2FFunctions%2F-977918241"><span>get</span><wbr><span>Last</span><wbr><span>Access</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1423541552%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#1423541552%2FFunctions%2F1625545868"><span>get</span><wbr><span>Last</span><wbr><span>Access</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1423541552%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1423541552%2FFunctions%2F-977918241"><span class="token function">getLastAccessTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1423541552%2FFunctions%2F1625545868"><span class="token function">getLastAccessTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-586484501%2FFunctions%2F-977918241" anchor-label="getLastModifiedTime" id="-586484501%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-586484501%2FFunctions%2F1625545868" anchor-label="getLastModifiedTime" id="-586484501%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-586484501%2FFunctions%2F-977918241"><span>get</span><wbr><span>Last</span><wbr><span>Modified</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-586484501%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-586484501%2FFunctions%2F1625545868"><span>get</span><wbr><span>Last</span><wbr><span>Modified</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-586484501%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-586484501%2FFunctions%2F-977918241"><span class="token function">getLastModifiedTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-586484501%2FFunctions%2F1625545868"><span class="token function">getLastModifiedTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="788208426%2FFunctions%2F-977918241" anchor-label="getTime" id="788208426%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="788208426%2FFunctions%2F1625545868" anchor-label="getTime" id="788208426%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#788208426%2FFunctions%2F-977918241"><span>get</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="788208426%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#788208426%2FFunctions%2F1625545868"><span>get</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="788208426%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#788208426%2FFunctions%2F-977918241"><span class="token function">getTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#788208426%2FFunctions%2F1625545868"><span class="token function">getTime</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-630582395%2FFunctions%2F-977918241" anchor-label="getTimeLocal" id="-630582395%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-630582395%2FFunctions%2F1625545868" anchor-label="getTimeLocal" id="-630582395%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-630582395%2FFunctions%2F-977918241"><span>get</span><wbr><span>Time</span><wbr><span><span>Local</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-630582395%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-630582395%2FFunctions%2F1625545868"><span>get</span><wbr><span>Time</span><wbr><span><span>Local</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-630582395%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-630582395%2FFunctions%2F-977918241"><span class="token function">getTimeLocal</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-630582395%2FFunctions%2F1625545868"><span class="token function">getTimeLocal</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-805219150%2FFunctions%2F-977918241" anchor-label="hashCode" id="-805219150%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-805219150%2FFunctions%2F1625545868" anchor-label="hashCode" id="-805219150%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-805219150%2FFunctions%2F-977918241"><span>hash</span><wbr><span><span>Code</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-805219150%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-805219150%2FFunctions%2F1625545868"><span>hash</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-805219150%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-805219150%2FFunctions%2F-977918241"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-805219150%2FFunctions%2F1625545868"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2026352118%2FFunctions%2F-977918241" anchor-label="isDirectory" id="-2026352118%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-2026352118%2FFunctions%2F1625545868" anchor-label="isDirectory" id="-2026352118%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-2026352118%2FFunctions%2F-977918241"><span>is</span><wbr><span><span>Directory</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026352118%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-2026352118%2FFunctions%2F1625545868"><span>is</span><wbr><span><span>Directory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2026352118%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-2026352118%2FFunctions%2F-977918241"><span class="token function">isDirectory</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-2026352118%2FFunctions%2F1625545868"><span class="token function">isDirectory</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1189472720%2FFunctions%2F-977918241" anchor-label="setCompressedSize" id="-1189472720%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-1189472720%2FFunctions%2F1625545868" anchor-label="setCompressedSize" id="-1189472720%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1189472720%2FFunctions%2F-977918241"><span>set</span><wbr><span>Compressed</span><wbr><span><span>Size</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1189472720%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-1189472720%2FFunctions%2F1625545868"><span>set</span><wbr><span>Compressed</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1189472720%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1189472720%2FFunctions%2F-977918241"><span class="token function">setCompressedSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1189472720%2FFunctions%2F1625545868"><span class="token function">setCompressedSize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1949659784%2FFunctions%2F-977918241" anchor-label="setCreationTime" id="-1949659784%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-1949659784%2FFunctions%2F1625545868" anchor-label="setCreationTime" id="-1949659784%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1949659784%2FFunctions%2F-977918241"><span>set</span><wbr><span>Creation</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1949659784%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-1949659784%2FFunctions%2F1625545868"><span>set</span><wbr><span>Creation</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1949659784%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1949659784%2FFunctions%2F-977918241"><span class="token function">setCreationTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1949659784%2FFunctions%2F1625545868"><span class="token function">setCreationTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-804499683%2FFunctions%2F-977918241" anchor-label="setLastAccessTime" id="-804499683%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-804499683%2FFunctions%2F1625545868" anchor-label="setLastAccessTime" id="-804499683%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-804499683%2FFunctions%2F-977918241"><span>set</span><wbr><span>Last</span><wbr><span>Access</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804499683%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-804499683%2FFunctions%2F1625545868"><span>set</span><wbr><span>Last</span><wbr><span>Access</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-804499683%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-804499683%2FFunctions%2F-977918241"><span class="token function">setLastAccessTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-804499683%2FFunctions%2F1625545868"><span class="token function">setLastAccessTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1490909736%2FFunctions%2F-977918241" anchor-label="setLastModifiedTime" id="-1490909736%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-1490909736%2FFunctions%2F1625545868" anchor-label="setLastModifiedTime" id="-1490909736%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1490909736%2FFunctions%2F-977918241"><span>set</span><wbr><span>Last</span><wbr><span>Modified</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1490909736%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-1490909736%2FFunctions%2F1625545868"><span>set</span><wbr><span>Last</span><wbr><span>Modified</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1490909736%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1490909736%2FFunctions%2F-977918241"><span class="token function">setLastModifiedTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1490909736%2FFunctions%2F1625545868"><span class="token function">setLastModifiedTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/file/attribute/FileTime.html">FileTime</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipEntry.html">ZipEntry</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1289204443%2FFunctions%2F-977918241" anchor-label="setTime" id="1289204443%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1289204443%2FFunctions%2F1625545868" anchor-label="setTime" id="1289204443%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1289204443%2FFunctions%2F-977918241"><span>set</span><wbr><span><span>Time</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1289204443%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#1289204443%2FFunctions%2F1625545868"><span>set</span><wbr><span><span>Time</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1289204443%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1289204443%2FFunctions%2F-977918241"><span class="token function">setTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1289204443%2FFunctions%2F1625545868"><span class="token function">setTime</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1133238656%2FFunctions%2F-977918241" anchor-label="setTimeLocal" id="1133238656%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="1133238656%2FFunctions%2F1625545868" anchor-label="setTimeLocal" id="1133238656%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#1133238656%2FFunctions%2F-977918241"><span>set</span><wbr><span>Time</span><wbr><span><span>Local</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1133238656%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#1133238656%2FFunctions%2F1625545868"><span>set</span><wbr><span>Time</span><wbr><span><span>Local</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1133238656%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1133238656%2FFunctions%2F-977918241"><span class="token function">setTimeLocal</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1133238656%2FFunctions%2F1625545868"><span class="token function">setTimeLocal</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-983385215%2FFunctions%2F-977918241" anchor-label="toString" id="-983385215%2FFunctions%2F-977918241" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/main" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/main">
+<a data-name="-983385215%2FFunctions%2F1625545868" anchor-label="toString" id="-983385215%2FFunctions%2F1625545868" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain"></a>
+          <div class="table-row" data-filterable-current=":connector:connector-file:dokkaHtmlPartial/jvmMain" data-filterable-set=":connector:connector-file:dokkaHtmlPartial/jvmMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-983385215%2FFunctions%2F-977918241"><span>to</span><wbr><span><span>String</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-983385215%2FFunctions%2F-977918241"></span>
+                  <div><a href="index.html#-983385215%2FFunctions%2F1625545868"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-983385215%2FFunctions%2F1625545868"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-983385215%2FFunctions%2F-977918241"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":connector:connector-file:dokkaHtmlPartial/jvmMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-983385215%2FFunctions%2F1625545868"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -434,10 +443,11 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
 

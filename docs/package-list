@@ -26,17 +26,12 @@ com.river.connector.jms
 com.river.connector.jms.model
 module:connector-mongodb
 com.river.connector.mongodb
-module:connector-openai
-com.river.connector.openai
-com.river.connector.openai.model
 module:connector-redis
 com.river.connector.redis
 module:connector-apache-kafka
 com.river.connector.apache.kafka
 module:connector-aws-java-11-http-spi
 com.river.connector.aws
-module:connector-aws-lambda
-com.river.connector.aws.lambda
 module:connector-aws-s3
 com.river.connector.aws.s3
 module:connector-aws-ses

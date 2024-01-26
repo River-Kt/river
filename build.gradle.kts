@@ -72,7 +72,10 @@ subprojects {
         jvmToolchain(17)
 
         compilerOptions {
-            freeCompilerArgs = listOf("-Xcontext-receivers")
+            freeCompilerArgs = listOf(
+                "-Xcontext-receivers",
+                "-Xexpect-actual-classes"
+            )
         }
 
         jvm().compilations.all {
@@ -241,7 +244,7 @@ fun Task.skipExamples() {
 }
 
 fun Project.onAndroidEnabled(block: () -> Unit) {
-    if (pluginManager.hasPlugin("com.android.library")) block()
+    afterEvaluate { if (pluginManager.hasPlugin("com.android.library")) block() }
 }
 
 fun Project.onWindows(block: () -> Unit) {
