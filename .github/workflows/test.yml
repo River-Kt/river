@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run tests
-        uses: ./.github/workflows/test-module.yml
+        uses: River-Kt/river/.github/workflows/test-module.yml@ref
         with:
           module: ${{ matrix.module }}
           path: ${{ matrix.path }}
