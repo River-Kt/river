@@ -80,3 +80,4 @@ jobs:
         with:
           module: ${{ matrix.module }}
           path: ${{ matrix.path }}
+          runner: ${{ matrix.runner }}
