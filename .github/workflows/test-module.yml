@@ -22,10 +22,11 @@ jobs:
       - name: Check
         run: ls -lh
       - name: Setup Docker on macOS
+        if: ${{ inputs.containers }}
         uses: douglascamata/setup-docker-macos-action@v1-alpha
       - name: Run docker-compose
         if: ${{ inputs.containers }}
-        run: docker compose up ${{ inputs.containers }} -d
+        run: sudo docker compose up ${{ inputs.containers }} -d
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
