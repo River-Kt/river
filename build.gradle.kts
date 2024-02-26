@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -58,6 +59,11 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+
+        testLogging {
+            showStandardStreams = true
+            exceptionFormat = TestExceptionFormat.FULL
+        }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
@@ -107,8 +113,11 @@ subprojects {
             }
 
             jvmTest {
+                resources.setSrcDirs(resources.srcDirs + file("$rootDir/src/jvmTest/resources"))
+
                 dependencies {
                     api(rootProject.libs.kotest.junit5)
+                    api(rootProject.libs.logback)
                 }
             }
 
