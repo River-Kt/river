@@ -1,6 +1,6 @@
 kotlin {
     sourceSets {
-        val jvmMain by getting {
+        commonMain {
             dependencies {
                 api(rootProject.libs.aws.lambda)
             }

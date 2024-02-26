@@ -1,19 +1,27 @@
+@file:OptIn(InternalApi::class)
+
 package com.river.connector.aws.sqs
 
+import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
+import aws.sdk.kotlin.services.ses.SesClient
+import aws.sdk.kotlin.services.ses.createTemplate
+import aws.sdk.kotlin.services.ses.model.BulkEmailDestination
+import aws.sdk.kotlin.services.ses.model.Destination
+import aws.sdk.kotlin.services.ses.verifyEmailAddress
+import aws.smithy.kotlin.runtime.InternalApi
+import aws.smithy.kotlin.runtime.net.url.Url
+import aws.smithy.kotlin.runtime.util.PlatformProvider
 import com.river.connector.aws.ses.model.*
 import com.river.connector.aws.ses.sendEmailFlow
 import com.river.core.chunked
 import io.kotest.core.spec.style.FeatureSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.mockkObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.future.await
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.ses.SesAsyncClient
-import java.net.URI
 import java.util.UUID.randomUUID
 
 class SesFlowExtKtTest : FeatureSpec({
@@ -21,7 +29,7 @@ class SesFlowExtKtTest : FeatureSpec({
     val from = "from@gmail.com"
 
     beforeSpec {
-        sesAsyncClient.verifyEmailAddress { it.emailAddress(from) }.await()
+        sesClient.verifyEmailAddress { emailAddress = from }
     }
 
     feature("Amazon SES - Simple E-mail Service") {
@@ -32,18 +40,19 @@ class SesFlowExtKtTest : FeatureSpec({
                 (1..numberOfMessages)
                     .asFlow()
                     .map { "This is the e-mail #$it" }
-                    .map { body ->
-                        SendEmailRequest.Single(
-                            source = Source.Plain("from@gmail.com"),
-                            destination = Destination("to@gmail.com"),
-                            message = Message.Text(
-                                body = Content(body),
-                                subject = Content("Test e-mail")
-                            )
-                        )
+                    .map { contentBody ->
+                        SesRequest.Single {
+                            source = "from@gmail.com"
+                            destination { toAddresses = listOf("to@gmail.com") }
+                            message {
+                                subject { data = "Test e-mail" }
+                                body { text { data = contentBody } }
+                            }
+                        }
+
                     }
 
-            sesAsyncClient
+            sesClient
                 .sendEmailFlow(emails)
                 .collect()
 
@@ -75,17 +84,15 @@ class SesFlowExtKtTest : FeatureSpec({
             val emails =
                 users
                     .map { user ->
-                        SendEmailRequest.Single(
-                            source = Source.Plain("from@gmail.com"),
-                            destination = Destination("to@gmail.com"),
-                            message = Message.Template(
-                                data = """{ "senderName": "$sender", "name": "${user.name}" }""",
-                                ref = Message.Template.TemplateRef.Name(templateName)
-                            )
-                        )
+                        SesRequest.SingleTemplated {
+                            source = "from@gmail.com"
+                            destination { toAddresses = listOf("to@gmail.com") }
+                            template = templateName
+                            templateData ="""{ "senderName": "$sender", "name": "${user.name}" }"""
+                        }
                     }
 
-            sesAsyncClient
+            sesClient
                 .sendEmailFlow(emails)
                 .collect()
 
@@ -108,17 +115,15 @@ class SesFlowExtKtTest : FeatureSpec({
                 users
                     .chunked(10)
                     .map { users ->
-                        SendEmailRequest.Single(
-                            source = Source.Plain("from@gmail.com"),
-                            destination = Destination(users.map { it.email }),
-                            message = Message.Template(
-                                data = """{ "senderName": "$sender" }""",
-                                ref = Message.Template.TemplateRef.Name(templateName)
-                            )
-                        )
+                        SesRequest.SingleTemplated {
+                            source = "from@gmail.com"
+                            destination { toAddresses = users.map { it.email } }
+                            template = templateName
+                            templateData = """{ "senderName": "$sender" }"""
+                        }
                     }
 
-            sesAsyncClient
+            sesClient
                 .sendEmailFlow(emails)
                 .collect()
 
@@ -141,22 +146,20 @@ class SesFlowExtKtTest : FeatureSpec({
                 users
                     .chunked(10)
                     .map { users ->
-                        SendEmailRequest.BulkTemplated(
-                            source = Source.Plain("from@gmail.com"),
+                        SesRequest.BulkTemplated {
+                            source = "from@gmail.com"
                             destinations = users.map {
-                                TemplatedDestination(
-                                    destination = Destination(it.email),
-                                    replacementData = """{ "name": "${it.name}" }"""
-                                )
-                            },
-                            message = Message.Template(
-                                data = """{ "senderName": "$sender" }""",
-                                ref = Message.Template.TemplateRef.Name(templateName)
-                            )
-                        )
+                                BulkEmailDestination {
+                                    destination = Destination { toAddresses = listOf(it.email) }
+                                    replacementTemplateData = """{ "name": "${it.name}" }"""
+                                }
+                            }
+                            defaultTemplateData = """{ "senderName": "$sender" }"""
+                            template = templateName
+                        }
                     }
 
-            sesAsyncClient
+            sesClient
                 .sendEmailFlow(emails)
                 .collect()
 
@@ -166,33 +169,41 @@ class SesFlowExtKtTest : FeatureSpec({
 })
 
 suspend fun currentQuota(): Int =
-    sesAsyncClient
-        .sendQuota
-        .await()
-        .sentLast24Hours()
+    sesClient
+        .getSendQuota()
+        .sentLast24Hours
         .toInt()
 
 suspend fun createTemplate(
     name: String,
     subject: String,
     content: String
-) = sesAsyncClient.createTemplate {
-    it.template { template ->
-        template
-            .subjectPart(subject)
-            .templateName(name)
-            .textPart(content)
+) = sesClient.createTemplate {
+    template {
+        subjectPart = subject
+        templateName = name
+        textPart = content
     }
-}.await()
-
-val sesAsyncClient: SesAsyncClient =
-    SesAsyncClient
-        .builder()
-        .endpointOverride(URI("http://localhost:4566"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider {
-            AwsBasicCredentials.create("x", "x")
-        }
-        .build()
+}
 
 fun shortId() = randomUUID().toString().replace("-", "").substring(0, 10)
+
+val sesClient: SesClient by lazy {
+    lateinit var client: SesClient
+
+    mockkObject(PlatformProvider.System) {
+        every { PlatformProvider.System.isAndroid } returns false
+
+        client = SesClient {
+            endpointUrl = Url.parse("http://s3.localhost.localstack.cloud:4566")
+            region = "us-east-1"
+            credentialsProvider = StaticCredentialsProvider {
+                accessKeyId = "x"
+                secretAccessKey = "x"
+            }
+            applicationId = "x"
+        }
+    }
+
+    client
+}

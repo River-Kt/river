@@ -1,25 +1,51 @@
 subprojects {
+    apply(plugin = rootProject.libs.plugins.android.get().pluginId)
+
     kotlin {
-        jvm {
-            configurations.all {
-                exclude("software.amazon.awssdk", "netty-nio-client")
-            }
-        }
+        androidTarget { publishLibraryVariants("release", "debug") }
 
         sourceSets {
-            val jvmMain by getting {
+            jvmMain {
                 dependencies {
-                    val modules = modules { project(it) }
+                    api(rootProject.libs.aws.http)
+                    api(rootProject.libs.aws.smithy.http)
+                }
+            }
 
-                    api(modules.http)
-                    api(rootProject.libs.aws.http.client.spi)
-                    api(rootProject.libs.coroutines.reactive)
+            commonMain {
+                dependencies {
+                    api(rootProject.libs.aws.http)
+                    api(rootProject.libs.aws.smithy.http)
+                    runtimeOnly(rootProject.libs.aws.smithy.http.jvm)
+                }
+            }
 
-                    if (project.name != "connector-aws-java-11-http-spi") {
-                        api(modules.awsHttp11Spi)
-                    }
+            commonTest {
+                dependencies {
+                    api(rootProject.libs.mockk)
+                    api(rootProject.libs.aws.smithy.http)
                 }
             }
         }
+    }
+
+    onAndroid {
+        namespace = "com.river"
+        compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
+
+        defaultConfig {
+            multiDexEnabled = true
+        }
+
+        compileOptions {
+            isCoreLibraryDesugaringEnabled = true
+
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+
+    dependencies {
+        coreLibraryDesugaring(rootProject.libs.desugar.jdk.libs)
     }
 }

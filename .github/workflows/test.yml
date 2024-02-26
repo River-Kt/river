@@ -19,18 +19,23 @@ jobs:
             containers: zookeeper kafka
           - module: AWS Lambda
             path: :connector:connector-aws:connector-aws-lambda
+            runner: macos-latest
             containers: localstack
           - module: AWS S3
             path: :connector:connector-aws:connector-aws-s3
+            runner: macos-latest
             containers: localstack
           - module: AWS SES
             path: :connector:connector-aws:connector-aws-ses
+            runner: macos-latest
             containers: localstack
           - module: AWS SNS
             path: :connector:connector-aws:connector-aws-sns
+            runner: macos-latest
             containers: localstack
           - module: AWS SQS
             path: :connector:connector-aws:connector-aws-sqs
+            runner: macos-latest
             containers: localstack
           - module: Azure Queue Storage
             path: :connector:connector-azure:connector-azure-queue-storage

@@ -6,4 +6,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    google()
+}
+
+dependencies {
+    compileOnly(gradleApi())
+    compileOnly("com.android.tools.build:gradle:8.1.4")
 }

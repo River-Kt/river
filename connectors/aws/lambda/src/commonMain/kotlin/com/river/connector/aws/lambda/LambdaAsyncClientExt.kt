@@ -1,60 +1,42 @@
 package com.river.connector.aws.lambda
 
+import aws.sdk.kotlin.services.lambda.LambdaClient
+import aws.sdk.kotlin.services.lambda.invoke
+import aws.sdk.kotlin.services.lambda.model.InvokeRequest
+import aws.sdk.kotlin.services.lambda.model.InvokeResponse
 import com.river.core.mapAsync
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.future.await
-import software.amazon.awssdk.core.SdkBytes
-import software.amazon.awssdk.services.lambda.LambdaAsyncClient
-import software.amazon.awssdk.services.lambda.model.InvocationType
-import software.amazon.awssdk.services.lambda.model.InvokeResponse
-import software.amazon.awssdk.services.lambda.model.LogType
 
 /**
- * Creates a flow that invokes an AWS Lambda function with the specified [functionName].
+ * Creates a flow that invokes an AWS Lambda function with the specified [builder] request.
  *
- * This function takes an [upstream] flow of input strings and invokes the specified Lambda
+ * This function takes an [upstream] flow of input byte arrays and invokes the specified Lambda
  * function with the given parameters concurrently based on the provided [concurrency].
  *
- * @param functionName The name of the Lambda function.
- * @param upstream A [Flow] of input payloads.
- * @param invocationType The type of invocation (default: [InvocationType.REQUEST_RESPONSE]).
- * @param logType The log type (optional).
- * @param qualifier The function version or alias (optional).
- * @param clientContext The client context (optional).
+ * @param upstream A ByteArray based [Flow] of input payloads.
  * @param concurrency The level of concurrency for invoking the Lambda function.
+ * @param builder The InvokeRequest's builder
  * @return A [Flow] of [InvokeResponse] objects.
  *
  * Example usage:
  *
  * ```
  * val lambdaClient: LambdaAsyncClient = ...
- * val functionName = "my-lambda-function"
+ * val functionName =
  * val inputs = flowOf("input1", "input2", "input3")
  *
- * lambdaClient.invokeFlow(functionName, inputs)
+ * lambdaClient
+ *     .invokeFlow(inputs, concurrency = 10) { item ->
+ *         functionName = "my-lambda-function"
+ *         payload = item.encodeToByteArray()
+ *     }
  *     .collect { response ->
  *         println("Lambda invocation response: $response")
  *     }
  * ```
  */
-fun LambdaAsyncClient.invokeFlow(
-    functionName: String,
-    upstream: Flow<String>,
-    invocationType: InvocationType = InvocationType.REQUEST_RESPONSE,
-    logType: LogType? = null,
-    qualifier: String? = null,
-    clientContext: String? = null,
-    concurrency: Int = 1
-): Flow<InvokeResponse> =
-    upstream
-        .mapAsync(concurrency) { content ->
-            invoke { builder ->
-                builder
-                    .functionName(functionName)
-                    .invocationType(invocationType)
-                    .logType(logType)
-                    .qualifier(qualifier)
-                    .clientContext(clientContext)
-                    .payload(SdkBytes.fromUtf8String(content))
-            }.await()
-        }
+inline fun <T> LambdaClient.invokeFlow(
+    upstream: Flow<T>,
+    concurrency: Int = 1,
+    crossinline builder: InvokeRequest.Builder.(T) -> Unit
+): Flow<InvokeResponse> = upstream.mapAsync(concurrency) { content -> invoke { builder(content) } }

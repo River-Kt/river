@@ -26,7 +26,6 @@ include(
     "connectors:aws:kinesis",
     "connectors:aws:lambda",
     "connectors:aws:s3",
-    "connectors:aws:java-11-http-spi",
     "connectors:aws:sns",
     "connectors:aws:sqs",
     "connectors:aws:ses",

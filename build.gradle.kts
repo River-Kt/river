@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import com.android.build.gradle.LibraryExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -123,15 +122,13 @@ subprojects {
         }
     }
 
-    pluginManager.withPlugin("com.android.library") {
-        extensions.configure<LibraryExtension> {
-            namespace = "com.river"
-            compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
+    onAndroid {
+        namespace = "com.river"
+        compileSdk = rootProject.libs.versions.android.compile.sdk.get().toInt()
 
-            publishing {
-                multipleVariants {
-                    withJavadocJar()
-                }
+        publishing {
+            multipleVariants {
+                withJavadocJar()
             }
         }
     }

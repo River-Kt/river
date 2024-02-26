@@ -1,7 +1,11 @@
 @file:OptIn(ExperimentalRiverApi::class)
 
+import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
+import aws.sdk.kotlin.services.sqs.SqsClient
+import aws.sdk.kotlin.services.sqs.model.SendMessageRequest
+import aws.smithy.kotlin.runtime.net.url.Url
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.river.connector.aws.sqs.model.SendMessageRequest
+import com.river.connector.aws.sqs.model.SqsQueue
 import com.river.connector.aws.sqs.sendMessageFlow
 import com.river.core.ExperimentalRiverApi
 import com.river.core.pollWithState
@@ -11,19 +15,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import java.net.URI
 import kotlin.time.Duration
 
-val sqsAsyncClient: SqsAsyncClient =
-    SqsAsyncClient
-        .builder()
-            .endpointOverride(URI("http://localhost:4566"))
-            .region(Region.US_EAST_1)
-            .credentialsProvider { AwsBasicCredentials.create("x", "x") }
-        .build()
+val sqs =
+    SqsClient {
+        endpointUrl = Url.parse("http://localhost:4566")
+        region = "us-east-1"
+        credentialsProvider = StaticCredentialsProvider {
+            accessKeyId = "x"
+            secretAccessKey = "x"
+        }
+    }
 
 fun keepOnPublishing(
     queueUrl: String,
@@ -32,11 +34,11 @@ fun keepOnPublishing(
 ): Job {
     val requestFlow =
         pollWithState(0) { it + 1 to listOf(it) }
-            .map { SendMessageRequest("$it") }
+            .map { SendMessageRequest { messageBody = "$it" } }
             .throttle(elementsPerInternal, interval)
 
-    return sqsAsyncClient
-        .sendMessageFlow(requestFlow) { queueUrl }
+    return sqs
+        .sendMessageFlow(SqsQueue.url(queueUrl), requestFlow)
         .launchIn(CoroutineScope(Dispatchers.Default))
 }
 

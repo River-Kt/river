@@ -1,7 +1,10 @@
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.project
 
 class Modules(val project: (String) -> ProjectDependency) {
@@ -34,3 +37,6 @@ fun DependencyHandler.compileOnly(module: Module): Dependency? =
 
 fun DependencyHandler.testImplementation(module: Module): Dependency? =
     add("testImplementation", this.project(module.name))
+
+fun <T> DependencyHandlerScope.coreLibraryDesugaring(dependencyNotation: org.gradle.api.provider.Provider<T>) =
+    add("coreLibraryDesugaring", dependencyNotation)

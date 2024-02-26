@@ -1,9 +1,10 @@
 [versions]
-river = "1.0.0-alpha15"
+river = "1.0.0-alpha16"
 kotlin = "1.9.22"
 java = "17"
 dokka = "1.9.10"
-aws-sdk = "2.23.2"
+aws-sdk = "1.0.63"
+aws-smithy-kotlin = "1.0.15"
 coroutines = "1.7.3"
 slf4j = "1.7.36"
 commons-net = "3.8.0"
@@ -36,6 +37,8 @@ android = "8.1.4"
 setup-android-sdk = "3.1.0"
 os-detector = "1.7.3"
 android-compile-sdk = "30"
+desugar-jdk-libs = "2.0.3"
+mockk = "1.13.9"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -65,12 +68,16 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 # aws
-aws-http-client-spi = { module = "software.amazon.awssdk:http-client-spi", version.ref = "aws-sdk" }
-aws-sqs = { module = "software.amazon.awssdk:sqs", version.ref = "aws-sdk" }
-aws-sns = { module = "software.amazon.awssdk:sns", version.ref = "aws-sdk" }
-aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }
-aws-ses = { module = "software.amazon.awssdk:ses", version.ref = "aws-sdk" }
-aws-lambda = { module = "software.amazon.awssdk:lambda", version.ref = "aws-sdk" }
+aws-http = { module = "aws.sdk.kotlin:aws-http", version.ref = "aws-sdk" }
+aws-smithy-http = { module = "aws.smithy.kotlin:http-client", version.ref = "aws-smithy-kotlin" }
+aws-smithy-http-jvm = { module = "aws.smithy.kotlin:http-client-jvm", version.ref = "aws-smithy-kotlin" }
+aws-sqs = { module = "aws.sdk.kotlin:sqs", version.ref = "aws-sdk" }
+aws-sns = { module = "aws.sdk.kotlin:sns", version.ref = "aws-sdk" }
+aws-s3 = { module = "aws.sdk.kotlin:s3", version.ref = "aws-sdk" }
+aws-ses = { module = "aws.sdk.kotlin:ses", version.ref = "aws-sdk" }
+aws-lambda = { module = "aws.sdk.kotlin:lambda", version.ref = "aws-sdk" }
+
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 # testing
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
@@ -79,6 +86,8 @@ kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 wiremock = { module = "com.github.tomakehurst:wiremock", version.ref = "wiremock" }
 kotlin-wiremock = { module = "com.marcinziolo:kotlin-wiremock", version.ref = "kotlin-wiremock" }
 kotest-wiremock = { module = "io.kotest.extensions:kotest-extensions-wiremock", version.ref = "kotest-wiremock" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # ktor
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }

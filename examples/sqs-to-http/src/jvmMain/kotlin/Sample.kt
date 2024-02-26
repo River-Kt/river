@@ -1,7 +1,9 @@
+import aws.sdk.kotlin.services.sqs.createQueue
 import com.marcinziolo.kotlin.wiremock.*
 import com.river.connector.aws.sqs.acknowledgeWith
 import com.river.connector.aws.sqs.acknowledgmentMessageFlow
 import com.river.connector.aws.sqs.model.Acknowledgment
+import com.river.connector.aws.sqs.model.SqsQueue
 import com.river.connector.aws.sqs.receiveMessagesAsFlow
 import com.river.connector.http.ofString
 import com.river.connector.http.post
@@ -14,7 +16,7 @@ import kotlinx.coroutines.future.await
 import kotlin.time.Duration.Companion.milliseconds
 
 suspend fun main() {
-    val queueUrl = sqsAsyncClient.createQueue { it.queueName("numbers") }.await().queueUrl()
+    val queueUrl = checkNotNull(sqs.createQueue { queueName = "numbers" }.queueUrl)
 
     // Publishing 10 events every 1/2 second to the queue just for the sake of this example
     keepOnPublishing(
@@ -34,7 +36,7 @@ suspend fun main() {
             }
 
         // SQS consumer setup starts here
-        sqsAsyncClient
+        sqs
             // receiveMessagesAsFlow continuously polls from SQS with a maximum of 5 concurrent requests
             // It starts with 1 concurrent request, and increases by 1 for each non-empty response, up to the maximum
             // If the queue returns an empty response, the consumer resets concurrency until data is returned again
@@ -47,7 +49,7 @@ suspend fun main() {
             // alsoTo performs a side operation with a Flow, allowing us to keep the Message instance for later deletion
             .alsoTo {
                 // Create a POST request using the SQS message body
-                map { post("${numbersApiUrl(port)}/api/numbers") { stringBody(it.body()) } }
+                map { post("${numbersApiUrl(port)}/api/numbers") { stringBody(it.body.orEmpty()) } }
                     // Send the request to the API with a maximum concurrency of 25
                     .sendAndHandle(bodyHandler = ofString, concurrency = 25)
                     .takeWhile { it.statusCode() == 200 }
@@ -57,7 +59,7 @@ suspend fun main() {
             }
             // And now we delete the message in SQS
             // It's possible to customize the message deletion concurrency as well
-            .let { sqsAsyncClient.acknowledgmentMessageFlow(it, 10) { queueUrl } }
+            .let { sqs.acknowledgmentMessageFlow(SqsQueue.url(queueUrl), it, 10)}
             .collect(::println) // Collect is required to initiate the process
     }
 }

@@ -1,5 +1,9 @@
 @file:OptIn(FlowPreview::class)
 
+import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
+import aws.sdk.kotlin.services.s3.S3Client
+import aws.sdk.kotlin.services.s3.createBucket
+import aws.smithy.kotlin.runtime.net.url.Url
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.river.connector.aws.s3.uploadSplitItems
 import com.river.connector.format.csv.rawCsv
@@ -15,19 +19,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.s3.S3AsyncClient
-import java.net.URI
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
 @ExperimentalRiverApi
 suspend fun main() = coroutineScope {
-    s3AsyncClient.createBucket { it.bucket("catalog") }.await()
+    s3.createBucket { bucket = "catalog" }
 
     debeziumFlow { DebeziumEngine.create(Json::class.java).using(debeziumProperties) }
         .mapAsync(1000) {
@@ -60,7 +59,7 @@ fun csvSink(
     val csvSink = Channel<ChangeEvent<String, String>>()
 
     val sinkJob =
-        s3AsyncClient
+        s3
             .uploadSplitItems(
                 bucket = "catalog",
                 upstream = csvSink.consumeAsFlow().asCsv(),
@@ -83,13 +82,15 @@ fun Flow<ChangeEvent<String, String>>.asCsv(): Flow<String> =
         }
         .intersperse("\n")
 
-val s3AsyncClient: S3AsyncClient =
-    S3AsyncClient
-        .builder()
-        .endpointOverride(URI("http://s3.localhost.localstack.cloud:4566"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider { AwsBasicCredentials.create("x", "x") }
-        .build()
+val s3 =
+    S3Client {
+        endpointUrl = Url.parse("http://s3.localhost.localstack.cloud:4566")
+        region = "us-east-1"
+        credentialsProvider = StaticCredentialsProvider {
+            accessKeyId = "x"
+            secretAccessKey = "x"
+        }
+    }
 
 val debeziumProperties = Properties().apply {
     putAll(

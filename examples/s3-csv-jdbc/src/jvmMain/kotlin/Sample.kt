@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalRiverApi::class)
 
+import aws.sdk.kotlin.services.s3.model.GetObjectResponse
 import com.river.connector.aws.s3.download
 import com.river.connector.aws.s3.upload
 import com.river.connector.format.csv.csv
@@ -8,7 +9,6 @@ import com.river.connector.rdbms.jdbc.batchUpdate
 import com.river.connector.rdbms.jdbc.query
 import com.river.core.*
 import kotlinx.coroutines.flow.*
-import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import kotlin.time.Duration.Companion.milliseconds
 
 suspend fun main() {
@@ -25,7 +25,7 @@ suspend fun main() {
     // For testing purposes, we're building a CSV file with 100000 entries
     // We create a flow and use intersperse("\n") to add a newline between each element
     // asByteArray() then converts the flow into a byte array for uploading
-    s3AsyncClient
+    s3
         .upload(
             bucket = "bucket",
             key = "numbers.csv",
@@ -41,7 +41,7 @@ suspend fun main() {
     // The download function emits a single tuple: the GetObjectResponse and the file's content as bytes
     // This can be useful when you want to examine the metadata of the file before downloading it
     val (metadata: GetObjectResponse, bytes: Flow<ByteArray>) =
-        s3AsyncClient
+        s3
             .download("bucket", "numbers.csv")
             .single()
 

@@ -29,20 +29,23 @@ import kotlin.time.Duration.Companion.milliseconds
  * ```
  *  val sqsClient = SqsClient {  }
  *
- *  sqsClient.receiveMessagesAsFlow {
- *      queueUrl(sqsClient.getQueueUrlByName("myqueue"))
- *      maxNumberOfMessages(10)
- *      waitTimeSeconds(20)
- *  }.collect { message -> println("Received message: ${message.body}") }
+ *  sqsClient
+ *      .receiveMessagesAsFlow {
+ *          // This builder function is evaluated only once.
+ *          queueUrl = sqsClient.getQueueUrl { queueName = "myqueue" }.queueUrl
+ *          maxNumberOfMessages = 10
+ *          waitTimeSeconds = 20
+ *      }
+ *      .collect { message -> println("Received message: ${message.body}") }
  * ```
  */
 inline fun SqsClient.receiveMessagesAsFlow(
     concurrency: ConcurrencyStrategy = ConcurrencyStrategy.disabled,
     stopOnEmptyList: Boolean = false,
-    crossinline builder: ReceiveMessageRequest.Builder.() -> Unit
+    crossinline builder: suspend ReceiveMessageRequest.Builder.() -> Unit
 ): Flow<Message> =
     flow {
-        val request = ReceiveMessageRequest { builder() }
+        val request = ReceiveMessageRequest {}.copy { builder() }
 
         val elements =
             poll(concurrency, stopOnEmptyList) {
@@ -292,12 +295,12 @@ fun SqsClient.deleteMessagesFlow(
  * based on their acknowledgment type: [ChangeMessageVisibility], [Delete], or [Ignore].
  * The function processes acknowledgments concurrently using [concurrency] and the specified [groupStrategy].
  *
+ * @param queue The reference of the queue.
  * @param upstream A [Flow] of [MessageAcknowledgment] objects.
  * @param concurrency The level of concurrency for processing messages.
  * @param groupStrategy The strategy to use when chunking messages for processing.
- * @param queueUrl A lambda function returning the URL of the Amazon SQS queue.
  *
- * @return A [Flow] of [AcknowledgmentResult] objects that contain the message, acknowledgment, and response.
+ * @return A [Flow] of [MessageAcknowledgmentResult] objects that contain the message, acknowledgment, and response.
  *
  * Example usage:
  * ```
@@ -309,9 +312,7 @@ fun SqsClient.deleteMessagesFlow(
  * )
  *
  * sqsClient
- *     .acknowledgmentMessageFlow(messageAcknowledgments) {
- *         sqsClient.getQueueUrlByName("myqueue")
- *     }
+ *     .acknowledgmentMessageFlow(SqsQueue.name("myqueue"), messageAcknowledgments)
  *     .collect { result ->
  *         println(
  *             """Processed message:
@@ -396,8 +397,8 @@ fun SqsClient.acknowledgmentMessageFlow(
  *  val messageFlow: Flow<Message> = ...
  *
  *  messageFlow
- *      .map { message -> message.acknowledgeWith(Acknowledgment.Delete) }
- *      .let { flow -> sqsClient.acknowledgmentMessageFlow(flow) { queueUrl } }
+ *      .map { message -> message acknowledgeWith Acknowledgment.Delete }
+ *      .let { flow -> sqsClient.acknowledgmentMessageFlow(queue, flow) }
  *      .collect(::println)
  * ```
  */
@@ -413,7 +414,7 @@ infix fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
  *
  * The function is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
  *
- * @param queueName The name of the queue from which messages will be received.
+ * @param queue The reference of the queue from which messages will be received.
  * @param concurrency The level of concurrency for processing messages. Defaults to 1.
  * @param groupStrategy The strategy to use when chunking messages for processing. Defaults to [GroupStrategy.TimeWindow].
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
@@ -429,7 +430,7 @@ infix fun Message.acknowledgeWith(acknowledgment: Acknowledgment) =
  * val sqsClient: SqsClient = ...
  *
  * coroutineScope {
- *     val myQueueJob = sqsClient.onMessages("myqueue") { messages ->
+ *     val myQueueJob = sqsClient.onMessages(SqsQueue.name("myqueue")) { messages ->
  *         messages.map { MessageAcknowledgment(it, Delete) }
  *     }
  *
@@ -448,7 +449,6 @@ fun SqsClient.onMessages(
     onMessages: suspend (List<Message>) -> List<MessageAcknowledgment<Acknowledgment>>
 ): Job = groupStrategy.validate().let {
     launch {
-
         val receiveConfig = ReceiveConfiguration().also(receiveConfiguration)
         val commitConfig = CommitConfiguration().also(commitConfiguration)
 
@@ -496,7 +496,7 @@ fun SqsClient.onMessages(
  * This function is a simplified version of [onMessages] that processes messages one by one.
  * It is executed in the specified [CoroutineScope] and returns a [Job] that represents its execution.
  *
- * @param queueName The name of the queue from which messages will be received.
+ * @param queue The reference of the queue from which messages will be received.
  * @param concurrency The level of concurrency for processing messages. Defaults to 1.
  * @param receiveConfiguration A lambda with receiver for configuring the [ReceiveConfiguration] for the underlying receive operation.
  * @param commitConfiguration A lambda with receiver for configuring the [CommitConfiguration] for the underlying commit operation.
@@ -511,7 +511,7 @@ fun SqsClient.onMessages(
  * val sqsClient: SqsClient = ...
  *
  * coroutineScope {
- *     val myQueueJob = sqsClient.onMessage("myqueue") { message ->
+ *     val myQueueJob = sqsClient.onMessage(SqsQueue.name("myqueue")) { message ->
  *         Delete
  *     }
  *

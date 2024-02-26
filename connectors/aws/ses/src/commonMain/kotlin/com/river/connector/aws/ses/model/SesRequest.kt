@@ -1,144 +1,72 @@
 package com.river.connector.aws.ses.model
 
-import java.nio.charset.Charset
+import aws.sdk.kotlin.services.ses.model.*
 
 /**
- * Represents a request to send an email. It can be either a single email or a bulk templated email.
+ * Represents a sealed interface for different types of SES (Simple Email Service) request models.
+ * This interface encapsulates various request types for sending emails using AWS SES.
+ *
+ * Each class implementing this interface corresponds to a specific type of email sending request,
+ * such as sending raw emails, single emails, single templated emails, and bulk templated emails.
+ *
+ * @param Req The type of the request object specific to each SES email sending method.
  */
-sealed interface SendEmailRequest {
-    /**
-     * Represents a single email sending request.
-     *
-     * @property source The [Source] of the email.
-     * @property destination The [Destination] of the email.
-     * @property message The [Message] content of the email.
-     * @property tags The optional tags of the email.
-     * @property replyToAddresses The optional list of reply-to addresses.
-     * @property returnPath The optional return path.
-     * @property configurationSetName The optional configuration set name.
-     */
-    data class Single<T : Message>(
-        val source: Source,
-        val destination: Destination,
-        val message: T,
-        val tags: Map<String, String> = emptyMap(),
-        val replyToAddresses: List<String> = emptyList(),
-        val returnPath: ReturnPath? = null,
-        val configurationSetName: String? = null
-    ) : SendEmailRequest
+sealed interface SesRequest<Req> {
+    val request: Req
 
     /**
-     * Represents a bulk email sending request with templates.
+     * Represents a request to send a raw email.
      *
-     * @property source The [Source] of the email.
-     * @property destinations The list of [TemplatedDestination] of the email.
-     * @property message The templated [Message] content of the email.
-     * @property defaultTags The optional tags of the email.
-     * @property replyToAddresses The optional list of reply-to addresses.
-     * @property returnPath The optional return path.
-     * @property configurationSetName The optional configuration set name.
+     * @param request The SendRawEmailRequest object containing the details of the raw email to be sent.
      */
-    data class BulkTemplated(
-        val source: Source,
-        val destinations: List<TemplatedDestination>,
-        val message: Message.Template,
-        val defaultTags: Map<String, String> = emptyMap(),
-        val replyToAddresses: List<String> = emptyList(),
-        val returnPath: ReturnPath? = null,
-        val configurationSetName: String? = null,
-    ) : SendEmailRequest
-}
-
-/**
- * Represents the destination of a templated email in a bulk sending request.
- *
- * @property replacementData The custom template data.
- * @property destination The [Destination] of the email.
- * @property replacementTags The optional tags of the email.
- */
-data class TemplatedDestination(
-    val replacementData: String,
-    val destination: Destination,
-    val replacementTags: Map<String, String> = emptyMap(),
-)
-
-/**
- * Represents the return path for the email.
- *
- * This could be either a plain source or an Amazon Resource Name (ARN).
- */
-sealed interface ReturnPath {
-    data class Plain(val path: String) : ReturnPath
-    data class Arn(val arn: String) : ReturnPath
-}
-
-/**
- * Represents the source of the email.
- *
- * This could be either a plain source or an Amazon Resource Name (ARN).
- */
-sealed interface Source {
-    data class Plain(val source: String) : Source
-    data class Arn(val arn: String) : Source
-}
-
-/**
- * Represents the content of the email message.
- *
- * This could be a plain message or a template message.
- */
-sealed interface Message {
-    sealed interface Plain : Message {
-        val subject: Content
-        val body: Content
-    }
-
-    data class Text(
-        override val subject: Content,
-        override val body: Content
-    ) : Plain
-
-    data class Html(
-        override val subject: Content,
-        override val body: Content
-    ) : Plain
-
-    data class Template(
-        val ref: TemplateRef,
-        val data: String
-    ) : Message {
-        sealed interface TemplateRef {
-            data class Name(val name: String) : TemplateRef
-            data class Arn(val arn: String) : TemplateRef
+    data class Raw(
+        override val request: SendRawEmailRequest
+    ) : SesRequest<SendRawEmailRequest> {
+        companion object {
+            operator fun invoke(request: SendRawEmailRequest.Builder.() -> Unit) =
+                Raw(SendRawEmailRequest { request() })
         }
     }
-}
 
-/**
- * Represents the content of the email.
- *
- * @property data The actual data or content of the email.
- * @property charset The character set of the email.
- */
-data class Content(
-    val data: String,
-    val charset: Charset = Charset.defaultCharset()
-)
+    /**
+     * Represents a request to send a single email.
+     *
+     * @param request The SendEmailRequest object containing the details of the email to be sent.
+     */
+    data class Single(
+        override val request: SendEmailRequest
+    ) : SesRequest<SendEmailRequest> {
+        companion object {
+            operator fun invoke(request: SendEmailRequest.Builder.() -> Unit) =
+                Single(SendEmailRequest { request() })
+        }
+    }
 
-/**
- * Represents the destination of the email.
- *
- * @property to The list of primary recipients.
- * @property cc The list of CC recipients.
- * @property bcc The list of BCC recipients.
- */
-data class Destination(
-    val to: List<String>,
-    val cc: List<String> = emptyList(),
-    val bcc: List<String> = emptyList()
-) {
-    companion object {
-        operator fun invoke(vararg to: String): Destination =
-            Destination(to.toList())
+    /**
+     * Represents a request to send a single templated email.
+     *
+     * @param request The SendTemplatedEmailRequest object containing the details of the templated email to be sent.
+     */
+    data class SingleTemplated(
+        override val request: SendTemplatedEmailRequest
+    ) : SesRequest<SendTemplatedEmailRequest> {
+        companion object {
+            operator fun invoke(request: SendTemplatedEmailRequest.Builder.() -> Unit) =
+                SingleTemplated(SendTemplatedEmailRequest { request() })
+        }
+    }
+
+    /**
+     * Represents a request to send bulk templated emails.
+     *
+     * @param request The SendBulkTemplatedEmailRequest object containing the details for sending multiple templated emails.
+     */
+    data class BulkTemplated(
+        override val request: SendBulkTemplatedEmailRequest
+    ) : SesRequest<SendBulkTemplatedEmailRequest> {
+        companion object {
+            operator fun invoke(request: SendBulkTemplatedEmailRequest.Builder.() -> Unit) =
+                BulkTemplated(SendBulkTemplatedEmailRequest { request() })
+        }
     }
 }

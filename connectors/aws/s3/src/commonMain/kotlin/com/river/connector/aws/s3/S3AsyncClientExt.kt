@@ -1,14 +1,14 @@
 package com.river.connector.aws.s3
 
+import aws.sdk.kotlin.services.s3.*
+import aws.sdk.kotlin.services.s3.model.*
+import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.toFlow
+import com.river.connector.aws.s3.model.S3Response
 import com.river.core.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.future.await
-import kotlinx.coroutines.reactive.asFlow
-import software.amazon.awssdk.core.async.AsyncRequestBody.fromBytes
-import software.amazon.awssdk.core.async.AsyncResponseTransformer
-import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.model.*
-import software.amazon.awssdk.services.s3.model.CompletedPart.builder
+import kotlinx.coroutines.yield
 
 private const val ONE_KB = 1024
 private const val ONE_MB = ONE_KB * ONE_KB
@@ -28,11 +28,12 @@ private const val MINIMUM_UPLOAD_SIZE = FIVE_MB
  * Example usage:
  *
  * ```
- * val s3Client: S3AsyncClient = ...
+ * val s3Client:  S3Client = ...
  * val bucket = "my-bucket"
  * val key = "path/to/myfile.txt"
  *
- * s3Client.download(bucket, key)
+ * s3Client
+ *     .download(bucket, key)
  *     .collect { (response, contentFlow) ->
  *         println("Downloaded file with response: $response")
  *         contentFlow.collect { byteArray ->
@@ -41,21 +42,71 @@ private const val MINIMUM_UPLOAD_SIZE = FIVE_MB
  *     }
  * ```
  */
-fun S3AsyncClient.download(
+fun S3Client.download(
     bucket: String,
     key: String
 ): Flow<Pair<GetObjectResponse, Flow<ByteArray>>> =
-    flowOfSuspend {
-        getObject({ it.bucket(bucket).key(key) }, AsyncResponseTransformer.toPublisher())
-            .await()
-            .let { it.response() to it.asFlow().asByteArray() }
+    download {
+        this.bucket = bucket
+        this.key = key
+    }
+
+
+/**
+ * Creates a flow that downloads a file from an Amazon S3 bucket.
+ *
+ * This function takes a builder function to create a [GetObjectRequest] and returns a [Flow] of pairs containing the
+ * [GetObjectResponse] and a flow of byte arrays.
+ *
+ * @param builder The request builder function.
+ *
+ * @return A [Flow] of pairs containing the [GetObjectResponse] and a flow of byte arrays.
+ *
+ * Example usage:
+ *
+ * ```
+ * val s3Client:  S3Client = ...
+ * val bucket = "my-bucket"
+ * val key = "path/to/myfile.txt"
+ *
+ * s3Client
+ *     .download {
+ *         bucket = "my-bucket"
+ *         key = "path/to/myfile.txt"
+ *     }
+ *     .collect { (response, contentFlow) ->
+ *         println("Got file with response: $response")
+ *         println("Downloading...")
+ *
+ *         contentFlow.collect { byteArray ->
+ *             // Process byteArray
+ *         }
+ *     }
+ * ```
+ */
+fun S3Client.download(
+    builder: GetObjectRequest.Builder.() -> Unit
+): Flow<Pair<GetObjectResponse, Flow<ByteArray>>> =
+    channelFlow {
+        val channel = Channel<ByteArray>()
+
+        getObject(GetObjectRequest { builder() }) { response ->
+            (response.body?.toFlow() ?: emptyFlow())
+                .onStart { send(response to channel.consumeAsFlow()) }
+                .onCompletion { channel.close(it) }
+                .collect { channel.send(it)}
+        }
+
+        while (!channel.isClosedForSend) {
+            yield()
+        }
     }
 
 /**
  * A function that performs a select object content operation on a file from an Amazon S3 bucket, which allows
  * retrieving a subset of data from an object by using simple SQL expressions.
  *
- * The function uses [S3AsyncClient] and processes the results as a flow.
+ * The function uses [ S3Client] and processes the results as a flow.
  *
  * @param request A lambda function with [SelectObjectContentRequest.Builder] receiver to configure the request.
  * @return Returns a flow of [SelectObjectContentEventStream] representing the content of the selected object.
@@ -63,7 +114,7 @@ fun S3AsyncClient.download(
  * Example usage:
  *
  * ```
- * val client = S3AsyncClient.create()
+ * val client =  S3Client.create()
  *
  * val selectObjectContentFlow = client.selectObjectContent {
  *     bucket("people-bucket")
@@ -89,20 +140,15 @@ fun S3AsyncClient.download(
  * }
  * ```
  */
-fun S3AsyncClient.selectObjectContent(
+fun S3Client.selectObjectContent(
     request: SelectObjectContentRequest.Builder.() -> Unit
 ): Flow<SelectObjectContentEventStream> =
-    promiseFlow { promise ->
-        val selectObjectRequest = SelectObjectContentRequest.builder().also(request).build()
+    flow {
+        val selectObjectRequest = SelectObjectContentRequest { request() }
 
-        val responseHandler =
-            SelectObjectContentResponseHandler
-                .builder()
-                    .onEventStream { promise.complete(it.asFlow()) }
-                    .onError { promise.completeExceptionally(it) }
-                .build()
-
-        selectObjectContent(selectObjectRequest, responseHandler)
+        selectObjectContent(selectObjectRequest) { response ->
+            response.payload?.also { emitAll(it) }
+        }
     }
 
 /**
@@ -121,47 +167,46 @@ fun S3AsyncClient.selectObjectContent(
  *
  * Example usage:
  * ```
- * val s3Client: S3AsyncClient = ...
- * val bucket = "my-bucket"
- * val key = "path/to/myfile.txt"
+ * val s3Client:  S3Client = ...
  * val byteFlow = flowOf<Byte> { ... } // A Flow<Byte> containing the bytes to upload.
  *
- * s3Client.uploadBytes(bucket, key, byteFlow)
+ * s3Client
+ *     .uploadBytes(byteFlow) {
+ *         bucket = "my-bucket"
+ *         key = "path/to/myfile.txt"
+ *     }
  *     .collect { response ->
  *         println("Upload response: $response")
  *     }
  * ```
  */
-fun S3AsyncClient.uploadBytes(
+fun S3Client.uploadBytes(
     upstream: Flow<Byte>,
     concurrency: Int = 1,
     initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
-): Flow<S3Response> = flow {
-    val uploadResponse = createMultipartUpload { initialRequest(it) }.await()
-    emit(uploadResponse)
+): Flow<S3Response.MultipartResponse<*>> = flow {
+    val uploadResponse = createMultipartUploadResponse(initialRequest)
 
-    val bucket = uploadResponse.bucket()
-    val key = uploadResponse.key()
-    val uploadId = uploadResponse.uploadId()
-
-    val uploadedParts =
+    val eTags =
         upstream
             .chunked(MINIMUM_UPLOAD_SIZE)
             .withIndex()
-            .mapAsync(concurrency) { (part, chunk) -> uploadPart(bucket, key, uploadId, part, chunk) }
-            .onEach { emit(it) }
-            .map { it.eTag() }
+            .mapAsync(concurrency) { (index, chunk) ->
+                uploadPart {
+                    bucket = uploadResponse.bucket
+                    key = uploadResponse.key
+                    uploadId = uploadResponse.uploadId
+                    partNumber = index + 1
+                    body = ByteStream.fromBytes(chunk.toByteArray())
+                }
+            }
+            .onEach { emit(S3Response.UploadPart(it)) }
+            .mapNotNull { it.eTag }
             .toList()
 
-    emit(
-        completeMultipartUpload(
-            bucket = bucket,
-            key = key,
-            uploadId = uploadId,
-            etags = uploadedParts
-        )
-    )
+    completeMultipartUpload(uploadResponse, eTags)
 }
+
 
 /**
  * Creates a flow that uploads bytes to an Amazon S3 bucket.
@@ -180,7 +225,7 @@ fun S3AsyncClient.uploadBytes(
  *
  * Example usage:
  * ```
- * val s3Client: S3AsyncClient = ...
+ * val s3Client:  S3Client = ...
  * val bucket = "my-bucket"
  * val key = "path/to/myfile.txt"
  * val byteFlow = flowOf<Byte> { ... } // A Flow<Byte> containing the bytes to upload.
@@ -191,15 +236,15 @@ fun S3AsyncClient.uploadBytes(
  *     }
  * ```
  */
-fun S3AsyncClient.uploadBytes(
+fun S3Client.uploadBytes(
     bucket: String,
     key: String,
     upstream: Flow<Byte>,
     concurrency: Int = 1,
-): Flow<S3Response> =
+): Flow<S3Response.MultipartResponse<*>> =
     uploadBytes(upstream, concurrency) {
-        bucket(bucket)
-        key(key)
+        this.bucket = bucket
+        this.key = key
     }
 
 /**
@@ -220,7 +265,7 @@ fun S3AsyncClient.uploadBytes(
  * Example usage:
  *
  * ```
- * val s3Client: S3AsyncClient = ...
+ * val s3Client:  S3Client = ...
  * val bucket = "my-bucket"
  * val key = "path/to/myfile.txt"
  * val byteArrayFlow = flowOf<ByteArray> { ... } // A Flow<ByteArray> containing the byte arrays to upload.
@@ -231,18 +276,18 @@ fun S3AsyncClient.uploadBytes(
  *     }
  * ```
  */
-fun S3AsyncClient.upload(
+fun S3Client.upload(
     bucket: String,
     key: String,
     upstream: Flow<ByteArray>,
     concurrency: Int = 1
-): Flow<S3Response> =
+): Flow<S3Response.MultipartResponse<*>> =
     upload(
         upstream = upstream,
         concurrency = concurrency
     ) {
-        bucket(bucket)
-        key(key)
+        this.bucket = bucket
+        this.key = key
     }
 
 /**
@@ -263,7 +308,7 @@ fun S3AsyncClient.upload(
  * Example usage:
  *
  * ```
- * val s3Client: S3AsyncClient = ...
+ * val s3Client:  S3Client = ...
  * val bucket = "my-bucket"
  * val key = "path/to/myfile.txt"
  * val byteArrayFlow = flowOf<ByteArray> { ... } // A Flow<ByteArray> containing the byte arrays to upload.
@@ -278,11 +323,11 @@ fun S3AsyncClient.upload(
  *     }
  * ```
  */
-fun S3AsyncClient.upload(
+fun S3Client.upload(
     upstream: Flow<ByteArray>,
     concurrency: Int = 1,
     initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
-): Flow<S3Response> =
+): Flow<S3Response.MultipartResponse<*>> =
     uploadBytes(
         upstream = upstream.flatMapIterable { it.toList() },
         concurrency = concurrency,
@@ -290,7 +335,7 @@ fun S3AsyncClient.upload(
     )
 
 /**
- * This function uploads a file in chunks to an Amazon S3 bucket using the [S3AsyncClient].
+ * This function uploads a file in chunks to an Amazon S3 bucket using the [ S3Client].
  *
  * Particularly useful for handling streams of unknown size, since it automatically splits the flow into separate files,
  * allowing for seamless processing and storage.
@@ -309,7 +354,7 @@ fun S3AsyncClient.upload(
  * Example usage:
  *
  * ```
- *  val s3Client: S3AsyncClient = ...
+ *  val s3Client:  S3Client = ...
  *  val bucket = "my-bucket"
  *  val byteArrayFlow = flowOf<ByteArray> { ... } // A Flow<ByteArray> containing the byte arrays to upload.
  *  val oneMB = 1024 * 1024
@@ -322,13 +367,13 @@ fun S3AsyncClient.upload(
  *  }
  * ```
  */
-fun S3AsyncClient.uploadSplit(
+fun S3Client.uploadSplit(
     bucket: String,
     upstream: Flow<Byte>,
     splitStrategy: GroupStrategy = GroupStrategy.Count(ONE_MB),
     concurrency: Int = 1,
     key: (Int) -> String
-): Flow<S3Response> =
+): Flow<S3Response<*>> =
     upstream
         .split(splitStrategy)
         .withIndex()
@@ -337,7 +382,7 @@ fun S3AsyncClient.uploadSplit(
         }
 
 /**
- * This function uploads a file in chunks to an Amazon S3 bucket using the [S3AsyncClient].
+ * This function uploads a file in chunks to an Amazon S3 bucket using the [ S3Client].
  *
  * Particularly useful for handling streams of unknown size, since it automatically splits the flow into separate files,
  * allowing for seamless processing and storage.
@@ -358,7 +403,7 @@ fun S3AsyncClient.uploadSplit(
  * Example usage:
  *
  * ```
- *  val s3Client: S3AsyncClient = ...
+ *  val s3Client:  S3Client = ...
  *  val bucket = "my-bucket"
  *  val usersFlow = flowOf<User> { ... }
  *
@@ -376,14 +421,14 @@ fun S3AsyncClient.uploadSplit(
  *      }
  * ```
  */
-fun <T> S3AsyncClient.uploadSplitItems(
+fun <T> S3Client.uploadSplitItems(
     bucket: String,
     upstream: Flow<T>,
     splitStrategy: GroupStrategy = GroupStrategy.Count(1000),
     concurrency: Int = 1,
     key: (Int) -> String,
     f: suspend (T) -> ByteArray
-): Flow<S3Response> =
+): Flow<S3Response<*>> =
     upstream
         .split(splitStrategy)
         .map { it.map(f).flatMapIterable { it.toList() } }
@@ -393,7 +438,7 @@ fun <T> S3AsyncClient.uploadSplitItems(
         }
 
 /**
- * This function performs a merge by using multipart upload copy operations using the [S3AsyncClient].
+ * This function performs a merge by using multipart upload copy operations using the [ S3Client].
  * It copies multiple source files into a single destination object in an S3 bucket.
  *
  * @param bucket The S3 bucket where the destination object will be stored.
@@ -405,9 +450,7 @@ fun <T> S3AsyncClient.uploadSplitItems(
  *
  * Example usage:
  * ```
- *  val s3Client = S3AsyncClient.create()
- *  val bucket = "my-bucket"
- *  val destinationKey = "merged-file.txt"
+ *  val s3Client =  S3Client.create()
  *
  *  val sourceFiles = flowOf(
  *      "source-bucket-1" to "file1.txt",
@@ -415,105 +458,72 @@ fun <T> S3AsyncClient.uploadSplitItems(
  *      "source-bucket-3" to "file3.txt"
  *  )
  *
- *  s3Client.multipartUploadCopy(
- *      bucket = bucket,
- *      key = destinationKey,
- *      concurrency = 2,
- *      files = sourceFiles
- *  ).collect { response ->
- *      println("Copied part: ${response.key}")
- *  }
+ *  s3Client
+ *      .mergeContents(sourceFiles) {
+ *          bucket = "my-bucket"
+ *          key = "merged-file.txt"
+ *      }
+ *      .collect { response ->
+ *          println("Copied part: ${response.key}")
+ *      }
  * ```
  */
-fun S3AsyncClient.mergeContents(
-    bucket: String,
-    key: String,
+fun S3Client.mergeContents(
+    files: List<Pair<String, String>>,
     concurrency: Int = 1,
-    files: List<Pair<String, String>>
-): Flow<S3Response> = flow {
-    val uploadResponse = createMultipartUpload { it.bucket(bucket).key(key) }.await()
+    destination: CreateMultipartUploadRequest.Builder.() -> Unit
+): Flow<S3Response<*>> = flow {
+    val uploadResponse = createMultipartUploadResponse(destination)
 
-    emit(uploadResponse)
-
-    val etags =
+    val eTags =
         files
             .withIndex()
             .mapAsync(concurrency) { (index, tuple) ->
                 val (sourceBucket, sourceKey) = tuple
 
                 uploadPartCopy {
-                    it.sourceBucket(sourceBucket)
-                        .sourceKey(sourceKey)
-                        .destinationBucket(bucket)
-                        .destinationKey(key)
-                        .uploadId(uploadResponse.uploadId())
-                        .partNumber(index + 1)
-                }.await()
+                    copySource = "$sourceBucket/$sourceKey"
+                    key = uploadResponse.key
+                    bucket = uploadResponse.bucket
+                    uploadId = uploadResponse.uploadId
+                    partNumber = index + 1
+                }
             }
-            .onEach { emit(it) }
-            .map { it.copyPartResult().eTag() }
+            .onEach { emit(S3Response.UploadPartCopy(it)) }
+            .mapNotNull { it.copyPartResult?.eTag }
 
-    completeMultipartUpload(bucket, key, uploadResponse.uploadId(), etags)
-        .also { emit(it) }
+    completeMultipartUpload(
+        uploadResponse = uploadResponse,
+        eTags = eTags
+    )
 }
 
-private suspend fun S3AsyncClient.uploadPart(
-    bucket: String,
-    key: String,
-    uploadId: String,
-    part: Int,
-    bytes: List<Byte>
-) = uploadPart({
-    it.bucket(bucket)
-        .key(key)
-        .uploadId(uploadId)
-        .partNumber(part + 1)
-}, fromBytes(bytes.toByteArray())).await()
-
-private suspend fun S3AsyncClient.completeMultipartUpload(
-    bucket: String,
-    key: String,
-    uploadId: String,
-    etags: List<String>
-) = completeMultipartUpload { builder ->
-    builder
-        .bucket(bucket)
-        .key(key)
-        .uploadId(uploadId)
-        .multipartUpload { complete ->
-            etags
-                .mapIndexed { number, part ->
-                    builder().apply { partNumber(number + 1).eTag(part) }.build()
-                }
-                .let { complete.parts(it) }
-        }
-}.await()
-
-private suspend fun S3AsyncClient.internalUploadSplit(
+private suspend fun S3Client.internalUploadSplit(
     splitStrategy: GroupStrategy,
     chunk: Flow<Byte>,
     bucket: String,
     key: (Int) -> String,
     part: Int,
     concurrency: Int
-): Flow<S3Response> {
+): Flow<S3Response<*>> {
     val size = when (splitStrategy) {
         is GroupStrategy.Count -> splitStrategy.size
         is GroupStrategy.TimeWindow -> splitStrategy.size
     }
 
     return if (size <= FIVE_MB) {
-        val eagerChunk = chunk.toList()
+        flow {
+            val eagerChunk = chunk.toList()
 
-        val request =
-            PutObjectRequest
-                .builder()
-                .bucket(bucket)
-                .key(key(part + 1))
-                .contentLength(eagerChunk.size.toLong())
-                .build()
+            val response = putObject {
+                this.bucket = bucket
+                this.key = key(part + 1)
+                contentLength = eagerChunk.size.toLong()
+                body = ByteStream.fromBytes(eagerChunk.toByteArray())
+            }
 
-        suspend { putObject(request, fromBytes(eagerChunk.toByteArray())).await() }.asFlow()
+            emit(S3Response.PutObject(response))
+        }
     } else {
         uploadBytes(
             bucket = bucket,
@@ -522,4 +532,36 @@ private suspend fun S3AsyncClient.internalUploadSplit(
             concurrency = concurrency
         )
     }
+}
+
+context(S3Client, FlowCollector<S3Response.MultipartResponse<*>>)
+private suspend fun createMultipartUploadResponse(
+    initialRequest: CreateMultipartUploadRequest.Builder.() -> Unit
+): CreateMultipartUploadResponse {
+    val uploadResponse = createMultipartUpload { initialRequest() }
+    emit(S3Response.CreateMultipartUpload(uploadResponse))
+    return uploadResponse
+}
+
+context(S3Client, FlowCollector<S3Response.MultipartResponse<*>>)
+private suspend inline fun completeMultipartUpload(
+    uploadResponse: CreateMultipartUploadResponse,
+    eTags: List<String>
+) {
+    val response = completeMultipartUpload {
+        bucket = uploadResponse.bucket
+        key = uploadResponse.key
+        uploadId = uploadResponse.uploadId
+
+        multipartUpload {
+            parts = eTags.mapIndexed { index, e ->
+                CompletedPart {
+                    partNumber = index + 1
+                    eTag = e
+                }
+            }
+        }
+    }
+
+    emit(S3Response.CompleteMultipartUpload(response))
 }

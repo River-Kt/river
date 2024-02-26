@@ -1,28 +1,35 @@
+@file:OptIn(InternalApi::class)
+
 package com.river.connector.aws.s3
 
+import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
+import aws.sdk.kotlin.services.s3.S3Client
+import aws.sdk.kotlin.services.s3.createBucket
+import aws.sdk.kotlin.services.s3.model.ExpressionType
+import aws.sdk.kotlin.services.s3.model.JsonType
+import aws.sdk.kotlin.services.s3.model.RecordsEvent
+import aws.smithy.kotlin.runtime.InternalApi
+import aws.smithy.kotlin.runtime.net.url.Url
+import aws.smithy.kotlin.runtime.util.PlatformProvider
+import com.river.connector.aws.s3.model.S3Response
 import com.river.core.GroupStrategy.Count
-import com.river.core.asByteArray
-import com.river.core.asBytes
+import com.river.core.flatMapIterable
 import com.river.core.intersperse
-import io.kotest.core.spec.style.FeatureSpec
+import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import io.mockk.every
+import io.mockk.mockkObject
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.future.await
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.model.*
-import java.net.URI
 
-class S3AsyncClientExtTest : FeatureSpec({
-    feature("S3 streaming connector") {
-        val bucketName = "test"
-        s3Client.createBucket { it.bucket(bucketName) }.await()
+class S3AsyncClientExtTest : FunSpec({
+    context("Amazon S3 as stream") {
+        val bucketName = "test-bucket"
+        client.createBucket { bucket = bucketName }
 
-        scenario("Successful upload") {
+        test("successful upload") {
             val responses =
-                s3Client
+                client
                     .uploadBytes(bucket = bucketName, "test.txt", flow)
                     .toList()
 
@@ -34,40 +41,48 @@ class S3AsyncClientExtTest : FeatureSpec({
                 complete
             ) = responses
 
-            createMultiPart.shouldBeTypeOf<CreateMultipartUploadResponse>()
+            createMultiPart.shouldBeTypeOf<S3Response.CreateMultipartUpload>()
 
-            part1.shouldBeTypeOf<UploadPartResponse>()
-            part2.shouldBeTypeOf<UploadPartResponse>()
-            part3.shouldBeTypeOf<UploadPartResponse>()
+            part1.shouldBeTypeOf<S3Response.UploadPart>()
+            part2.shouldBeTypeOf<S3Response.UploadPart>()
+            part3.shouldBeTypeOf<S3Response.UploadPart>()
 
-            complete.shouldBeTypeOf<CompleteMultipartUploadResponse>()
+            complete.shouldBeTypeOf<S3Response.CompleteMultipartUpload>()
         }
 
-        scenario("Successful download") {
-            s3Client
+        test("successful download") {
+            client
                 .uploadBytes(bucket = bucketName, "test.txt", flow)
                 .collect()
 
-            val (metadata, content) = s3Client.download(bucketName, "test.txt").first()
-            metadata.contentLength() shouldBe ContentLength
+            client
+                .download {
+                    bucket = bucketName
+                    key = "test.txt"
+                }
+                .collect { (metadata, content) ->
+                    metadata.contentLength shouldBe ContentLength
 
-            val count =
-                content
-                    .map { String(it) }
-                    .toList()
-                    .fold("") { acc, s -> acc + s }
-                    .split("\n")
-                    .size
+                    val count =
+                        content
+                            .map { String(it) }
+                            .toList()
+                            .fold("") { acc, s -> acc + s }
+                            .split("\n")
+                            .size
 
-            count shouldBe 2104969
+                    count shouldBe 2104969
+                }
         }
 
-        scenario("Successful many files upload") {
+        test("successful upload split") {
             val responses =
-                s3Client
-                    .uploadSplit(bucket = bucketName, upstream = flow, splitStrategy = Count(1024 * 1024 * 5)) {
-                        "file-$it.txt"
-                    }
+                client
+                    .uploadSplit(
+                        bucket = bucketName,
+                        upstream = flow,
+                        splitStrategy = Count(1024 * 1024 * 5)
+                    ) { "file-$it.txt" }
                     .toList()
 
             val (
@@ -76,73 +91,83 @@ class S3AsyncClientExtTest : FeatureSpec({
                 piece3,
             ) = responses
 
-            piece1.shouldBeTypeOf<PutObjectResponse>()
-            piece2.shouldBeTypeOf<PutObjectResponse>()
-            piece3.shouldBeTypeOf<PutObjectResponse>()
+            piece1.shouldBeTypeOf<S3Response.PutObject>()
+            piece2.shouldBeTypeOf<S3Response.PutObject>()
+            piece3.shouldBeTypeOf<S3Response.PutObject>()
         }
 
-        scenario("Successful many files upload and merge them into one") {
-            s3Client
-                .uploadSplit(bucket = bucketName, upstream = flow, splitStrategy = Count(1024 * 1024 * 5)) {
-                    "file-$it.txt"
+        test("successful upload many files + merge content") {
+            client
+                .uploadSplit(
+                    bucket = bucketName,
+                    upstream = flow,
+                    splitStrategy = Count(1024 * 1024 * 5)
+                ) { "file-$it.txt" }
+                .collect()
+
+            client
+                .mergeContents(
+                    files = listOf(
+                        bucketName to "file-1.txt",
+                        bucketName to "file-2.txt",
+                        bucketName to "file-3.txt"
+                    )
+                ) {
+                    bucket = bucketName
+                    key = "file-all.txt"
                 }.collect()
 
-            s3Client.mergeContents(
-                bucket = bucketName,
-                key = "file-all.txt",
-                files = listOf(
-                    bucketName to "file-1.txt",
-                    bucketName to "file-2.txt",
-                    bucketName to "file-3.txt"
-                )
-            ).collect()
+            client
+                .download {
+                    bucket = bucketName
+                    key = "test.txt"
+                }
+                .collect { (metadata, content) ->
+                    metadata.contentLength shouldBe ContentLength
 
-            val (metadata, content) = s3Client.download(bucketName, "file-all.txt").first()
+                    val count =
+                        content
+                            .map { String(it) }
+                            .toList()
+                            .fold("") { acc, s -> acc + s }
+                            .split("\n")
+                            .size
 
-            metadata.contentLength() shouldBe ContentLength
-
-            val count =
-                content
-                    .map { String(it) }
-                    .toList()
-                    .fold("") { acc, s -> acc + s }
-                    .split("\n")
-                    .size
-
-            count shouldBe 2104969
+                    count shouldBe 2104969
+                }
         }
 
-        // This is a pro Localstack feature. Disabled for now
-        xscenario("Querying data using selectObjectContent") {
+        // Disabled since it's Localstack Pro only
+        xtest("querying data using selectObjectContent") {
             val items = 100
 
-            s3Client
+            client
                 .upload(
                     bucket = bucketName,
                     key = "users.jsonl",
                     upstream =
-                        (1..items)
-                            .asFlow()
-                            .map {
-                                val age = if (it % 2 == 0) "32" else "17"
-                                val name = "name-$it"
-                                """{"id":$it,"name":"$name","age":$age}"""
-                            }
-                            .intersperse("\n")
-                            .asByteArray()
+                    (1..items)
+                        .asFlow()
+                        .map {
+                            val age = if (it % 2 == 0) "32" else "17"
+                            val name = "name-$it"
+                            """{"id":$it,"name":"$name","age":$age}"""
+                        }
+                        .intersperse("\n")
+                        .map { it.encodeToByteArray() }
                 )
                 .collect()
 
-            s3Client
+            client
                 .selectObjectContent {
-                    bucket(bucketName)
-                    key("users.jsonl")
+                    bucket = bucketName
+                    key = "users.jsonl"
 
-                    expression("SELECT * FROM S3Object s where s.id = 1")
-                    expressionType(ExpressionType.SQL)
+                    expression = "SELECT * FROM S3Object s where s.id = 1"
+                    expressionType = ExpressionType.Sql
 
-                    inputSerialization { s -> s.json { it.type(JSONType.LINES) } }
-                    outputSerialization { it.json { } }
+                    inputSerialization { json { type = JsonType.Lines } }
+                    outputSerialization { json { } }
                 }
                 .filterIsInstance<RecordsEvent>()
                 .collect()
@@ -157,18 +182,25 @@ private val flow =
         .asFlow()
         .map { it.toString() }
         .intersperse("\n")
-        .asBytes()
+        .flatMapIterable { it.encodeToByteArray().toList() }
         .take(1024 * 1024 * 15)
 
-private val s3Client: S3AsyncClient =
-    S3AsyncClient
-        .builder()
-        .endpointOverride(URI("http://s3.localhost.localstack.cloud:4566"))
-        .region(Region.US_EAST_1)
-        .credentialsProvider {
-            AwsBasicCredentials.create(
-                "x",
-                "x"
-            )
+val client: S3Client by lazy {
+    lateinit var client: S3Client
+
+    mockkObject(PlatformProvider.System) {
+        every { PlatformProvider.System.isAndroid } returns false
+
+        client = S3Client {
+            endpointUrl = Url.parse("http://s3.localhost.localstack.cloud:4566")
+            region = "us-east-1"
+            credentialsProvider = StaticCredentialsProvider {
+                accessKeyId = "x"
+                secretAccessKey = "x"
+            }
+            applicationId = "x"
         }
-        .build()
+    }
+
+    client
+}

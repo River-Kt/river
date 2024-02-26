@@ -1,10 +1,6 @@
 kotlin {
     sourceSets {
-        macosMain {
-
-        }
-
-        jvmMain {
+        commonMain {
             dependencies {
                 api(libs.aws.sns)
             }

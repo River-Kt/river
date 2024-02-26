@@ -2,59 +2,53 @@
 
 package com.river.connector.aws.ses
 
-import com.river.connector.aws.ses.internal.*
-import com.river.connector.aws.ses.model.*
-
+import aws.sdk.kotlin.services.ses.SesClient
+import com.river.connector.aws.ses.model.SesRequest
+import com.river.connector.aws.ses.model.SesResponse
 import com.river.core.mapAsync
-
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.future.await
-
-import software.amazon.awssdk.services.ses.SesAsyncClient
-import software.amazon.awssdk.services.ses.model.SesResponse
 
 /**
- * Sends emails using the requests provided in a [Flow]. The emails are sent concurrently with the specified concurrency level.
+ * Sends a flow of email requests using the AWS Simple Email Service (SES) client.
  *
- * @param upstream The [Flow] of [SendEmailRequest] objects representing the email sending requests.
- * @param concurrency The maximum number of concurrent requests. Defaults to 1.
- * @return A [Flow] of [SesResponse] objects representing the responses to the email sending requests.
+ * This extension function on SesClient takes an upstream Flow of SesRequest objects, processes them concurrently,
+ * and emits a Flow of SesResponse objects corresponding to the results of the email sending operations.
+ *
+ * The function supports different types of SES requests, including bulk templated, raw, single, and single templated emails.
+ *
+ * @param R The type parameter representing the payload type of the SesRequest.
+ * @param upstream A Flow of SesRequest objects that represent the email sending requests.
+ * @param concurrency An integer defining the level of concurrency for processing the requests. Default is 1, meaning sequential processing.
+ *
+ * @return A Flow of SesResponse objects, each representing the outcome of an email sending request.
  *
  * Example usage:
+ * ```
+ * val sesClient = SesClient { region = "us-east-1" }
+ * val emailRequestsFlow = flowOf(
+ *     SesRequest.SingleTemplated(SesSingleTemplatedRequest(...)),
+ *     SesRequest.BulkTemplated(SesBulkTemplatedRequest(...)),
+ *     // more requests
+ * )
  *
- * ```kotlin
- * val client = SesAsyncClient.create()
- * val requests = flowOf(SendEmailRequest.Single(...), SendEmailRequest.BulkTemplated(...))
- * val responses = client.sendEmailFlow(requests, concurrency = 2)
- * responses.collect { response ->
- *     println("Response: $response")
- * }
+ * val emailResponsesFlow = sesClient.sendEmailFlow(emailRequestsFlow, concurrency = 2)
+ *
+ * emailResponsesFlow
+ *     .collect { response ->
+ *         // Handle each response
+ *     }
  * ```
  */
-fun SesAsyncClient.sendEmailFlow(
-    upstream: Flow<SendEmailRequest>,
+fun <R> SesClient.sendEmailFlow(
+    upstream: Flow<SesRequest<R>>,
     concurrency: Int = 1,
-): Flow<SesResponse> =
-    upstream.mapAsync(concurrency) { coSendEmail(it) }
-
-suspend fun SesAsyncClient.coSendEmail(
-    request: SendEmailRequest
-): SesResponse =
-    when (request) {
-        is SendEmailRequest.BulkTemplated -> {
-            sendBulkTemplatedEmail(request.asSesBulkTemplatedRequest()).await()
-        }
-
-        is SendEmailRequest.Single<*> ->
-            when (request.message) {
-                is Message.Plain -> {
-                    request as SendEmailRequest.Single<Message.Plain>
-                    sendEmail(request.asSesSendEmailRequest()).await()
-                }
-
-                is Message.Template -> {
-                    request as SendEmailRequest.Single<Message.Template>
-                    sendTemplatedEmail(request.asSesTemplatedRequest()).await()
-                }
+): Flow<SesResponse<*>> =
+    upstream
+        .mapAsync(concurrency) {
+            when (it) {
+                is SesRequest.BulkTemplated -> SesResponse.BulkTemplated(sendBulkTemplatedEmail(it.request))
+                is SesRequest.Raw -> SesResponse.Raw(sendRawEmail(it.request))
+                is SesRequest.Single -> SesResponse.Single(sendEmail(it.request))
+                is SesRequest.SingleTemplated -> SesResponse.SingleTemplated(sendTemplatedEmail(it.request))
             }
-    }
+        }
