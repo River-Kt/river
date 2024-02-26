@@ -22,7 +22,6 @@ services:
       - LAMBDA_EXECUTOR=local
     volumes:
       - './stub/localstack/:/etc/localstack/init/ready.d/'
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   rabbitmq:
