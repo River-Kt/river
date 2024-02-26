@@ -82,7 +82,7 @@ class PollExtTest : FunSpec({
     test("building an arithmetic series flow") {
         val count = 100
 
-        val flow = pollWithState(1, { it > count }) { state ->
+        val flow = pollWithState(1, shouldStop = { it > count }) { state ->
             (state + 1) to (0..state).toList()
         }
 

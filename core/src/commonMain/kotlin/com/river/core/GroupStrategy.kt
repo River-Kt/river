@@ -22,12 +22,16 @@ import kotlin.time.Duration
  * - [TimeWindow]: Groups items based on a time window with a maximum item count.
  */
 sealed interface GroupStrategy {
+    val size: Int
+
     /**
      * A class representing a count-based grouping strategy.
      *
      * @property size The number of items to group together.
      */
-    class Count(val size: Int) : GroupStrategy
+    class Count(override val size: Int) : GroupStrategy {
+        init { require(size > 0) { "Size must be positive" } }
+    }
 
     /**
      * A class representing a time window-based grouping strategy.
@@ -36,7 +40,9 @@ sealed interface GroupStrategy {
      * @property duration The time window duration for grouping items.
      */
     class TimeWindow(
-        val size: Int,
+        override val size: Int,
         val duration: Duration
-    ) : GroupStrategy
+    ) : GroupStrategy {
+        init { require(size > 0) { "Size must be positive" } }
+    }
 }

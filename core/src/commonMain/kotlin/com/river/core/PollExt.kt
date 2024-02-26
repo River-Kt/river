@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformWhile
+import kotlin.time.Duration
 
 /**
  * Creates a flow that continuously polls elements concurrently by successively applying the [f] function.
@@ -30,11 +31,13 @@ import kotlinx.coroutines.flow.transformWhile
 fun <T> poll(
     concurrency: ConcurrencyStrategy = ConcurrencyStrategy.disabled,
     stopOnEmptyList: Boolean = false,
+    interval: Duration? = null,
     f: suspend ConcurrencyInfo.() -> List<T>
 ): Flow<T> =
     PollingFlow(
         stopOnEmptyList = stopOnEmptyList,
         concurrency = concurrency,
+        interval = interval,
         producer = f
     )
 
@@ -78,12 +81,13 @@ fun <T> poll(
 @ExperimentalRiverApi
 fun <T, S> pollWithState(
     initial: S,
+    interval: Duration? = null,
     shouldStop: (S) -> Boolean = { false },
     f: suspend (S) -> Pair<S, List<T>>
 ): Flow<T> = flow {
     var last: S = initial
 
-    poll { listOf(f(last).also { last = it.first }) }
+    poll(interval = interval) { listOf(f(last).also { last = it.first }) }
         .transformWhile { (state, items) ->
             emit(items)
             !shouldStop(state)

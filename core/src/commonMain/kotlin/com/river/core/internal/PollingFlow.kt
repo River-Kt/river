@@ -8,13 +8,16 @@ import com.river.core.mapAsync
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
+import kotlin.time.Duration
 
 internal sealed interface PollingFlow<T> : Flow<T> {
     class Default<T>(
         private val stopOnEmptyList: Boolean = false,
+        private val interval: Duration? = null,
         private val producer: suspend () -> List<T>
     ) : PollingFlow<T> {
         override suspend fun collect(collector: FlowCollector<T>) =
@@ -27,6 +30,8 @@ internal sealed interface PollingFlow<T> : Flow<T> {
                     if (result.isEmpty() && stopOnEmptyList) {
                         break;
                     }
+
+                    if (interval != null) delay(interval)
                 }
             }.collect(collector)
     }
@@ -34,6 +39,7 @@ internal sealed interface PollingFlow<T> : Flow<T> {
     class Parallel<T>(
         private val concurrency: ConcurrencyStrategy,
         private val stopOnEmptyList: Boolean = false,
+        private val interval: Duration? = null,
         private val producer: suspend ConcurrencyInfo.() -> List<T>
     ) : PollingFlow<T> {
         override suspend fun collect(collector: FlowCollector<T>) =
@@ -62,6 +68,8 @@ internal sealed interface PollingFlow<T> : Flow<T> {
 
                     firstIteration = false
                     gotEmptyResponse = emptyResultOnResponse
+
+                    if (interval != null) delay(interval)
                 }
             }.collect(collector)
     }
@@ -72,14 +80,16 @@ internal sealed interface PollingFlow<T> : Flow<T> {
         operator fun <T> invoke(
             concurrency: ConcurrencyStrategy,
             stopOnEmptyList: Boolean,
+            interval: Duration? = null,
             producer: suspend ConcurrencyInfo.() -> List<T>
         ): PollingFlow<T> {
             return when (concurrency.initial.maximum) {
-                1 -> Default(stopOnEmptyList) { producer(concurrency.initial) }
+                1 -> Default(stopOnEmptyList, interval) { producer(concurrency.initial) }
 
                 else -> Parallel(
                     concurrency = concurrency,
                     stopOnEmptyList = stopOnEmptyList,
+                    interval = interval,
                     producer = producer
                 )
             }

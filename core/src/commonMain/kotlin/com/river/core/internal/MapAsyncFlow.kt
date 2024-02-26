@@ -1,11 +1,11 @@
 package com.river.core.internal
 
 import com.river.core.AsyncSemaphore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.map
 
 internal class MapAsyncFlow<T, R, P>(
     private val upstream: Flow<T>,
@@ -16,16 +16,11 @@ internal class MapAsyncFlow<T, R, P>(
         coroutineScope {
             val semaphore = semaphore()
 
-            val channel: Flow<Deferred<Pair<P, R>>> =
-                flow {
-                    upstream
-                        .collect {
-                            val id = semaphore.acquire()
-                            emit(async { id to transform(it) })
-                        }
+            upstream
+                .map {
+                    val id = semaphore.acquire()
+                    async { id to transform(it) }
                 }
-
-            channel
                 .buffer(semaphore.totalPermits)
                 .map {
                     val (permit, result) = it.await()
