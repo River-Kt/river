@@ -19,24 +19,24 @@ jobs:
             containers: zookeeper kafka
           - module: AWS Lambda
             path: :connector:connector-aws:connector-aws-lambda
-            runner: macos-latest
             containers: localstack
+            runner: macos-latest
           - module: AWS S3
             path: :connector:connector-aws:connector-aws-s3
-            runner: macos-latest
             containers: localstack
+            runner: macos-latest
           - module: AWS SES
             path: :connector:connector-aws:connector-aws-ses
-            runner: macos-latest
             containers: localstack
+            runner: macos-latest
           - module: AWS SNS
             path: :connector:connector-aws:connector-aws-sns
-            runner: macos-latest
             containers: localstack
+            runner: macos-latest
           - module: AWS SQS
             path: :connector:connector-aws:connector-aws-sqs
-            runner: macos-latest
             containers: localstack
+            runner: macos-latest
           - module: Azure Queue Storage
             path: :connector:connector-azure:connector-azure-queue-storage
             containers: azurite
@@ -84,8 +84,11 @@ jobs:
       - name: Setup Docker [macOS only]
         if: ${{ inputs.containers && inputs.runner == 'macos-latest' }}
         uses: douglascamata/setup-docker-macos-action@v1-alpha
+      - name: Run docker-compose [if needed] [macOS only]
+        if: ${{ inputs.containers && inputs.runner == 'macos-latest' }}
+        run: docker-compose up ${{ matrix.containers }} -d
       - name: Run docker-compose [if needed]
-        if: ${{ matrix.containers }}
+        if: ${{ inputs.containers && inputs.runner != 'macos-latest' }}
         run: docker compose up ${{ matrix.containers }} -d
       - name: Set up JDK 17
         uses: actions/setup-java@v4
