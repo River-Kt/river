@@ -10,24 +10,27 @@ jobs:
         include:
           - module: River Core
             path: :core
-            runner: macos-latest
           - module: AMQP
             path: :connector:connector-amqp
             containers: rabbitmq
           - module: Apache Kafka
             path: :connector:connector-apache:connector-apache-kafka
             containers: zookeeper kafka
-          - module: AWS (lambda, s3, ses, sqs, sns)
-            path: :connector:connector-aws
+          - module: AWS Lambda
+            path: :connector:connector-aws:connector-aws-lambda
             containers: localstack
-            runner: macos-latest
-            gradle-command: >
-              :connector:connector-aws:connector-aws-lambda:test 
-              :connector:connector-aws:connector-aws-s3:test 
-              :connector:connector-aws:connector-aws-sqs:test 
-              :connector:connector-aws:connector-aws-sns:test 
-              :connector:connector-aws:connector-aws-ses:test 
-              --parallel
+          - module: AWS S3
+            path: :connector:connector-aws:connector-aws-s3
+            containers: localstack
+          - module: AWS SQS
+            path: :connector:connector-aws:connector-aws-sqs
+            containers: localstack
+          - module: AWS SNS
+            path: :connector:connector-aws:connector-aws-sns
+            containers: localstack
+          - module: AWS SES
+            path: :connector:connector-aws:connector-aws-ses
+            containers: localstack
           - module: Azure Queue Storage
             path: :connector:connector-azure:connector-azure-queue-storage
             containers: azurite
@@ -115,3 +118,12 @@ jobs:
           task: ${{ matrix.path }}:${{ matrix.task || 'allTests' }}
         run: |
           ./gradlew ${{ matrix.gradle-command || env.task }}
+
+      - name: Store reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.module }} [${{ matrix.runner || 'ubuntu-latest' }}]
+          path: |
+            **/build/reports/
+            **/build/test-results/
