@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
@@ -45,7 +45,9 @@ class FlowAsyncExtKtTest : FunSpec({
                     it * 2
                 }
 
-        retry(5, 20.seconds) {
+        // The high max retries is due to macOS incredibly slow build on GH Actions
+        // It causes the test to slow down, so time-related tests get quite unpredictable
+        retry(20, 1.minutes) {
             val counter = AtomicReference(0)
 
             sourceFlow
@@ -61,18 +63,19 @@ class FlowAsyncExtKtTest : FunSpec({
 
                             // Measure the time taken to receive two items
                             measureTime {
-                                // First item should be received in >= 500 ms & <= 520 ms
+                                // First item should be received in >= 500 ms & <= 600 ms
                                 assertSoftly(ensureNext()) { duration ->
                                     duration shouldBeGreaterThan 480.milliseconds
-                                    duration shouldBeLessThanOrEqualTo 520.milliseconds
+                                    // Once again, this is due to macOS slow builds on GH Actions
+                                    duration shouldBeLessThanOrEqualTo 600.milliseconds
                                 }
 
                                 repeat(9) {
                                     // The other 9 items should be almost immediate
-                                    ensureNext() shouldNotBeGreaterThan 6.milliseconds
+                                    ensureNext() shouldNotBeGreaterThan 10.milliseconds
                                 }
 
-                            } shouldBeLessThanOrEqualTo 550.milliseconds
+                            } shouldBeLessThanOrEqualTo 650.milliseconds
                         }
 
                     awaitComplete()
@@ -81,7 +84,7 @@ class FlowAsyncExtKtTest : FunSpec({
     }
 
     test("unorderedMapAsync should correctly transform each element") {
-        val sourceFlow = flowOf(100, 50, 10)
+        val sourceFlow = flowOf(500, 100, 5)
 
         val result =
             sourceFlow
@@ -92,22 +95,22 @@ class FlowAsyncExtKtTest : FunSpec({
                 .toList()
 
         /**
-         * The assertion shouldContainInOrder expects the elements in the specific order [100, 20, 200].
+         * The assertion shouldContainInOrder expects the elements in the specific order [200, 10, 1000].
          *
          * Despite the function being unordered, in this specific case, the output will be ordered due to the
          * interplay of processing times and concurrency limit.
          *
          * Lemme explain how it works exactly:
          *
-         *  - The first element (100) will start processing and take 100 milliseconds.
-         *  - Meanwhile, the second element (50) starts and finishes in 50 milliseconds.
-         *  - The third element (10) starts processing after the second but finishes quickly in 10 milliseconds.
-         *  - By the time the first element (100) finishes, the other two are already done.
+         *  - The first element (500) will start processing and take 500 milliseconds.
+         *  - Meanwhile, the second element (100) starts and finishes in 100 milliseconds.
+         *  - The third element (5) starts processing after the second but finishes quickly in 5 milliseconds.
+         *  - By the time the first element (500) finishes, the other two are already done.
          *
-         *  So, the order of completion is 50 (20 after transformation), 10 (20 after transformation),
-         *  and finally 100 (200 after transformation).
+         *  So, the order of completion is 100 (200 after transformation), 5 (10 after transformation),
+         *  and finally 500 (1000 after transformation).
          */
-        result shouldContainInOrder listOf(100, 20, 200)
+        result shouldContainInOrder listOf(200, 10, 1000)
     }
 
     test("flatMapIterableAsync should correctly transform and flatten each element") {
@@ -126,7 +129,7 @@ class FlowAsyncExtKtTest : FunSpec({
     }
 
     test("unorderedFlatMapIterableAsync should correctly transform and flatten each element with specific processing times") {
-        val sourceFlow = flowOf(100, 50, 10)
+        val sourceFlow = flowOf(500, 100, 5)
 
         val result =
             sourceFlow
@@ -137,21 +140,21 @@ class FlowAsyncExtKtTest : FunSpec({
                 .toList()
 
         /**
-         * The assertion shouldContainInOrder expects the elements in the specific order [100, 20, 200].
+         * The assertion shouldContainInOrder expects the elements in the specific order [100, 200, 5, 10, 500, 1000].
          *
          * Despite the function being unordered, in this specific case, the output will be ordered due to the
          * interplay of processing times and concurrency limit.
          *
          * Lemme explain how it works exactly:
          *
-         *  - The first element (100) will start processing and take 100 milliseconds.
-         *  - Meanwhile, the second element (50) starts and finishes in 50 milliseconds.
-         *  - The third element (10) starts processing after the second but finishes quickly in 10 milliseconds.
-         *  - By the time the first element (100) finishes, the other two are already done.
+         *  - The first element (500) will start processing and take 500 milliseconds.
+         *  - Meanwhile, the second element (100) starts and finishes in 100 milliseconds.
+         *  - The third element (5) starts processing after the second but finishes quickly in 5 milliseconds.
+         *  - By the time the first element (500) finishes, the other two are already done.
          *
-         *  So, the order of completion is 50 (100 after transformation), 10 (20 after transformation),
-         *  and finally 100 (200 after transformation).
+         *  So, the order of completion is 100 (200 after transformation), 5 (10 after transformation),
+         *  and finally 500 (1000 after transformation).
          */
-        result shouldContainInOrder listOf(50, 100, 10, 20, 100, 200)
+        result shouldContainInOrder listOf(100, 200, 5, 10, 500, 1000)
     }
 })

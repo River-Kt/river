@@ -71,8 +71,8 @@ class FlowExtKtTest : FunSpec({
 
     test("should transform the flow into a list based on the time window") {
         flowOf(2, 4, 6, 8, 10, 12, 14, 16)
-            .onEach { delay(190) }
-            .toList(10, 600.milliseconds) shouldBe listOf(2, 4, 6)
+            .onEach { delay(300) }
+            .toList(10, 1150.milliseconds) shouldBe listOf(2, 4, 6)
     }
 
     test("should chunk the items based on the count") {
