@@ -1,4 +1,4 @@
-name: Build and assembly
+name: Build monorepo
 
 on:
   workflow_call:
@@ -9,15 +9,18 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: build -x test
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build monorepo
+        run: ./gradlew build -PskipTests=true

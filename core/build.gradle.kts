@@ -9,8 +9,17 @@ kotlin {
     mingwX64()
 
     js(IR) {
-        browser()
-        nodejs()
+        browser {
+            testTask {
+                onlyIf { !skipTests() }
+            }
+        }
+        
+        nodejs {
+            testTask {
+                onlyIf { !skipTests() }
+            }
+        }
     }
 
     androidTarget {

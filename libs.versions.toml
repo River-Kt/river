@@ -39,6 +39,7 @@ os-detector = "1.7.3"
 android-compile-sdk = "30"
 desugar-jdk-libs = "2.0.3"
 mockk = "1.13.9"
+test-logger = "4.0.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -55,6 +56,8 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "1.3.0" }
 
 os-detector = { id = "com.google.osdetector", version.ref = "os-detector" }
+
+test-logger = { id = "com.adarshr.test-logger", version.ref = "test-logger" }
 
 [libraries]
 # kotlin

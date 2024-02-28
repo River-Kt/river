@@ -14,3 +14,6 @@ inline fun Project.androidApp(crossinline configure: AppExtension.() -> Unit) {
         extensions.configure<AppExtension> { configure() }
     }
 }
+
+fun Project.skipTests(): Boolean =
+    "${properties["skipTests"] ?: "false"}".toBooleanStrict()

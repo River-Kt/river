@@ -1,7 +1,10 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import com.adarshr.gradle.testlogger.TestLoggerExtension
+import com.adarshr.gradle.testlogger.theme.ThemeType
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
+import org.jetbrains.kotlin.cli.common.toBooleanLenient
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -13,6 +16,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.nexus.publish) apply false
     alias(libs.plugins.os.detector)
+    alias(libs.plugins.test.logger) apply false
 
     `maven-publish`
     signing
@@ -48,6 +52,7 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "signing")
     apply(plugin = "com.google.osdetector")
+    apply(plugin = "com.adarshr.test-logger")
 
     version = rootProject.libs.versions.river.get()
     group = "com.river-kt"
@@ -57,13 +62,29 @@ subprojects {
         google()
     }
 
+    configure<TestLoggerExtension> {
+        theme = ThemeType.MOCHA
+        showExceptions = true
+        showStackTraces = true
+        showFullStackTraces = false
+        showCauses = true
+        slowThreshold = 10000
+        showSummary = true
+        showSimpleNames = false
+        showPassed = true
+        showSkipped = true
+        showFailed = true
+        showStandardStreams = false
+        showPassedStandardStreams = true
+        showSkippedStandardStreams = true
+        showFailedStandardStreams = true
+        logLevel = LogLevel.LIFECYCLE
+    }
+
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
 
-        testLogging {
-            showStandardStreams = true
-            exceptionFormat = TestExceptionFormat.FULL
-        }
+        onlyIf { !skipTests() }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
