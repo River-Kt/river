@@ -49,7 +49,11 @@ users
     
 // Since it's still Kotlin's Flow, everything leverages asynchronous non-blocking backpressure:
 // if the processing in the collect block is slow, the polling stage will slow down accordingly.
-``` 
+```
+
+Are you a visual learner? The code basically represents the flow below:
+
+![Alt text](miscellaneous/readme-sample.svg)
 
 To get to know the core module a bit further, you can refer to the [site's kdoc](https://www.river-kt.com/core/com.river.core/) or you can [check the code](https://github.com/River-Kt/river/tree/main/core/src/main/kotlin/com/river/core) directly.
 
