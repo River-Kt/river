@@ -11,5 +11,5 @@ repositories {
 
 dependencies {
     compileOnly(gradleApi())
-    compileOnly("com.android.tools.build:gradle:8.1.4")
+    compileOnly("com.android.tools.build:gradle:8.4.1")
 }
