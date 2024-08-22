@@ -41,6 +41,8 @@ include(
     "connectors:google:drive",
     "connectors:http",
     "connectors:jms",
+    "connectors:ktor",
+    "connectors:ktor:network",
     "connectors:mongodb",
     "connectors:mqtt",
     "connectors:rdbms:jdbc",
