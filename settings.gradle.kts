@@ -38,6 +38,7 @@ include(
     "connectors:format:positional-flat-line",
     "connectors:ftp",
     "connectors:github",
+    "connectors:google:common",
     "connectors:google:drive",
     "connectors:http",
     "connectors:jms",

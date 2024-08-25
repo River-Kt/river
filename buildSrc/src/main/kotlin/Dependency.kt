@@ -13,6 +13,7 @@ class Modules(val project: (String) -> ProjectDependency) {
     val awsHttp11Spi by lazy { project(":connector:connector-aws:connector-aws-java-11-http-spi") }
     val debezium by lazy { project(":connector:connector-red-hat:connector-red-hat-debezium") }
     val json by lazy { project(":connector:connector-format:connector-format-json") }
+    val googleCommon by lazy { project(":connector:connector-google:connector-google-common") }
     val csv by lazy { project(":connector:connector-format:connector-format-csv") }
     val s3 by lazy { project(":connector:connector-aws:connector-aws-s3") }
     val sqs by lazy { project(":connector:connector-aws:connector-aws-sqs") }

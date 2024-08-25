@@ -1,19 +1,14 @@
+plugins {
+    alias(libs.plugins.kotlin.serialization)
+}
+
 kotlin {
     sourceSets {
-        jvmMain {
+        commonMain {
             dependencies {
                 val modules = modules { project(it) }
 
-                api(modules.http)
-                api(modules.json)
-                api(libs.jackson)
-                api(libs.java.jwt)
-            }
-        }
-
-        jvmTest {
-            dependencies {
-                api(libs.kotest.wiremock)
+                api(modules.googleCommon)
             }
         }
     }

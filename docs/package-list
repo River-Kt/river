@@ -54,6 +54,8 @@ module:connector-format-positional-flat-line
 com.river.connector.format.positional.flat.line
 module:connector-google-drive
 com.river.connector.google.drive
+module:connector-ktor-network
+com.river.connector.ktor.network
 module:connector-rdbms-jdbc
 com.river.connector.rdbms.jdbc
 module:connector-rdbms-r2dbc

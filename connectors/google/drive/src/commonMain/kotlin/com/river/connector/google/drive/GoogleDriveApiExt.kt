@@ -1,17 +1,16 @@
 package com.river.connector.google.drive
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.river.connector.format.json.defaultObjectMapper
-import com.river.connector.http.coSend
-import com.river.connector.http.get
-import com.river.connector.http.ofFlow
-import com.river.connector.http.ofString
 import com.river.core.ExperimentalRiverApi
-import com.river.core.asByteArray
 import com.river.core.pollWithState
+
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * This function allows for listing files on Google Drive with an optional query to filter the files.
@@ -45,19 +44,19 @@ fun GoogleDriveApi.listFiles(
         ) { (_, token) ->
             filter.pageToken = token
 
-            val request = get("$baseUrl/v3/files") {
-                authorization { bearer(currentToken()) }
+            val response = httpClient.get("$baseUrl/v3/files") {
+                bearerAuth(currentToken())
 
-                filter
-                    .build()
-                    .filterValues { it != null }
-                    .forEach { query(it.key, "${it.value}") }
+                url {
+                    filter
+                        .build()
+                        .filterValues { it != null }
+                        .forEach { parameters.append(it.key, "${it.value}") }
+                }
             }
 
-            val body: String = httpClient.coSend(request, ofString).body()
-            val response = defaultObjectMapper.readValue<FileList>(body)
-
-            (false to response.nextPageToken) to response.files
+            val body = response.body<FileList>()
+            (false to body.nextPageToken) to body.files
         }
     }
 
@@ -70,7 +69,7 @@ fun GoogleDriveApi.listFiles(
  * Example usage:
  *
  * ```
- * val serviceAccount: JsonNode = // provide your credentials here
+ * val serviceAccount: JsonObject = // provide your credentials here
  * val googleDriveApi = GoogleDriveApi(serviceAccount)
  * val fileDataFlow: Flow<ByteArray> = googleDriveApi.download("0BwwA4oUTeiV1UVNwOHItT0xfa2M")
  *
@@ -82,34 +81,30 @@ fun GoogleDriveApi.listFiles(
 @ExperimentalRiverApi
 fun GoogleDriveApi.download(
     fileId: String
-): Flow<ByteArray> = flow {
+): Flow<ByteArray> = channelFlow {
     val accessToken = currentToken()
 
-    val request = get("$baseUrl/v3/files/$fileId") {
-        query("fields", "webContentLink")
-        authorization { bearer(accessToken) }
+    val response = httpClient.get("$baseUrl/v3/files/$fileId") {
+        url { parameters.append("fields", "webContentLink") }
+        bearerAuth(accessToken)
     }
 
-    val response = httpClient.coSend(request, ofString)
+    require(response.status.value != 401) { "The provided authorization token is not valid." }
+    require(response.status.value != 404) { "The file $fileId does not exist." }
+    require(response.status.value == 200) { "Received HTTP status: ${response.status}" }
 
-    require(response.statusCode() != 401) { "The provided authorization token is not valid." }
-    require(response.statusCode() != 404) { "The file $fileId does not exist." }
-    require(response.statusCode() == 200) { "Received HTTP status: ${response.statusCode()}" }
+    val jsonBody = response.body<JsonObject>()
 
-    val jsonBody = defaultObjectMapper.readTree(response.body())
-
-    val url = jsonBody["webContentLink"].asText()
+    val url = checkNotNull(jsonBody["webContentLink"]?.jsonPrimitive?.content)
 
     httpClient
-        .coSend(
-            request = get(url) {
-                authorization { bearer(accessToken) }
-            },
-            bodyHandler = ofFlow
-        )
-        .body()
-        .asByteArray()
-        .also {
-            emitAll(it)
+        .prepareGet(url) { bearerAuth(accessToken) }
+        .execute {
+            val content = it.bodyAsChannel()
+
+            while (!content.isClosedForRead) {
+                val packet = content.readRemaining(4096)
+                while (!packet.isEmpty) send(packet.readBytes())
+            }
         }
 }
