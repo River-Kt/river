@@ -9,9 +9,9 @@ on:
         required: true
       SIGNING_SECRET_FILE:
         required: true
-      RELEASER_NEXUS2_USERNAME:
+      OSSRH_USER_TOKEN_USERNAME:
         required: true
-      RELEASER_NEXUS2_PASSWORD:
+      OSSRH_USER_TOKEN_PASSWORD:
         required: true
 
 permissions:
@@ -41,7 +41,7 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_SECRET_FILE: ${{ secrets.SIGNING_SECRET_FILE }}
-          RELEASER_NEXUS2_USERNAME: ${{ secrets.RELEASER_NEXUS2_USERNAME }}
-          RELEASER_NEXUS2_PASSWORD: ${{ secrets.RELEASER_NEXUS2_PASSWORD }}
+          OSSRH_USER_TOKEN_USERNAME: ${{ secrets.OSSRH_USER_TOKEN_USERNAME }}
+          OSSRH_USER_TOKEN_PASSWORD: ${{ secrets.OSSRH_USER_TOKEN_PASSWORD }}
         with:
           arguments: assemble sourcesJar javadocJar signAllPublications publish --stacktrace
